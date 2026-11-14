@@ -750,8 +750,7 @@ img,canvas,video{max-width:100%}
     <div class="login-logo">RIMINI</div>
     <div class="login-sub">Point of Sale System v2</div>
 <div class="login-branch-row">
-  <button class="branch-pick active" onclick="selectBranch('MULTAN',this)">🍕 Multan</button>
-  <button class="branch-pick" onclick="selectBranch('BWP',this)">🥩 BWP</button>
+  <button class="branch-pick active" onclick="selectBranch('BWP',this)">🍨 Bahawalpur</button>
 </div>
     <input class="login-input" type="text" id="staff-name" placeholder="Staff Name" autocomplete="off">
     <input class="login-input" type="password" id="staff-pin" placeholder="PIN" maxlength="6" autocomplete="off"
@@ -1232,8 +1231,7 @@ img,canvas,video{max-width:100%}
           <input type="datetime-local" step="60" id="history-date-to-picker" onchange="syncDateRangeFromInputs('history-date-picker','history-date-to-picker')"
             style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;">
           <select id="history-branch-picker" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;">
-  <option value="MULTAN">🍕 Multan</option>
-  <option value="BWP">🥩 BWP</option>
+  <option value="BWP">🍨 Bahawalpur</option>
 </select>
           <button class="refresh-btn" onclick="loadHistoryForRange(document.getElementById('history-date-picker').value, document.getElementById('history-date-to-picker').value)">↻ Load</button>
         </div>
@@ -1774,11 +1772,7 @@ async function sbWrite(table, op, payload, match) {
 }
 
 const BRANCHES = {
-  MULTAN: { id:'MULTAN', name:'Multan', address:'Shop #12, Gulgasht Colony, Multan', phone:'923001450301',
-    riders:["Ramzan","Abdurehman","Atif","Ehsan"],
-    riderPhones:{ Ramzan:"923196206229", Abdurehman:"923286001660", Atif:"923047373321", Ehsan:"923193157142" }
-  },
-  BWP: { id:'BWP', name:'Bahawalpur', address:'Shop 8-9, SS Tower, Noor Mahal Rd, Sadiq Colony', phone:'923003450301',
+  BWP: { id:'BWP', name:'Bahawalpur', address:'SS Tower, Noor Mahal Road, Bahawalpur Cantt', phone:'923004670301',
     riders:["Raffay","Waseem","Asif","Touqeer","Talha","Danish"],
     riderPhones:{ Raffay:"923440398730", Waseem:"923123382820", Asif:"923008683615", Touqeer:"923706547442", Talha:"923008643811", Danish:"923126299048" }
   }
@@ -1863,7 +1857,7 @@ const dealFlavorMap = {
 // ══════════════════════════════════
 // STATE
 // ══════════════════════════════════
-let activeBranch = 'MULTAN';
+let activeBranch = 'BWP';
 let currentStaff = '';
 let currentStaffRole = '';
 let currentStaffPermissions = {};
