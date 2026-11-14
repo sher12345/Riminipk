@@ -720,6 +720,9 @@ body {
 .adm-deal-price-inp { background:#f7f8fa; border:1px solid #e2e5ea; border-radius:6px; padding:6px 10px; color:#e88fb4; font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:600; width:110px; outline:none; transition:all 0.2s; }
 .adm-deal-price-inp:focus { border-color:#e88fb4; background:white; }
 .adm-deal-img-url { width:100%; background:#f7f8fa; border:1px solid #e2e5ea; border-radius:6px; padding:5px 9px; color:#6b7280; font-size:11px; font-family:'Barlow',sans-serif; outline:none; margin-top:8px; transition:all 0.2s; }
+.adm-img-up-btn { flex:none; background:#e88fb4; color:#fff; border:none; border-radius:6px; padding:5px 9px; font-size:13px; cursor:pointer; }
+.adm-img-up-btn:disabled { opacity:.6; cursor:wait; }
+.adm-img-up-wide { display:block; width:100%; margin-top:6px; font-size:12px; font-weight:700; }
 .adm-deal-img-url:focus { border-color:#e88fb4; background:white; }
 .adm-deal-tog-btn { width:100%; padding:9px; border:none; border-radius:6px; font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
 .adm-deal-tog-btn.available { background:#f0fdf4; color:#16a34a; border:1.5px solid #bbf7d0; }
@@ -2494,7 +2497,7 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
       <!-- PRICES -->
       <div class="adm-panel" id="adm-panel-prices">
         <div class="adm-page-title">Prices & Images</div>
-        <div class="adm-page-sub">Edit prices and image URLs. Changes apply to menu when saved.</div>
+        <div class="adm-page-sub">Edit prices and images (paste a link or upload a photo). Changes apply to menu when saved.</div>
         <div class="adm-filter-bar">
           <input type="text" class="adm-search" id="adm-price-search" placeholder="🔍 Search items..." oninput="admFilterPrices()">
           <select class="adm-select" id="adm-price-cat" onchange="admFilterPrices()"><option value="all">All Categories</option></select>
@@ -2506,7 +2509,7 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
           </div>
           <div style="overflow-x:auto;">
             <table class="adm-price-table">
-              <thead><tr><th style="width:52px;"></th><th>Item</th><th>Price(s) — Rs</th><th>Image URL</th><th style="width:100px;">Status</th></tr></thead>
+              <thead><tr><th style="width:52px;"></th><th>Item</th><th>Price(s) — Rs</th><th>Image (URL or upload)</th><th style="width:100px;">Status</th></tr></thead>
               <tbody id="adm-price-tbody"></tbody>
             </table>
           </div>
@@ -2552,7 +2555,7 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
               </div>
               <div>
                 <label style="font-size:11px;font-weight:700;color:#9ca3af;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px;">Image URL</label>
-                <input type="text" id="new-item-img" class="adm-search" placeholder="https://..." style="width:100%;">
+                <input type="text" id="new-item-img" class="adm-search" placeholder="https://... or upload" style="width:100%;"><button type="button" class="adm-img-up-btn adm-img-up-wide" onclick="admPickImage(this)">📷 Upload photo</button>
               </div>
             </div>
             <div style="margin-bottom:12px;">
@@ -2620,7 +2623,7 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
               </div>
               <div>
                 <label style="font-size:11px;font-weight:700;color:#9ca3af;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:6px;">Image URL</label>
-                <input type="text" id="new-deal-img" class="adm-search" placeholder="https://..." style="width:100%;">
+                <input type="text" id="new-deal-img" class="adm-search" placeholder="https://... or upload" style="width:100%;"><button type="button" class="adm-img-up-btn adm-img-up-wide" onclick="admPickImage(this)">📷 Upload photo</button>
               </div>
             </div>
             <div style="margin-bottom:12px;">
@@ -8207,7 +8210,7 @@ const ADM_BRANCHES = {
   BWP:    { id:'BWP', name:'Bahawalpur', emoji:'🥩', color:'#5d3a1a', cls:'bwp' }
 };
 
-const ADM_PASSWORDS = { BWP:'CHANGE_ME_2', SUPER:'CHANGE_ME_SUPER' };
+const ADM_PASSWORDS = { BWP:'bwp@rimini', SUPER:'super@rimini' };
 
 async function openAdminPanel() {
   window._admAvailLoaded = false; // ← ADD THIS
@@ -8570,7 +8573,7 @@ function admRenderPrices(filterText='', catFilter='all') {
       ph+=`</div>`; t3.innerHTML=ph;
       // image
       const t4=document.createElement('td');
-      t4.innerHTML=`<div style="display:flex;align-items:center;gap:6px;"><input type="text" class="adm-img-inp" placeholder="Paste image URL..." value="${s.image||''}" onchange="admUpdateImg('${item.name}',this.value)" oninput="admMarkRowChanged('${admSafeId(item.name)}')"><button class="adm-img-preview-btn" onclick="admPreviewImg('${item.name}')">👁️</button></div>`;
+      t4.innerHTML=`<div style="display:flex;align-items:center;gap:6px;"><input type="text" class="adm-img-inp" placeholder="Paste image URL..." value="${s.image||''}" onchange="admUpdateImg('${item.name}',this.value)" oninput="admMarkRowChanged('${admSafeId(item.name)}')"><button type="button" class="adm-img-up-btn" onclick="admPickImage(this)" title="Upload photo">📷</button><button class="adm-img-preview-btn" onclick="admPreviewImg('${item.name}')">👁️</button></div>`;
       // status
       const t5=document.createElement('td');
       t5.innerHTML=`<button class="adm-tog-btn ${isAvail?'active':''}" onclick="admToggleItem('${item.name}');this.classList.toggle('active');"><span class="adm-status-dot ${isAvail?'on':'off'}"></span>${isAvail?'Live':'Off'}</button>`;
@@ -8588,6 +8591,45 @@ function admUpdatePrice(name, sk, val) {
   if (sk) { if(!admState.items[name].prices||typeof admState.items[name].prices!=='object') admState.items[name].prices={}; admState.items[name].prices[sk]=p; }
   else admState.items[name].prices=p;
   admMarkUnsaved();
+}
+
+// ── Upload a photo to Supabase Storage (bucket: menu-images) and drop its public URL into the input next to the button ──
+async function admResizeImage(file, maxSide) {
+  const isPng = file.type === 'image/png';
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, maxSide / Math.max(bmp.width, bmp.height));
+  const c = document.createElement('canvas');
+  c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  const type = isPng ? 'image/png' : 'image/jpeg';
+  const blob = await new Promise(r => c.toBlob(r, type, 0.85));
+  return { blob, type, ext: isPng ? 'png' : 'jpg' };
+}
+function admPickImage(btn) {
+  const inp = btn.previousElementSibling;
+  if (!inp || inp.tagName !== 'INPUT') return;
+  const f = document.createElement('input'); f.type = 'file'; f.accept = 'image/*';
+  f.onchange = async () => {
+    const file = f.files[0]; if (!file) return;
+    const old = btn.textContent; btn.disabled = true; btn.textContent = '⏳';
+    try {
+      const img = await admResizeImage(file, 900);
+      const path = (admActiveBranch || 'BWP').toLowerCase() + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + img.ext;
+      const { error } = await sb.storage.from('menu-images').upload(path, img.blob, { contentType: img.type, cacheControl: '31536000', upsert: false });
+      if (error) throw error;
+      const { data } = sb.storage.from('menu-images').getPublicUrl(path);
+      inp.value = data.publicUrl;
+      inp.dispatchEvent(new Event('input', { bubbles: true }));
+      inp.dispatchEvent(new Event('change', { bubbles: true }));
+      btn.textContent = '✅';
+    } catch (e) {
+      alert('Photo upload failed: ' + (e.message || e) + '\n\nMake sure the "menu-images" storage bucket exists (see supabase/sql/4_storage_menu_images.sql).');
+      btn.textContent = old;
+    } finally {
+      btn.disabled = false; setTimeout(() => { btn.textContent = old; }, 1500);
+    }
+  };
+  f.click();
 }
 
 function admUpdateImg(name, url) {
@@ -8622,7 +8664,7 @@ function admRenderDeals(filterText='') {
       <div class="adm-deal-price-row"><span style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#9ca3af;">Rs</span>
         <input type="number" class="adm-deal-price-inp" value="${ds.price}" onchange="admUpdateDealPrice('${deal.name}',this.value)" oninput="admMarkUnsaved()">
       </div>
-      <input type="text" class="adm-deal-img-url" placeholder="Image URL..." value="${ds.image||deal.image}" onchange="admUpdateDealImg('${deal.name}',this.value)" oninput="admMarkUnsaved()">
+      <input type="text" class="adm-deal-img-url" placeholder="Image URL..." value="${ds.image||deal.image}" onchange="admUpdateDealImg('${deal.name}',this.value)" oninput="admMarkUnsaved()"><button type="button" class="adm-img-up-btn adm-img-up-wide" onclick="admPickImage(this)">📷 Upload photo</button>
       <div style="height:10px;"></div>
       <button class="adm-deal-tog-btn ${isAvail?'available':'unavailable'}" onclick="admToggleDeal('${deal.name}')">
         ${isAvail?'✅ ACTIVE — Click to Disable':'🚫 DISABLED — Click to Enable'}
