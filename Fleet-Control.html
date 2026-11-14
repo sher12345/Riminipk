@@ -100,7 +100,7 @@ tbody tr{cursor:pointer;transition:background .15s}tbody tr:hover{background:var
  <div class="top">
   <h1 class="logo">RIMINI Fleet<small><i class="pulse"></i><span id="upd">Loading…</span></small></h1>
   <div class="seg" id="per"><i class="pill"></i><button data-p="today" class="on">Today</button><button data-p="week">7 days</button><button data-p="month">Month</button></div>
-  <select class="inp" id="br" aria-label="Branch"><option value="">All branches</option><option value="MULTAN">Multan</option><option value="BWP">Bahawalpur</option></select>
+  <select class="inp" id="br" aria-label="Branch"><option value="">All branches</option><option value="BWP">Bahawalpur</option></select>
   <input class="inp sr" id="q" placeholder="Search rider" aria-label="Search rider">
   <button class="btn rf" onclick="load(true)" aria-label="Refresh"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" stroke="rgba(255,255,255,.1)"/><circle id="cd" cx="18" cy="18" r="16" stroke="#3ddc84" stroke-dasharray="0 100.5" pathLength="100.5"/></svg>↻</button>
   <button class="btn" onclick="exportCsv()">CSV</button><button class="btn" onclick="lock()">Lock</button>
@@ -121,7 +121,7 @@ tbody tr{cursor:pointer;transition:background .15s}tbody tr:hover{background:var
 
 <script>
 const sb=supabase.createClient("https://htlqprvfbmjydpfqcbhd.supabase.co","sb_publishable_GJLVXKbQUYZHX-Q84hRAAA_JoGC8JCt");
-const ADMIN_PIN='8888'; // CHANGE THIS
+const ADMIN_PIN='CHANGE_ME'; // CHANGE THIS
 const CASH_ALERT=20000, LATE_MIN=45, REFRESH=30;
 const HIST='kitchen_orders';              // live orders
 const ARCHIVE='kitchen_orders_history';   // archived orders (older days live here)
