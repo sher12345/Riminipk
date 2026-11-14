@@ -1450,12 +1450,12 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
   <div class="wrap">
     <div class="copy">
       <h1>Crafted with fire &amp; flavor</h1>
-      <p class="lede">Pizza, burgers, steaks and more, made fresh in our kitchen and delivered to your door in Multan and Bahawalpur.</p>
+      <p class="lede">Pizza, burgers, steaks and more, made fresh in our kitchen and delivered to your door in Bahawalpur.</p>
       <div class="cta-row">
         <button class="nbtn nbtn-primary" id="heroCta" data-order="discount">Order now and save 10%</button>
         <a class="nbtn nbtn-ghost" href="#menu">See the menu</a>
       </div>
-      <p class="facts">Two branches, more than 50 menu items, rated 4.8 by customers.</p>
+      <p class="facts">Bahawalpur Cantt, more than 50 menu items, rated 4.8 by customers.</p>
     </div>
   </div>
 </section>
@@ -1563,30 +1563,21 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
 
 <section class="branches" id="branches" aria-labelledby="bh">
   <div class="wrap">
-    <h2 id="bh">Find us near you</h2>
+    <h2 id="bh">Find us</h2>
     <div class="bgrid">
       <article class="branch">
-        <h3>Multan</h3>
-        <address>Shop #12, Gulgasht Colony, Multan</address>
-        <a class="tel" href="tel:+923001450301">0300-145-0301</a>
-        <div class="cta-row">
-          <button class="nbtn nbtn-primary" data-order="multan">Order from Multan</button>
-          <a class="nbtn nbtn-ghost" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=Oven+X+Gulgasht+Colony+Multan">Get directions</a>
-        </div>
-      </article>
-      <article class="branch">
         <h3>Bahawalpur</h3>
-        <address>Shop 8-9, SS Tower, 31-32 Noor Mahal Rd, Sadiq Colony</address>
-        <a class="tel" href="tel:+923003450301">0300-345-0301</a>
+        <address>SS Tower, Noor Mahal Road, Bahawalpur Cantt</address>
+        <a class="tel" href="tel:+923004670301">0300-467-0301</a>
         <div class="cta-row">
           <button class="nbtn nbtn-primary" data-order="bahawalpur">Order from Bahawalpur</button>
-          <a class="nbtn nbtn-ghost" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=Oven+X+SS+Tower+Noor+Mahal+Road+Bahawalpur">Get directions</a>
+          <a class="nbtn nbtn-ghost" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&amp;query=Rimini+SS+Tower+Noor+Mahal+Road+Bahawalpur">Get directions</a>
         </div>
       </article>
     </div>
     <div class="care">
       <p>Need help with an order? Customer care is available during restaurant hours.</p>
-      <a class="nbtn nbtn-ghost" href="tel:+923002450301">Call 0300-245-0301</a>
+      <a class="nbtn nbtn-ghost" href="tel:+923004670301">Call 0300-467-0301</a>
     </div>
   </div>
 </section>
@@ -1619,8 +1610,7 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
     var b = e.target.closest('[data-order]');
     if(!b) return;
     var t = b.getAttribute('data-order');
-    if(t==='multan')          enterFromLandingBranch('MULTAN');
-    else if(t==='bahawalpur') enterFromLandingBranch('BWP');
+    if(t==='bahawalpur') enterFromLandingBranch('BWP');
     else if(t==='deals')      enterFromLandingDeals();
     else if(t==='club')       openLoyaltySetup();
     else if(t==='discount')   claimDiscount();
@@ -1673,18 +1663,10 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
 </button>
     </div>
     <div class="branch-cards-wrap" id="branch-cards-wrap" style="display:none;">
-<div class="branch-card" id="bcard-MULTAN">            <div class="near-tag" id="bnear-MULTAN" style="display:none;">📍 NEAREST</div>
-            <div class="branch-card-city">🍕 Multan</div>
-            <div class="branch-card-addr">Shop #12, Gulgasht Colony, Multan</div>
-            <div class="branch-card-meta">
-                <span class="branch-card-dist" id="bdist-MULTAN"></span>
-                <span class="branch-card-status" id="bstatus-MULTAN">● Open Now</span>
-            </div>
-        </div>
 <div class="branch-card" id="bcard-BWP">
             <div class="near-tag" id="bnear-BWP" style="display:none;">📍 NEAREST</div>
-            <div class="branch-card-city">🥩 Bahawalpur</div>
-            <div class="branch-card-addr">Shop 8-9, SS Tower, 31-32 Noor Mahal Rd, Sadiq Colony</div>
+            <div class="branch-card-city">🍨 Bahawalpur Cantt</div>
+            <div class="branch-card-addr">SS Tower, Noor Mahal Road, Bahawalpur Cantt</div>
             <div class="branch-card-meta">
                 <span class="branch-card-dist" id="bdist-BWP"></span>
                 <span class="branch-card-status" id="bstatus-BWP">● Open Now</span>
@@ -1696,10 +1678,9 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
 <div id="gateway-screen" style="display:none;">
       <div class="bouncing-logo"><p class="gateway-logo">RIMINI</p></div>
     
-    <div id="branch-pill" onclick="resetBranchSelection()">
+    <div id="branch-pill">
     <span class="bpill-dot"></span>
-    <span id="branch-pill-text">MULTAN</span>
-    <span style="opacity:.4; font-size:10px;">↺ change</span>
+    <span id="branch-pill-text">BAHAWALPUR</span>
 </div>
     <div id="gateway-table-note">🎉 WELCOME! TABLE <span id="gateway-table-id"></span> 🎉</div>
 
@@ -1777,7 +1758,7 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
     <div class="modal" style="max-width:640px; text-align:left;">
         <h2 style="color:var(--red); font-weight:700; text-align:center;">Manual Order 📝</h2>
         <div style="background:#f0f0f0; padding:8px 15px; border-radius:10px; margin-bottom:10px; font-size:12px; font-weight:700; color:#555; text-align:center;">
-            Branch: <span id="man-branch-tag" style="color:var(--red);">MULTAN</span>
+            Branch: <span id="man-branch-tag" style="color:var(--red);">BAHAWALPUR</span>
         </div>
         <select id="man-type" class="big-input" onchange="renderManSummary()">
             <option value="Dine-In">Dine-In</option>
@@ -1854,7 +1835,7 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
 <div class="calc-header">
             <div>
                 <h2 style="margin:0; font-weight:700;">🚚 Delivery Calculator</h2>
-                <p style="margin:3px 0 0; font-size:11px; opacity:.7;" id="calc-branch-label">From: Rimini Multan Kitchen</p>
+                <p style="margin:3px 0 0; font-size:11px; opacity:.7;" id="calc-branch-label">From: Rimini Bahawalpur Kitchen</p>
             </div>
             <button onclick="closeDeliveryCalc()" style="background:white; color:var(--red); border:none; padding:8px 15px; border-radius:10px; font-weight:700;">✕</button>
         </div>
@@ -2061,7 +2042,7 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
             <div class="perk"><div class="perk-line"></div><div class="perk-name">1 stamp per order</div><div class="perk-desc">On orders above Rs 1000</div></div>
             <div class="perk"><div class="perk-line" style="background:#d4af37"></div><div class="perk-name">Free mystery meal</div><div class="perk-desc">Unlocked at stamp 10</div></div>
             <div class="perk"><div class="perk-line" style="background:rgba(255,255,255,0.2)"></div><div class="perk-name">Never expires</div><div class="perk-desc">Stamps last forever</div></div>
-            <div class="perk"><div class="perk-line"></div><div class="perk-name">Both branches</div><div class="perk-desc">Multan & Bahawalpur</div></div>
+            <div class="perk"><div class="perk-line"></div><div class="perk-name">Our branch</div><div class="perk-desc">Bahawalpur Cantt</div></div>
           </div>
           <div class="nav-row" style="padding-top:0">
             <button class="btn-red" onclick="go(1)" style="box-shadow:0 5px 0px #5b3a7e">GET STARTED</button>
@@ -2253,7 +2234,6 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
                 <h2 style="margin:0; color:var(--red); font-weight:700;">LIVE KITCHEN</h2>
                 <div class="kbranch-tabs">
                     <button class="kbranch-tab active-all" id="kb-ALL" onclick="setKBranchFilter('ALL')">ALL BRANCHES</button>
-                    <button class="kbranch-tab" id="kb-MULTAN" onclick="setKBranchFilter('MULTAN')">🍕 MULTAN</button>
                     <button class="kbranch-tab" id="kb-BWP" onclick="setKBranchFilter('BWP')">🥩 BWP</button>
                 </div>
             </div>
@@ -2346,7 +2326,6 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
                 </select>
                 <select id="cr-branch" class="adm-select" onchange="renderCardRecords()">
                     <option value="all">All Branches</option>
-                    <option value="MULTAN">Multan</option>
                     <option value="BWP">Bahawalpur</option>
                 </select>
                 <input type="date" id="cr-from" class="adm-search" style="max-width:150px;" onchange="renderCardRecords()">
@@ -2367,7 +2346,6 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
                 <h2 style="margin:0; color:#16a34a; font-weight:700;">📊 TAX AUDIT REPORT</h2>
                 <div class="kbranch-tabs">
                     <button class="kbranch-tab active-all" id="audit-kb-ALL" onclick="setAuditBranchFilter('ALL')">ALL BRANCHES</button>
-                    <button class="kbranch-tab" id="audit-kb-MULTAN" onclick="setAuditBranchFilter('MULTAN')">🍕 MULTAN</button>
                     <button class="kbranch-tab" id="audit-kb-BWP" onclick="setAuditBranchFilter('BWP')">🥩 BWP</button>
                 </div>
             </div>
@@ -2434,8 +2412,7 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
       <div class="adm-unsaved-dot" id="adm-unsaved-dot"></div>
     </div>
     <div class="adm-branch-sw">
-      <button class="adm-branch-btn active" id="adm-btn-MULTAN" onclick="admSwitchBranch('MULTAN')">🍕 Multan</button>
-      <button class="adm-branch-btn" id="adm-btn-BWP" onclick="admSwitchBranch('BWP')">🥩 Bahawalpur</button>
+      <button class="adm-branch-btn active" id="adm-btn-BWP" onclick="admSwitchBranch('BWP')">🥩 Bahawalpur</button>
     </div>
     <div style="display:flex;gap:10px;align-items:center;">
       <div style="font-size:12px;color:rgba(255,255,255,0.7);display:flex;align-items:center;gap:6px;" id="adm-save-label">
@@ -2450,8 +2427,8 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
 
   <!-- Context bar -->
   <div class="adm-ctx-bar">
-    <span class="adm-branch-ind multan" id="adm-branch-ind">🍕 MULTAN</span>
-    <span>Changes only affect <b id="adm-branch-ctx-name">Multan</b> branch menu.</span>
+    <span class="adm-branch-ind bwp" id="adm-branch-ind">🥩 BWP</span>
+    <span>Changes only affect <b id="adm-branch-ctx-name">Bahawalpur</b> branch menu.</span>
     <span style="margin-left:auto;font-size:11px;opacity:0.5;">Each branch has independent settings</span>
   </div>
 
@@ -2683,7 +2660,7 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
         <div><label style="font-size:11px;color:#9ca3af;font-weight:700;">VALID FROM *</label><input type="date" class="adm-search" id="pt-from" style="width:100%"></div>
         <div><label style="font-size:11px;color:#9ca3af;font-weight:700;">VALID UNTIL (optional)</label><input type="date" class="adm-search" id="pt-until" style="width:100%"></div>
         <input class="adm-search" id="pt-code" placeholder="Card code (leave blank to auto-generate)">
-        <select class="adm-select" id="pt-branch"><option value="ALL">Both branches</option><option value="MULTAN">Multan only</option><option value="BWP">Bahawalpur only</option></select>
+        <select class="adm-select" id="pt-branch"><option value="ALL">All branches</option><option value="BWP">Bahawalpur only</option></select>
       </div>
       <textarea class="adm-search" id="pt-details" placeholder="Terms / details (e.g. Not valid with deals. Show card at counter.)" style="width:100%;height:64px;margin-bottom:12px;"></textarea>
       <div style="display:flex;gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap;">
@@ -2854,30 +2831,10 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
     // BRANCH CONFIGURATION
     // ══════════════════════════════════════════
     const BRANCH_CONFIG = {
-        MULTAN: {
-    id: 'MULTAN',
-    name: 'Multan',
-    address: 'Shop #12, Gulgasht Colony, Multan',
-    lat: 30.2197, lng: 71.4711,
-    phone: '923001450301',
-    cc_phone: '923002450301',
-    riders: ["Abdurehman", "Atif", "Ehsan", "Rana Dilawar", "Madni", "Dilawar Siyal"],
-riderPhones: {
-    "Abdurehman":  "923286001660",
-    "Atif":        "923047373321",
-    "Ehsan":       "923193157142",
-    "Madni":       "923130555890",
-    "Rana Dilawar": "923186913345",
-    "Shahzad":     "923138322920",
-    "Dilawar Siyal": "923144815123",
-},
-    inventoryPassword: 'CHANGE_ME',
-    excludedDeals: []
-},
-       BWP: {
+        BWP: {
     id: 'BWP',
     name: 'Bahawalpur',
-    address: 'Shop 8-9, SS Tower, 31-32 Noor Mahal Rd, Sadiq Colony, Bahawalpur',
+    address: 'SS Tower, Noor Mahal Road, Bahawalpur Cantt',
     lat: 29.38365358488693, lng: 71.67091027857997,
     phone: '923004670301',
     cc_phone: '923004670301',
@@ -2890,7 +2847,7 @@ riderPhones: {
         "Azeem":   "923116688948",
         "Talha":   "923294943839"
     },
-    inventoryPassword: 'super@rimini',
+    inventoryPassword: 'CHANGE_ME',
     excludedDeals: []
 },
     };
@@ -2908,13 +2865,13 @@ riderPhones: {
     function fmtDist(km){return km<1?Math.round(km*1000)+' m away':km.toFixed(1)+' km away';}
 
     // ── Branch open/closed status (admin-controlled flag, fail-open) ──
-    let BRANCH_OPEN_OVERRIDE = { MULTAN: true, BWP: true };
+    let BRANCH_OPEN_OVERRIDE = { BWP: true };
 
     async function loadBranchOpenStatus() {
         if (!sb) return;
         try {
             const { data } = await sb.from('app_settings').select('key,value')
-                .in('key', ['branch_closed_MULTAN','branch_closed_BWP']);
+                .in('key', ['branch_closed_BWP']);
             (data||[]).forEach(row => {
                 const branch = row.key.replace('branch_closed_', '');
                 BRANCH_OPEN_OVERRIDE[branch] = row.value !== 'true';
@@ -2943,7 +2900,7 @@ riderPhones: {
         return allRows;
     }
     function updateBranchStatusBadges() {
-        ['MULTAN','BWP'].forEach(id => {
+        ['BWP'].forEach(id => {
             const isOpen = getBranchOpenStatus(id);
             const el = document.getElementById('bstatus-' + id);
             if (el) {
@@ -3072,6 +3029,9 @@ riderPhones: {
             }
         }
     } catch(e) {}
+    // Single branch: always go straight to Bahawalpur
+    selectBranch('BWP', true);
+    return;
     const saved = localStorage.getItem('rimini_branch');
 
     // ── Saved branch exists: VERIFY it against the customer's real location ──
@@ -3175,7 +3135,6 @@ loadCustomItemsIntoMenu();
         }
     }
 }
-    document.getElementById('bcard-MULTAN').addEventListener('click', () => { manualBranchPick = true; selectBranch('MULTAN'); });
     document.getElementById('bcard-BWP').addEventListener('click', () => { manualBranchPick = true; selectBranch('BWP'); });
     document.getElementById('branch-manual-btn').addEventListener('click', () => chooseBranchManually());
 
@@ -3200,7 +3159,6 @@ loadCustomItemsIntoMenu();
             t.className = 'kbranch-tab';
         });
         if (f === 'ALL') document.getElementById('kb-ALL').classList.add('active-all');
-        else if (f === 'MULTAN') document.getElementById('kb-MULTAN').classList.add('active-multan');
         else if (f === 'BWP') document.getElementById('kb-BWP').classList.add('active-bwp');
         renderKitchenOrders();
     }
@@ -3210,7 +3168,7 @@ loadCustomItemsIntoMenu();
     // EXISTING RIMINI CODE (PRESERVED)
     // ==========================================
     
-    const BRANCH_CODE = 'MULTAN';
+    const BRANCH_CODE = 'BWP';
     let audioCtx = null;
     function playClick(type = 'pop') { 
     try { 
@@ -3707,7 +3665,7 @@ async function submitReview() {
 
     try {
         const { error } = await sb.from('reviews').insert([{
-            branch: (activeBranch || BRANCH_CONFIG.MULTAN).id,
+            branch: (activeBranch || BRANCH_CONFIG.BWP).id,
             customer_name: name,
             phone: phone,
             rating: currentReviewRating,
@@ -4748,7 +4706,7 @@ function unlockOrderButton() {
             if (m && Number(m.stamps) >= 10) {
                 const { data: claim, error: claimErr } = await sb.rpc('claim_gold_club_reward', {
                     member_phone: memberPhone,
-                    claim_branch: (activeBranch || BRANCH_CONFIG.MULTAN).id
+                    claim_branch: (activeBranch || BRANCH_CONFIG.BWP).id
                 });
                 if (claimErr) throw claimErr;
                 if (claim && claim.prize) {
@@ -4784,7 +4742,7 @@ function unlockOrderButton() {
         ai_assisted: window._botAssisted === true,
         tax: tax,
         payment_method: paymentMethod,
-        branch: (activeBranch || BRANCH_CONFIG.MULTAN).id,
+        branch: (activeBranch || BRANCH_CONFIG.BWP).id,
         latitude: orderType === 'Delivery' ? (currentCalcData?.userLat || null) : null,
         longitude: orderType === 'Delivery' ? (currentCalcData?.userLng || null) : null
     };
@@ -4919,7 +4877,7 @@ if (!custPhone.startsWith('92')) custPhone = '92' + custPhone;
     );
 
     // Send to WhatsApp
-    const br = activeBranch || BRANCH_CONFIG.MULTAN;
+    const br = activeBranch || BRANCH_CONFIG.BWP;
     const KITCHEN_NUMBER = br.phone;
     const CUSTOMER_CARE_NUMBER = br.cc_phone;
 
@@ -5185,7 +5143,7 @@ function resetCalcErrorState() {
         distance_round_trip: roundTrip,
         cost: cost,
         is_estimated: !roadDistance,
-        branch: (activeBranch || BRANCH_CONFIG.MULTAN).id  // ADD THIS
+        branch: (activeBranch || BRANCH_CONFIG.BWP).id  // ADD THIS
     }]);
 }
 
@@ -5556,7 +5514,7 @@ async function clearDeliveriesWithPassword() {
 
 async function loadDeliveryHistory() {
     if (!sb) return;
-    const branch = activeBranch || BRANCH_CONFIG.MULTAN;
+    const branch = activeBranch || BRANCH_CONFIG.BWP;
     
     const { data, error } = await sb.from('delivery_calculations')
         .select('*')
@@ -5609,7 +5567,7 @@ async function loadDeliveryHistory() {
     async function clearDeliveryHistory() {
     if (!confirm("Clear all delivery calculation history?")) return;
     if (!sb) return;
-    const branch = activeBranch || BRANCH_CONFIG.MULTAN;
+    const branch = activeBranch || BRANCH_CONFIG.BWP;
     
     const { error } = await sb.from('delivery_calculations')
         .delete()
@@ -5670,7 +5628,7 @@ async function loadDeliveryHistory() {
         document.getElementById('man-discount-pct').value = "";
         document.getElementById('man-fee').value = "";
         document.getElementById('man-item-search').value = "";
-        document.getElementById('man-branch-tag').innerText = (activeBranch || BRANCH_CONFIG.MULTAN).name.toUpperCase();
+        document.getElementById('man-branch-tag').innerText = (activeBranch || BRANCH_CONFIG.BWP).name.toUpperCase();
         renderManCart();
         renderManPaymentButtons();
         renderManSummary();
@@ -5687,14 +5645,14 @@ async function loadDeliveryHistory() {
     async function renderManItemPicker(filterText) {
         const container = document.getElementById('man-item-picker');
         const search = (filterText || '').toLowerCase();
-        const isBWP = (activeBranch || BRANCH_CONFIG.MULTAN).id === 'BWP';
+        const isBWP = (activeBranch || BRANCH_CONFIG.BWP).id === 'BWP';
         _manPickerFlat = [];
 
         // ── Ensure ALL custom deals for this branch are merged into dealsData
         // before rendering. This is what fixes the "only 6 deals" issue.
         if (sb) {
             try {
-                const brId = (activeBranch || BRANCH_CONFIG.MULTAN).id;
+                const brId = (activeBranch || BRANCH_CONFIG.BWP).id;
                 const { data: cds, error: cdsErr } = await sb.from('custom_deals')
                     .select('*')
                     .eq('branch', brId)
@@ -5774,7 +5732,7 @@ async function loadDeliveryHistory() {
             });
         }
 
-        const br = activeBranch || BRANCH_CONFIG.MULTAN;
+        const br = activeBranch || BRANCH_CONFIG.BWP;
         const deals = dealsData.filter(d => {
             if (d.bwpOnly && !isBWP) return false;
             if (br.excludedDeals && br.excludedDeals.includes(d.name)) return false;
@@ -6091,7 +6049,7 @@ async function loadDeliveryHistory() {
             tax: t.tax,
             payment_method: manPaymentMethod,
             discount_claimed: t.discount > 0,
-            branch: (activeBranch || BRANCH_CONFIG.MULTAN).id
+            branch: (activeBranch || BRANCH_CONFIG.BWP).id
         };
         if (custName) obj.customer_name = custName;
         if (custPhone) obj.phone = custPhone;
@@ -6139,8 +6097,8 @@ function sendToCC(orderId, itemsB64, location, subtotal, deliveryFee, createdAt,
     
     // Get branch from order location tag
     const branchTag = card ? card.querySelector('.order-branch-tag') : null;
-    const orderBranch = branchTag ? branchTag.textContent.trim() : 'MULTAN';
-    const branchConfig = BRANCH_CONFIG[orderBranch] || BRANCH_CONFIG.MULTAN;
+    const orderBranch = branchTag ? branchTag.textContent.trim() : 'BWP';
+    const branchConfig = BRANCH_CONFIG[orderBranch] || BRANCH_CONFIG.BWP;
     
     // Get rider phone
     const riderPhone = riderName && branchConfig.riderPhones ? branchConfig.riderPhones[riderName] : null;
@@ -6216,13 +6174,12 @@ function sendToCC(orderId, itemsB64, location, subtotal, deliveryFee, createdAt,
         if (pass !== "7530") { if (pass !== null) alert("Wrong code!"); return; }
         if (!sb) return;
         // If ANY branch is open, close all; if all are closed, open all
-        const anyOpen = getBranchOpenStatus('MULTAN') || getBranchOpenStatus('BWP');
+        const anyOpen = getBranchOpenStatus('BWP');
         const newValue = anyOpen ? 'true' : 'false';
         await sb.from('app_settings').upsert(
-            ['MULTAN','BWP'].map(b => ({ key: 'branch_closed_' + b, value: newValue })),
+            ['BWP'].map(b => ({ key: 'branch_closed_' + b, value: newValue })),
             { onConflict: 'key' }
         );
-        BRANCH_OPEN_OVERRIDE.MULTAN = !anyOpen;
         BRANCH_OPEN_OVERRIDE.BWP = !anyOpen;
         updateBranchStatusBadges();
         alert(`ALL branches are now ${anyOpen ? 'CLOSED' : 'OPEN'}.`);
@@ -6295,7 +6252,7 @@ function tickKitchenTimers(){
 }
 
 function kitchenCardHtml(o, cardMap){
-  const orderBranch = o.branch || 'MULTAN';
+  const orderBranch = o.branch || 'BWP';
   let priceHtml = '';
   if (o.subtotal) {
     const hasDiscount = o.discount && o.discount > 0;
@@ -6314,7 +6271,7 @@ function kitchenCardHtml(o, cardMap){
       </div></div>`;
   }
   let riderHtml = '';
-  if (o.type === 'Delivery') riderHtml = `<div class="rider-box"><span style="font-size:11px; font-weight:700; color:#888;">ASSIGN RIDER:</span><div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:5px;">${(BRANCH_CONFIG[o.branch] || BRANCH_CONFIG.MULTAN).riders.map(r => `<button class="rider-btn ${riderMatches(o, r) ? 'selected' : ''}" onclick="assignRider('${o.id}', '${r}')">${r}</button>`).join('')}</div></div>`;
+  if (o.type === 'Delivery') riderHtml = `<div class="rider-box"><span style="font-size:11px; font-weight:700; color:#888;">ASSIGN RIDER:</span><div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:5px;">${(BRANCH_CONFIG[o.branch] || BRANCH_CONFIG.BWP).riders.map(r => `<button class="rider-btn ${riderMatches(o, r) ? 'selected' : ''}" onclick="assignRider('${o.id}', '${r}')">${r}</button>`).join('')}</div></div>`;
 
   let customerInfoHtml = '';
   if (o.phone || o.customer_name) {
@@ -6557,7 +6514,7 @@ async function saveCardEntry() {
     if ((o.discount || 0) <= 0 && !confirm("No discount has been applied to this order yet.\n\nSave the card record anyway?")) return;
 
     const row = {
-        branch: o.branch || 'MULTAN',
+        branch: o.branch || 'BWP',
         card_type: document.getElementById('card-type').value,
         card_number: number,
         holder_name: holder,
@@ -6623,7 +6580,7 @@ function getCardRecordsFiltered() {
     const to = document.getElementById('cr-to').value;
     return cardRecords.filter(r => {
         if (type !== 'all' && r.card_type !== type) return false;
-        if (branch !== 'all' && (r.branch || 'MULTAN') !== branch) return false;
+        if (branch !== 'all' && (r.branch || 'BWP') !== branch) return false;
         if (from && new Date(r.created_at) < new Date(from + 'T00:00:00')) return false;
         if (to && new Date(r.created_at) > new Date(to + 'T23:59:59')) return false;
         if (s) {
@@ -6675,7 +6632,7 @@ function renderCardRecords() {
             const t = fmtPKT(r.created_at);
             return `<tr style="border-top:1px solid #f0ece8;vertical-align:top;">
                 <td style="padding:8px;font-size:11px;white-space:nowrap;">${t.date}<br>${t.time}</td>
-                <td style="padding:8px;font-size:11px;">${escHtml(r.branch || 'MULTAN')}</td>
+                <td style="padding:8px;font-size:11px;">${escHtml(r.branch || 'BWP')}</td>
                 <td style="padding:8px;font-size:11px;">${escHtml(r.order_type)}<br><span style="color:#999;">${escHtml(r.location)}</span></td>
                 <td style="padding:8px;font-size:11px;white-space:pre-wrap;">${escHtml(r.items)}${r.notes ? '<br><i style="color:#7c3aed;">Note: ' + escHtml(r.notes) + '</i>' : ''}</td>
                 <td style="padding:8px;font-size:12px;font-weight:600;white-space:nowrap;">Rs ${Number(r.total || 0)}</td>
@@ -6729,7 +6686,7 @@ function downloadCardRecordsCSV() {
     list.forEach(r => {
         const t = fmtPKT(r.created_at);
         csv += [
-            esc(t.date), esc(t.time), esc(r.branch || 'MULTAN'), esc(r.card_type), esc(r.card_number),
+            esc(t.date), esc(t.time), esc(r.branch || 'BWP'), esc(r.card_type), esc(r.card_number),
             esc(r.holder_name), esc(r.phone), esc(r.institution), esc(r.order_type), esc(r.location),
             esc(r.items), Number(r.subtotal || 0), Number(r.discount || 0), Number(r.tax || 0),
             Number(r.delivery_fee || 0), Number(r.total || 0), esc(r.notes)
@@ -6985,7 +6942,7 @@ function markKitchenPrinted(id) {
     function renderAuditUI(orders) {
     const div = document.getElementById('rider-audit-selection'); 
     div.innerHTML = "";
-    const branchForAudit = kitchenBranchFilter !== 'ALL' ? (BRANCH_CONFIG[kitchenBranchFilter] || BRANCH_CONFIG.MULTAN) : (activeBranch || BRANCH_CONFIG.MULTAN);
+    const branchForAudit = kitchenBranchFilter !== 'ALL' ? (BRANCH_CONFIG[kitchenBranchFilter] || BRANCH_CONFIG.BWP) : (activeBranch || BRANCH_CONFIG.BWP);
     branchForAudit.riders.forEach(r => {
         const b = document.createElement('button'); 
         b.className = "rider-btn"; 
@@ -7247,7 +7204,7 @@ const ni = await askText(
     const list = document.getElementById('deals-list');
     list.innerHTML = '';
     const isBWP = activeBranch && activeBranch.id === 'BWP';
-    const br = activeBranch || BRANCH_CONFIG.MULTAN;
+    const br = activeBranch || BRANCH_CONFIG.BWP;
     const filteredDeals = dealsData.filter(d => {
         if (d.bwpOnly && !isBWP) return false;
         if (br.excludedDeals && br.excludedDeals.includes(d.name)) return false;
@@ -8242,16 +8199,15 @@ if (incomingOrderType === 'Delivery') {
 
 let admState = { items:{}, deals:{} };
 let admHasUnsaved = false;
-let admActiveBranch = 'MULTAN';
+let admActiveBranch = 'BWP';
 let customItems = [];
 let customDeals = [];
 
 const ADM_BRANCHES = {
-  MULTAN: { id:'MULTAN', name:'Multan', emoji:'🍕', color:'#7b4fa3', cls:'multan' },
   BWP:    { id:'BWP', name:'Bahawalpur', emoji:'🥩', color:'#5d3a1a', cls:'bwp' }
 };
 
-const ADM_PASSWORDS = { MULTAN:'CHANGE_ME_1', BWP:'super@rimini', SUPER:'super@rimini' };
+const ADM_PASSWORDS = { BWP:'CHANGE_ME_2', SUPER:'CHANGE_ME_SUPER' };
 
 async function openAdminPanel() {
   window._admAvailLoaded = false; // ← ADD THIS
@@ -8260,9 +8216,8 @@ async function openAdminPanel() {
     alert('❌ Wrong password. Access denied.');
     return;
   }
-  if (entered === ADM_PASSWORDS.MULTAN) admActiveBranch = 'MULTAN';
-  else if (entered === ADM_PASSWORDS.BWP) admActiveBranch = 'BWP';
-  else admActiveBranch = localStorage.getItem('rimini_admin_branch') || 'MULTAN';
+  if (entered === ADM_PASSWORDS.BWP) admActiveBranch = 'BWP';
+  else admActiveBranch = localStorage.getItem('rimini_admin_branch') || 'BWP';
   document.getElementById('admin-panel-overlay').classList.add('open');
   setScrollLock(true);
   admInitBranch(admActiveBranch);
@@ -8870,7 +8825,6 @@ function setAuditBranchFilter(f) {
     auditBranchFilter = f;
     document.querySelectorAll('#audit-report-overlay .kbranch-tab').forEach(t => t.className = 'kbranch-tab');
     if (f === 'ALL') document.getElementById('audit-kb-ALL').classList.add('active-all');
-    else if (f === 'MULTAN') document.getElementById('audit-kb-MULTAN').classList.add('active-multan');
     else if (f === 'BWP') document.getElementById('audit-kb-BWP').classList.add('active-bwp');
     renderAuditReport();
 }
@@ -8965,7 +8919,7 @@ function detectDuplicates(list) {
 function getAuditFiltered() {
     let list = auditBranchFilter === 'ALL'
         ? auditReportOrders
-        : auditReportOrders.filter(o => (o.branch || 'MULTAN') === auditBranchFilter);
+        : auditReportOrders.filter(o => (o.branch || 'BWP') === auditBranchFilter);
 
     if (auditFilters.search) {
         const s = auditFilters.search;
@@ -9040,7 +8994,7 @@ function renderAuditReport() {
         const isVoided = o.status === 'VOIDED';
         return `<tr id="audit-row-${o.id}" style="${isVoided ? 'background:#f3f4f6; opacity:0.65;' : (dupReason ? 'background:#fff7ed;' : '')}">
             <td style="padding:8px;font-size:12px;">${dt}</td>
-            <td style="padding:8px;font-size:12px;">${escHtml(o.branch || 'MULTAN')}</td>
+            <td style="padding:8px;font-size:12px;">${escHtml(o.branch || 'BWP')}</td>
             <td style="padding:8px;font-size:12px;">${escHtml(o.type)}</td>
             <td style="padding:8px;font-size:12px;">${escHtml(o.location)}${o.customer_name ? '<br><span style="color:#999;font-size:11px;">'+escHtml(o.customer_name)+'</span>' : ''}${o.phone ? '<br><span style="color:#999;font-size:11px;">'+escHtml(o.phone)+'</span>' : ''}</td>
             <td style="padding:8px;font-size:12px;">${escHtml(o.payment_method || 'Cash')}</td>
@@ -9131,7 +9085,7 @@ function downloadAuditCSV() {
         const t = fmtPKT(o.created_at);
         const total = (o.subtotal||0) + (o.tax||0) + (o.delivery_fee||0);
         csv += [
-            esc(t.date), esc(t.time), esc(o.branch||'MULTAN'), esc(o.type),
+            esc(t.date), esc(t.time), esc(o.branch||'BWP'), esc(o.type),
             esc(o.location), esc(o.customer_name), esc(o.phone),
             esc(o.payment_method||'Cash'),
             o.subtotal||0, o.tax||0, o.delivery_fee||0, o.discount||0, total,
@@ -9261,7 +9215,7 @@ async function downloadAuditExcel() {
         const voided = ord.status === 'VOIDED';
         const flag = dupFlags.get(ord.id) || '';
         const row = o.addRow({
-            date:p.date, time:p.time, br:ord.branch||'MULTAN', type:ord.type,
+            date:p.date, time:p.time, br:ord.branch||'BWP', type:ord.type,
             loc:ord.location||'', cust:ord.customer_name||'', phone:ord.phone||'',
             pay:ord.payment_method||'Cash',
             sub:ord.subtotal||0, tax:ord.tax||0, del:ord.delivery_fee||0, disc:ord.discount||0,
@@ -9797,7 +9751,6 @@ setTimeout(() => {
             <div style="display:flex; gap:10px;">
                 <select id="rev-filter-branch" class="adm-select" onchange="renderAdminReviews()">
                     <option value="ALL">All Branches</option>
-                    <option value="MULTAN">Multan</option>
                     <option value="BWP">Bahawalpur</option>
                 </select>
                 <select id="rev-filter-stars" class="adm-select" onchange="renderAdminReviews()">
