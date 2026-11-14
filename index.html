@@ -2879,8 +2879,8 @@ riderPhones: {
     name: 'Bahawalpur',
     address: 'Shop 8-9, SS Tower, 31-32 Noor Mahal Rd, Sadiq Colony, Bahawalpur',
     lat: 29.38365358488693, lng: 71.67091027857997,
-    phone: '923003450301',
-    cc_phone: '923003450301',
+    phone: '923004670301',
+    cc_phone: '923004670301',
     riders: ["Sohail", "Waseem", "Sarib", "Ahmad", "Talha", "Asif", "Azeem" ],
     riderPhones: {
         "Sohail":  "923012037250",
@@ -3318,9 +3318,9 @@ loadCustomItemsIntoMenu();
         try { return decodeURIComponent(escape(atob(str || ''))); } catch(e) { return ''; }
     }
 
-    const SUPABASE_URL = "https://YOUR-RIMINI-PROJECT.supabase.co";
-    const SUPABASE_KEY = "YOUR_RIMINI_PUBLISHABLE_KEY";
-    const ADMIN_ACTIONS_URL = "https://YOUR-RIMINI-PROJECT.supabase.co/functions/v1/admin-actions";
+    const SUPABASE_URL = "https://htlqprvfbmjydpfqcbhd.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_GJLVXKbQUYZHX-Q84hRAAA_JoGC8JCt";
+    const ADMIN_ACTIONS_URL = "https://htlqprvfbmjydpfqcbhd.supabase.co/functions/v1/admin-actions";
 let _adminSecret = null;
 
 async function callAdminAction(action, payload) {
@@ -3385,62 +3385,28 @@ try {
     if(urlParams.has('table')) { isQRScan = true; tableNum = urlParams.get('table').toUpperCase(); document.getElementById('gateway-table-id').innerText = tableNum; document.getElementById('gateway-table-note').style.display = 'block'; document.getElementById('header-table-indicator').innerText = "(TABLE " + tableNum + ")"; }
 } catch(e) { }
 
-    const menuData = {
-        "Starter 🍟": [{name: "Plain Fries", price: {Reg: 230, Large: 300}}, {name: "Loaded Fries", price: 699}, {name: "Pizza Fries", price: 799}, {name: "Dragon Shots", price: 449}, {name: "Oven Baked Wings", price: {Reg: 399, Large: 780}}, {name: "Peri-Peri Wings", price: {M: 399, L: 780}}, {name: "Hot Wings", price: {M: 399, L: 780}}, {name: "Honey Chili Wings", price: {M: 449, L: 880}}, {name: "Cheese Sticks", price: 449}, {name: "Meat Sticks", price: 449}, {name: "Nuggets", price: {M: 350, L: 650}}],
-        "Sandwich 🥪": [{name: "Health Harvest", price: 720}, {name: "Khameera Sandwich", price: 799}, {name: "Club Sandwich", price: 720}],
-        "Fried Burger 🍔": [{name: "Chicken Patty Burger", price: 299}, {name: "Zinger Burger", price: 420}, {name: "Mighty Burger", price: 699}, {name: "Chipotle Burger", price: 699}, {name: "Crispy Jalapeno", price: 549}, {name: "Stuff Jalapeno", price: 699}],
-        "Grilled Burger ♨️": [{name: "CM Grilled", price: 599}, {name: "Smokey Grilled", price: 699}, {name: "Peri Peri Grilled", price: 699}, {name: "Drizzler X", price: 799}, {name: "Jalapeno Blaze", price: 749}, {name: "Mexi Fiesta", price: 749}],
-        "Pan Pizza 🍕": [{name: "Chicken Tikka", price: {S:499, M:999, L:1549}}, {name: "Chicken Fajita", price: {S:499, M:999, L:1549}}, {name: "Chicken Supreme", price: {S:499, M:999, L:1549}}, {name: "Cheese Lover", price: {S:499, M:999, L:1549}}, {name: "Veg Lover", price: {S:499, M:999, L:1549}}, {name: "Sicilian Pizza", price: {S:499, M:999, L:1549}}],
-        "Premium Pizza 🌟": [{name: "BBQ Pizza", price: {M:1199, L:1699}}, {name: "Creamy Dreamy", price: {M:1199, L:1699}}, {name: "Rimini Special Premium", price: {M:1199, L:1699}}, {name: "Bonfire Pizza", price: {M:1199, L:1699}}],
-        "Deep Dish Pizza 🍲": [{name: "Mild Butter", price: {M:1749, L:2449}}, {name: "Rimini Special Deep Dish", price: {M:1749, L:2449}}],
-        "Extreme Pizza 🌶️": [{name: "Extreme Peri Peri", price: {M:1549, L:2100}}, {name: "Extreme Flaming Kabab", price: {M:1549, L:2100}}, {name: "Crispy Extreme", price: {M:1549, L:2100}}],
-        "Craft My Own Pizza 🎨": [{name: "Kabab Crust", price: {Med: 1399, Large: 1799}}, {name: "Crown Crust", price: {Med: 1399, Large: 1799}}, {name: "Cheese Crust", price: {Med: 1399, Large: 1799}}, {name: "Crusti Thin", price: 1699}],
-        "Platters 🍱": [{name: "Khameera Sandwich Platter", price: 799}, {name: "Calzone Platter", price: 990}, {name: "Behari Platter", price: 1090}],
-        "Pasta 🍝": [{name: "Alfredo Pasta", price: 849}, {name: "Rimini Flaming Pasta", price: 699}, {name: "Fire Kissed Pasta", price: 749}, {name: "X-Special Pasta", price: 849}],
-        "Wraps & Rolls 🌯": [{name: "Chipotle Wrap", price: 699}, {name: "BBQ Wrap", price: 699}, {name: "Donar Kabab", price: 799}, {name: "Crunch Wrap", price: 549}, {name: "Zingeratha Roll", price: 499}, {name: "Paratha Roll", price: 499}, {name: "Malai Roll", price: 499}, {name: "Behari Roll", price: 799}, {name: "Peri Peri Wrap", price: 749}],
-        "Steaks 🥩": [
-    {name: "Mexican Steak", price: 1549, bwpOnly: true},
-    {name: "Moroccan Steak", price: 1549, bwpOnly: true},
-    {name: "Tarragon Steak", price: 1549, bwpOnly: true},
-    {name: "Mushroom Steak", price: 1549, bwpOnly: true},
-    {name: "Cordon Blue Steak", price: 1549, bwpOnly: true},
-    {name: "Stuffed Jalapeno Steak", price: 1549, bwpOnly: true},
-    {name: "Pepper Steak", price: 1499, bwpOnly: true}
-],
-"Bar Menu 🥤": [
-    {name: "Coke Buddy", price: 130},
-    {name: "Sprite Buddy", price: 130},
-    {name: "Coke 1 Liter", price: 190},
-    {name: "Sprite 1 Liter", price: 190},
-    {name: "Coke 1.5L", price: 230},
-    {name: "Sprite 1.5L", price: 230},
-    {name: "Water Small", price: 99},
-    {name: "Water Large", price: 170},
-    // BWP Moctails — hidden at Multan
-    {name: "Mint Margarita", price: 249, bwpOnly: true},
-    {name: "Lemonade", price: 249, bwpOnly: true},
-    {name: "Pina Colada", price: 349, bwpOnly: true},
-    {name: "Red Rose", price: 220, bwpOnly: true},
-    {name: "Fresh Lime", price: 220, bwpOnly: true},
-    {name: "Blue Lagoon", price: 220, bwpOnly: true}
-],
-    };
-    menuData["Pan/Premium"] = [...menuData["Pan Pizza 🍕"], ...menuData["Premium Pizza 🌟"]];
-    menuData["Rolls 🌯"] = menuData["Wraps & Rolls 🌯"].filter(i => 
-    i.name.includes('Roll') && i.name !== 'Behari Roll'
-);
-menuData["Wraps 🌯"] = menuData["Wraps & Rolls 🌯"].filter(i => 
-    i.name.includes('Wrap') || i.name === 'Crunch Wrap' || i.name === 'Donar Kabab'
-);
-
-    const dealsData = [
-        { name: "Family Feast", desc: "2 Med Pizzas + 2 Zingers + 1L Drink + 6 Wings", price: 2499, badge: "FAMILY", image: "https://i.ibb.co/3y2Q29J6/family.png", flavorsNeeded: [{label: "Category 1", cat: "Pan Pizza 🍕", forceCat: "Pan"}, {label: "Category 2", cat: "Premium Pizza 🌟", forceCat: "Premium"}], fixedItems: ["2x Zinger Burgers", "1L Drink", "6x Wings"] },
-        { name: "Extreme Buddy", desc: "1 Medium Extreme Pizza + Free 1L Drink", price: 1649, badge: "BEST SELLER", image: "https://i.ibb.co/JjRhc727/Gemini-Generated-Image-66v5a566v5a566v5.png", flavorsNeeded: [{label: "Pizza Flavor", cat: "Extreme Pizza 🌶️"}], fixedItems: ["1L Drink"] },
-        { name: "01 PIZZA DEAL", desc: "1 Large Pizza (Pan) + 1L Drink", price: 1299, badge: "DELIVERY", image: "https://i.ibb.co/0VCYD27q/Gemini-Generated-Image-ivdo7civdo7civdo.png", flavorsNeeded: [{label: "Pizza", cat: "Pan Pizza 🍕"}], fixedItems: ["1L Drink"] },
-        { name: "02 PIZZA DEAL", desc: "1 Large Pizza (Premium) + 1L Drink", price: 1599, badge: "DELIVERY", image: "https://i.ibb.co/kssSML9j/Whats-App-Image-2026-05-04-at-5-58-32-PM.jpg", flavorsNeeded: [{label: "Pizza", cat: "Premium Pizza 🌟"}], fixedItems: ["1L Drink"] },
-        { name: "03 PIZZA DEAL", desc: "1 Large Crown Pizza + 1L Drink", price: 1699, badge: "DELIVERY", image: "https://i.ibb.co/kgNzKVW5/03.png", flavorsNeeded: [{label: "Crown Flavor", cat: "Craft My Own Pizza 🎨"}], fixedItems: ["1L Drink"] },
-        { name: "04 PIZZA DEAL", desc: "1 Large Extreme Pizza + 1L Drink", price: 2149, badge: "DELIVERY", image: "https://i.ibb.co/hFp6Bnpx/Gemini-Generated-Image-wxourqwxourqwxou.png", flavorsNeeded: [{label: "Extreme Flavor", cat: "Extreme Pizza 🌶️"}], fixedItems: ["1L Drink"] }
-    ];
+const menuData = {
+  "Hot Coffee ☕": [{name: "Cafe Latte", price: {"Reg": 449, "Large": 499}}, {name: "Cappuccino", price: {"Reg": 449, "Large": 499}}, {name: "Cortado", price: {"Reg": 449, "Large": 499}}, {name: "Americano", price: {"Reg": 449, "Large": 499}}, {name: "Hot Chocolate", price: {"Reg": 449, "Large": 499}}],
+  "Iced Latte 🧊": [{name: "Iced Spanish Latte", price: {"Reg": 499, "Large": 599}}, {name: "Iced Caramel Latte", price: {"Reg": 499, "Large": 599}}, {name: "Iced Hazelnut Latte", price: {"Reg": 499, "Large": 599}}, {name: "Iced Vanilla Latte", price: {"Reg": 499, "Large": 599}}, {name: "Iced Americano", price: {"Reg": 499, "Large": 599}}],
+  "Premium Latte 👑": [{name: "Iced Mocha Latte", price: {"Reg": 749, "Large": 849}}, {name: "Iced Lotus Latte", price: {"Reg": 749, "Large": 849}}, {name: "Iced Pistachio Latte", price: {"Reg": 749, "Large": 849}}, {name: "Iced Tiramisu Latte", price: {"Reg": 749, "Large": 849}}, {name: "Vanilla Affogato Latte", price: {"Reg": 749, "Large": 849}}],
+  "Matchas 🍵": [{name: "Strawberry Matcha", price: {"Reg": 849, "Large": 920}}, {name: "Mango Butterfly Pie", price: {"Reg": 749, "Large": 849}}, {name: "Apple Pie Pink Matcha", price: {"Reg": 749, "Large": 849}}, {name: "Coconut Matcha", price: {"Reg": 849, "Large": 920}}],
+  "Mocktails 🍹": [{name: "Passion Fruit", price: 599}, {name: "Lime & Mint Classic", price: 599}, {name: "Passion Fusion", price: 599}, {name: "Red Grape Fruit", price: 599}],
+  "Premium Italiano 🍨": [{name: "Belgian Chocolate", price: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {name: "Wild Berries", price: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {name: "Pistacchiolo", price: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {name: "KitKat", price: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {name: "Peanut Swirl", price: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {name: "Strawbella", price: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {name: "Peach Pie", price: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {name: "Raffaello", price: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {name: "Lotus Biscoff", price: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {name: "Bounty Hunter", price: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {name: "Chocolate Marble", price: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {name: "Choco Mint", price: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {name: "Tiramisu", price: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {name: "Chikoo", price: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {name: "Sugar Free", price: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}],
+  "Gelato 🍦": [{name: "Royal Kulfa", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {name: "Dutch Brownie", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {name: "Cotton Candy", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {name: "Oreo N Cream", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {name: "Butter Scotch", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {name: "Mango Tango", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {name: "Almond Fudge Brownie", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {name: "Red Velvet", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {name: "French Vanilla", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {name: "Pineapple", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {name: "Chocolate Divine", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {name: "Caramel Crunch", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}],
+  "Sorbet 🍧": [{name: "Mango Salsa", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {name: "Mix Berries", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {name: "Tropical Orange", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {name: "Mint Freeze", price: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}],
+  "Cone & Waffle Add-On 🧇": [{name: "Mini Cone (1 scoop)", price: 30}, {name: "Jumbo Cone (2 scoop)", price: 40}, {name: "Waffle for Cold Plate", price: 60}],
+  "Cold Plate 🍧": [{name: "Ferrero Rocher", price: 699}, {name: "Pina Colada", price: 550}, {name: "Cup of Heaven", price: 499}, {name: "Crunchy Munchie", price: 550}, {name: "Decadent Lotus", price: 599}, {name: "Coffee Cream", price: 550}, {name: "BonBon", price: 550}, {name: "Black Forest", price: 550}, {name: "Nutty Nutella", price: 550}, {name: "Twix", price: 550}, {name: "Ice Lava", price: 599}, {name: "Peach Malba", price: 550}, {name: "Premium Falooda", price: 550}],
+  "Waffles 🧇": [{name: "Nutella Waffle", price: 499}, {name: "KitKat Waffle", price: 599}, {name: "Oreo Waffle", price: 599}, {name: "Pistachio Kunafa Waffle", price: 699}, {name: "Classic Waffle", price: 699}, {name: "Choice of Flavour Waffle", price: 699}, {name: "Waffle Quarter", price: 350}],
+  "Slushes 🥤": [{name: "Berry Bomb Slush", price: 599}, {name: "Peach Punch Slush", price: 599}, {name: "Strawbella Slush", price: 599}],
+  "Shakes 🥛": [{name: "KitKat Shake", price: 599}, {name: "Cold Coffee", price: 550}, {name: "Unicorn Shake", price: 599}, {name: "Classic Shake", price: 499}, {name: "Decadent Lotus Shake", price: 599}, {name: "Gelato Shake", price: 599}, {name: "Salted Crispy Caramel Shake", price: 499}, {name: "Oreo Shake", price: 499}, {name: "Strawberry Shake", price: 499}, {name: "Snickers Shake", price: 550}, {name: "Tutti Frutti Shake", price: 599}, {name: "Pina Colada Shake", price: 499}],
+  "Sundae Cups 🍨": [{name: "Choco Holic", price: 420}, {name: "Cookies & Cream", price: 420}, {name: "Lotus Sundae", price: 420}, {name: "Strawberry Sundae", price: 420}, {name: "Bounty Sundae", price: 420}, {name: "Oreo Brownie Sundae", price: 599}, {name: "Pistachio Sundae", price: 550}, {name: "Pineapple Sundae", price: 420}, {name: "Brownie Sundae", price: 499}],
+  "Jumbo Cones 🍦": [{name: "Chocolate Jumbo Cone", price: 420}, {name: "Oreo Jumbo Cone", price: 450}, {name: "Nutella Jumbo Cone", price: 450}, {name: "Strawberry Jumbo Cone", price: 420}, {name: "Caramel Jumbo Cone", price: 420}],
+  "Cakes 🍰": [{name: "Lotus Cake", price: {"Slice": 299, "2 Lb": 2450}}, {name: "Baked Cheesecake", price: {"Slice": 399, "2 Lb": 3200}}, {name: "San Sebastian Cheesecake", price: {"Slice": 420, "2 Lb": 3450}}, {name: "Caramel Cake", price: {"Slice": 280, "2 Lb": 2250}}, {name: "Lotus Three Milk Cake", price: {"Slice": 350, "2 Lb": 2650}}],
+  "Brownies 🍫": [{name: "Classic Brownie", price: 250}, {name: "Brookie", price: 350}, {name: "Kunafa Brownie", price: 399}, {name: "Lotus Three Milk Bowl", price: 499}],
+  "Pancakes 🥞": [{name: "Nutella Pancakes", price: 499}, {name: "KitKat Pancakes", price: 599}, {name: "Lotus Pancakes", price: 599}, {name: "Oreo Pancakes", price: 599}, {name: "Pistachio Pancakes", price: 699}],
+  "Toppings 🍫": [{name: "Nutella", price: 150}, {name: "KitKat", price: 150}, {name: "Oreo Crumbles", price: 150}, {name: "Pistachio Sauce", price: 150}, {name: "Chocolate Sauce", price: 150}, {name: "Strawberry Sauce", price: 150}, {name: "Caramel Sauce", price: 150}, {name: "Whipped Cream", price: 150}, {name: "Extra Gelato Scoop", price: 190}],
+};
+const dealsData = [];
 
         
     const imgMap = {
@@ -3629,7 +3595,7 @@ menuData["Wraps 🌯"] = menuData["Wraps & Rolls 🌯"].filter(i =>
     "Nuggets": "Our Chicken Nuggets — bite-sized crispy fried chicken pieces, tender on the inside and golden on the outside. A timeless classic everyone loves!",
 };
 const arModels = {
-  "Rimini Flaming Pasta": "https://YOUR-RIMINI-PROJECT.supabase.co/storage/v1/object/public/ar-models/Flaming-Pasta.glb?v=2"
+  "Rimini Flaming Pasta": "https://htlqprvfbmjydpfqcbhd.supabase.co/storage/v1/object/public/ar-models/Flaming-Pasta.glb?v=2"
 };
 
 function openModelAR(name, url) {
@@ -7469,7 +7435,7 @@ card.querySelector('.deal-info-box').appendChild(btn);
         if (cat === "Pan/Premium" || cat === "Rolls 🌯" || cat === "Wraps 🌯") continue;
         
         // Hide Steaks pill at Multan — it's BWP exclusive
-        if (cat === "Steaks 🥩" && !isBWP) continue;
+        
 
         const pill = document.createElement('div'); 
         pill.className = "cat-pill"; 

@@ -156,7 +156,7 @@ img,canvas{max-width:100%}
 <div class="top"><div><div class="logo">Central Warehouse<small>Stock, purchasing and accounts</small></div><div id="tabs"></div><div class="sp row"><span id="sync" class="pill">Connecting…</span><button class="b2 sm" onclick="lockApp()">🔒 Lock</button></div></div></div>
 <main id="main"></main><div id="toast"></div>
 <script>
-const SB=supabase.createClient('https://YOUR-RIMINI-PROJECT.supabase.co','YOUR_RIMINI_PUBLISHABLE_KEY');
+const SB=supabase.createClient('https://htlqprvfbmjydpfqcbhd.supabase.co','sb_publishable_GJLVXKbQUYZHX-Q84hRAAA_JoGC8JCt');
 const T={ing:'ingredients',loc:'locations',lv:'stock_levels',par:'parties',led:'ledger',mv:'stock_moves',po:'purchase_orders',poi:'po_items'};
 const S={};let tab='dash',sub={led:'vendor'},D=null;
 const $=i=>document.getElementById(i),uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);

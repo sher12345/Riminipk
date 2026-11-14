@@ -1650,8 +1650,8 @@ function askText(message, def) {
 // ══════════════════════════════════
 // CONFIG & CONSTANTS
 // ══════════════════════════════════
-const SUPABASE_URL = "https://YOUR-RIMINI-PROJECT.supabase.co";
-const SUPABASE_KEY = "YOUR_RIMINI_PUBLISHABLE_KEY";
+const SUPABASE_URL = "https://htlqprvfbmjydpfqcbhd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_GJLVXKbQUYZHX-Q84hRAAA_JoGC8JCt";
 let sb;
 try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) { console.error('Supabase failed'); }
 
@@ -1820,35 +1820,27 @@ const ALL_TABLE_IDS = Object.values(TABLES).flat();
 
 // ── MENU DATA ──
 const menuData = {
-  "Starters":[{n:"Plain Fries",p:{Reg:230,Large:300}},{n:"Loaded Fries",p:699},{n:"Pizza Fries",p:799},{n:"Dragon Shots",p:449},{n:"Oven Baked Wings",p:{M:399,L:780}},{n:"Peri-Peri Wings",p:{M:399,L:780}},{n:"Hot Wings",p:{M:399,L:780}},{n:"Honey Chili Wings",p:{M:449,L:880}},{n:"Cheese Sticks",p:449},{n:"Meat Sticks",p:449},{n:"Nuggets",p:{M:350,L:650}}],
-  "Sandwiches":[{n:"Health Harvest",p:720},{n:"Khameera Sandwich",p:799},{n:"Club Sandwich",p:720}],
-  "Fried Burgers":[{n:"Chicken Patty Burger",p:299},{n:"Zinger Burger",p:420},{n:"Mighty Burger",p:699},{n:"Chipotle Burger",p:699},{n:"Crispy Jalapeno",p:549},{n:"Stuff Jalapeno",p:699}],
-  "Grilled Burgers":[{n:"CM Grilled",p:599},{n:"Smokey Grilled",p:699},{n:"Peri Peri Grilled",p:699},{n:"Drizzler X",p:799},{n:"Jalapeno Blaze",p:749},{n:"Mexi Fiesta",p:749}],
-  "Pan Pizza":[{n:"Chicken Tikka",p:{S:499,M:999,L:1549}},{n:"Chicken Fajita",p:{S:499,M:999,L:1549}},{n:"Chicken Supreme",p:{S:499,M:999,L:1549}},{n:"Cheese Lover",p:{S:499,M:999,L:1549}},{n:"Veg Lover",p:{S:499,M:999,L:1549}},{n:"Sicilian Pizza",p:{S:499,M:999,L:1549}}],
-  "Premium Pizza":[{n:"BBQ Pizza",p:{M:1199,L:1699}},{n:"Creamy Dreamy",p:{M:1199,L:1699}},{n:"Rimini Special Premium",p:{M:1199,L:1699}},{n:"Bonfire Pizza",p:{M:1199,L:1699}}],
-  "Deep Dish":[{n:"Mild Butter",p:{M:1749,L:2449}},{n:"Rimini Special Deep Dish",p:{M:1749,L:2449}}],
-  "Extreme Pizza":[{n:"Extreme Peri Peri",p:{M:1549,L:2100}},{n:"Extreme Flaming Kabab",p:{M:1549,L:2100}},{n:"Crispy Extreme",p:{M:1549,L:2100}}],
-  "Craft Pizza":[{n:"Kabab Crust",p:{Med:1399,Large:1799}},{n:"Crown Crust",p:{Med:1399,Large:1799}},{n:"Cheese Crust",p:{Med:1399,Large:1799}},{n:"Crusti Thin",p:1699}],
-  "Platters":[{n:"Khameera Sandwich Platter",p:799},{n:"Calzone Platter",p:990},{n:"Behari Platter",p:1090}],
-  "Pasta":[{n:"Alfredo Pasta",p:849},{n:"Rimini Flaming Pasta",p:699},{n:"Fire Kissed Pasta",p:749},{n:"X-Special Pasta",p:849}],
-  "Wraps & Rolls":[{n:"Chipotle Wrap",p:699},{n:"BBQ Wrap",p:699},{n:"Donar Kabab",p:799},{n:"Crunch Wrap",p:549},{n:"Zingeratha Roll",p:499},{n:"Paratha Roll",p:499},{n:"Malai Roll",p:499},{n:"Behari Roll",p:799},{n:"Peri Peri Wrap",p:749}],
-  "Steaks (BWP)":[{n:"Mexican Steak",p:1549,bwp:true},{n:"Moroccan Steak",p:1549,bwp:true},{n:"Tarragon Steak",p:1549,bwp:true},{n:"Mushroom Steak",p:1549,bwp:true},{n:"Cordon Blue Steak",p:1549,bwp:true},{n:"Stuffed Jalapeno Steak",p:1549,bwp:true},{n:"Pepper Steak",p:1499,bwp:true}],
-  "Add-ons":[{n:"Dip: BBQ",p:70},{n:"Dip: Peri Peri",p:70},{n:"Dip: Bonfire",p:70},{n:"Dip: Special",p:70},{n:"Dip: Chipotle",p:70},{n:"Dip: Creamy Dreamy",p:70},{n:"Dip: Chili Mayo",p:70}],
-  "Drinks":[{n:"Coke Buddy",p:130},{n:"Sprite Buddy",p:130},{n:"Coke 1 Liter",p:190},{n:"Next Cola 1 Liter",p:170},{n:"Coke 1.5L",p:230},{n:"Sprite 1.5L",p:230},{n:"Water Small",p:99},{n:"Water Large",p:170},
-    {n:"Mint Margarita",p:249,bwp:true},{n:"Lemonade",p:249,bwp:true},{n:"Pina Colada",p:349,bwp:true},{n:"Red Rose",p:220,bwp:true},{n:"Fresh Lime",p:220,bwp:true},{n:"Blue Lagoon",p:220,bwp:true}]
+  "Hot Coffee ☕": [{n: "Cafe Latte", p: {"Reg": 449, "Large": 499}}, {n: "Cappuccino", p: {"Reg": 449, "Large": 499}}, {n: "Cortado", p: {"Reg": 449, "Large": 499}}, {n: "Americano", p: {"Reg": 449, "Large": 499}}, {n: "Hot Chocolate", p: {"Reg": 449, "Large": 499}}],
+  "Iced Latte 🧊": [{n: "Iced Spanish Latte", p: {"Reg": 499, "Large": 599}}, {n: "Iced Caramel Latte", p: {"Reg": 499, "Large": 599}}, {n: "Iced Hazelnut Latte", p: {"Reg": 499, "Large": 599}}, {n: "Iced Vanilla Latte", p: {"Reg": 499, "Large": 599}}, {n: "Iced Americano", p: {"Reg": 499, "Large": 599}}],
+  "Premium Latte 👑": [{n: "Iced Mocha Latte", p: {"Reg": 749, "Large": 849}}, {n: "Iced Lotus Latte", p: {"Reg": 749, "Large": 849}}, {n: "Iced Pistachio Latte", p: {"Reg": 749, "Large": 849}}, {n: "Iced Tiramisu Latte", p: {"Reg": 749, "Large": 849}}, {n: "Vanilla Affogato Latte", p: {"Reg": 749, "Large": 849}}],
+  "Matchas 🍵": [{n: "Strawberry Matcha", p: {"Reg": 849, "Large": 920}}, {n: "Mango Butterfly Pie", p: {"Reg": 749, "Large": 849}}, {n: "Apple Pie Pink Matcha", p: {"Reg": 749, "Large": 849}}, {n: "Coconut Matcha", p: {"Reg": 849, "Large": 920}}],
+  "Mocktails 🍹": [{n: "Passion Fruit", p: 599}, {n: "Lime & Mint Classic", p: 599}, {n: "Passion Fusion", p: 599}, {n: "Red Grape Fruit", p: 599}],
+  "Premium Italiano 🍨": [{n: "Belgian Chocolate", p: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {n: "Wild Berries", p: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {n: "Pistacchiolo", p: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {n: "KitKat", p: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {n: "Peanut Swirl", p: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {n: "Strawbella", p: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {n: "Peach Pie", p: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {n: "Raffaello", p: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {n: "Lotus Biscoff", p: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {n: "Bounty Hunter", p: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {n: "Chocolate Marble", p: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {n: "Choco Mint", p: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {n: "Tiramisu", p: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {n: "Chikoo", p: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}, {n: "Sugar Free", p: {"Kiddie": 270, "Twin": 499, "Three": 799, "Five": 1299, "Nine": 2299}}],
+  "Gelato 🍦": [{n: "Royal Kulfa", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {n: "Dutch Brownie", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {n: "Cotton Candy", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {n: "Oreo N Cream", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {n: "Butter Scotch", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {n: "Mango Tango", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {n: "Almond Fudge Brownie", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {n: "Red Velvet", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {n: "French Vanilla", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {n: "Pineapple", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {n: "Chocolate Divine", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {n: "Caramel Crunch", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}],
+  "Sorbet 🍧": [{n: "Mango Salsa", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {n: "Mix Berries", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {n: "Tropical Orange", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}, {n: "Mint Freeze", p: {"Kiddie": 190, "Twin": 349, "Value": 549, "Home Pack": 1099, "Family Pack": 1649}}],
+  "Cone & Waffle Add-On 🧇": [{n: "Mini Cone (1 scoop)", p: 30}, {n: "Jumbo Cone (2 scoop)", p: 40}, {n: "Waffle for Cold Plate", p: 60}],
+  "Cold Plate 🍧": [{n: "Ferrero Rocher", p: 699}, {n: "Pina Colada", p: 550}, {n: "Cup of Heaven", p: 499}, {n: "Crunchy Munchie", p: 550}, {n: "Decadent Lotus", p: 599}, {n: "Coffee Cream", p: 550}, {n: "BonBon", p: 550}, {n: "Black Forest", p: 550}, {n: "Nutty Nutella", p: 550}, {n: "Twix", p: 550}, {n: "Ice Lava", p: 599}, {n: "Peach Malba", p: 550}, {n: "Premium Falooda", p: 550}],
+  "Waffles 🧇": [{n: "Nutella Waffle", p: 499}, {n: "KitKat Waffle", p: 599}, {n: "Oreo Waffle", p: 599}, {n: "Pistachio Kunafa Waffle", p: 699}, {n: "Classic Waffle", p: 699}, {n: "Choice of Flavour Waffle", p: 699}, {n: "Waffle Quarter", p: 350}],
+  "Slushes 🥤": [{n: "Berry Bomb Slush", p: 599}, {n: "Peach Punch Slush", p: 599}, {n: "Strawbella Slush", p: 599}],
+  "Shakes 🥛": [{n: "KitKat Shake", p: 599}, {n: "Cold Coffee", p: 550}, {n: "Unicorn Shake", p: 599}, {n: "Classic Shake", p: 499}, {n: "Decadent Lotus Shake", p: 599}, {n: "Gelato Shake", p: 599}, {n: "Salted Crispy Caramel Shake", p: 499}, {n: "Oreo Shake", p: 499}, {n: "Strawberry Shake", p: 499}, {n: "Snickers Shake", p: 550}, {n: "Tutti Frutti Shake", p: 599}, {n: "Pina Colada Shake", p: 499}],
+  "Sundae Cups 🍨": [{n: "Choco Holic", p: 420}, {n: "Cookies & Cream", p: 420}, {n: "Lotus Sundae", p: 420}, {n: "Strawberry Sundae", p: 420}, {n: "Bounty Sundae", p: 420}, {n: "Oreo Brownie Sundae", p: 599}, {n: "Pistachio Sundae", p: 550}, {n: "Pineapple Sundae", p: 420}, {n: "Brownie Sundae", p: 499}],
+  "Jumbo Cones 🍦": [{n: "Chocolate Jumbo Cone", p: 420}, {n: "Oreo Jumbo Cone", p: 450}, {n: "Nutella Jumbo Cone", p: 450}, {n: "Strawberry Jumbo Cone", p: 420}, {n: "Caramel Jumbo Cone", p: 420}],
+  "Cakes 🍰": [{n: "Lotus Cake", p: {"Slice": 299, "2 Lb": 2450}}, {n: "Baked Cheesecake", p: {"Slice": 399, "2 Lb": 3200}}, {n: "San Sebastian Cheesecake", p: {"Slice": 420, "2 Lb": 3450}}, {n: "Caramel Cake", p: {"Slice": 280, "2 Lb": 2250}}, {n: "Lotus Three Milk Cake", p: {"Slice": 350, "2 Lb": 2650}}],
+  "Brownies 🍫": [{n: "Classic Brownie", p: 250}, {n: "Brookie", p: 350}, {n: "Kunafa Brownie", p: 399}, {n: "Lotus Three Milk Bowl", p: 499}],
+  "Pancakes 🥞": [{n: "Nutella Pancakes", p: 499}, {n: "KitKat Pancakes", p: 599}, {n: "Lotus Pancakes", p: 599}, {n: "Oreo Pancakes", p: 599}, {n: "Pistachio Pancakes", p: 699}],
+  "Toppings 🍫": [{n: "Nutella", p: 150}, {n: "KitKat", p: 150}, {n: "Oreo Crumbles", p: 150}, {n: "Pistachio Sauce", p: 150}, {n: "Chocolate Sauce", p: 150}, {n: "Strawberry Sauce", p: 150}, {n: "Caramel Sauce", p: 150}, {n: "Whipped Cream", p: 150}, {n: "Extra Gelato Scoop", p: 190}],
 };
-const dealsData=[
-  {n:"Family Feast",d:"2 Med Pizzas + 2 Zingers + 1L Drink + 6 Wings",p:2499},
-  {n:"Extreme Buddy",d:"1 Medium Extreme Pizza + Free 1L Drink",p:1649},
-  {n:"01 PIZZA DEAL",d:"1 Large Pizza (Pan) + 1L Drink",p:1299},
-  {n:"02 PIZZA DEAL",d:"1 Large Pizza (Premium) + 1L Drink",p:1599},
-  {n:"03 PIZZA DEAL",d:"1 Large Crown Pizza + 1L Drink",p:1699},
-  {n:"04 PIZZA DEAL",d:"1 Large Extreme Pizza + 1L Drink",p:2149},
-  // Hardcoded Combos to guarantee they appear
-  {n:"Combo 1",d:"Classic Zinger Burger, Platter",p:920},
-  {n:"Combo 2",d:"Khameera Sandwich, Platter",p:1059},
-  {n:"Combo 3",d:"2 Small Pizzas",p:998}
-];
+const dealsData = [];
 // ══════════════════════════════════
 // DEAL FLAVOR MAP (matches web app)
 // ══════════════════════════════════
