@@ -1949,7 +1949,7 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
 <div id="admin-login-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;justify-content:center;align-items:center;z-index:9000;backdrop-filter:blur(8px);">
     <div class="modal">
         <h2 style="color:var(--red); font-weight:700;">Kitchen Access</h2>
-        <input type="text" id="adminPassword" placeholder="Secret Code" class="big-input" oninput="handlePassInput(this)" style="text-align:center; letter-spacing:4px; font-size:22px;">
+        <input type="text" id="adminPassword" placeholder="Secret Code" class="big-input" oninput="handlePassInput(this)" onkeydown="handlePassKey(event,this)" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" style="text-align:center; letter-spacing:4px; font-size:22px;">
         <div style="display:flex; gap:10px; margin-top:20px;">
             <button class="next-btn btn-3d" style="background:#888;" onclick="closeAdminLogin()">BACK</button>
             <button class="next-btn btn-3d" style="background:var(--red);" onclick="verifyAdmin()">UNLOCK</button>
@@ -5302,25 +5302,30 @@ function showPermissionDeniedHelp() {
     let adminPassTracker = "";
     function openAdminLogin() { playClick('pop'); adminPassTracker = ""; document.getElementById('adminPassword').value = ""; document.getElementById('admin-login-overlay').style.display = 'flex'; setScrollLock(true); }
     function closeAdminLogin() { document.getElementById('admin-login-overlay').style.display = 'none'; setScrollLock(false); }
-    function handlePassInput(el) {
-    const cur = el.value;
-
-    // Handle Backspace/Delete correctly
-    if (cur.length < adminPassTracker.length) {
-        adminPassTracker = adminPassTracker.substring(0, cur.length);
+    // The box shows one 🍕 per typed character; the real code lives in adminPassTracker.
+    // (🍕 is two UTF-16 units, so we count whole characters, never string length.)
+    function renderPass(el) {
+        el.value = "🍕".repeat(Array.from(adminPassTracker).length);
+        try { el.setSelectionRange(el.value.length, el.value.length); } catch(e) {}
     }
-    // Add only the newly typed character
-    else if (cur.length > adminPassTracker.length) {
-        const last = cur.substring(cur.length - 1);
-
-        if (last !== "🍕") {
-            adminPassTracker += last;
+    function handlePassKey(e, el) {
+        if (e.key === "Enter") { e.preventDefault(); verifyAdmin(); return; }
+        if (e.key === "Escape") { e.preventDefault(); closeAdminLogin(); return; }
+        if (e.key === "Backspace" || e.key === "Delete") {
+            e.preventDefault();
+            if (e.ctrlKey || e.metaKey || e.altKey) adminPassTracker = "";
+            else adminPassTracker = Array.from(adminPassTracker).slice(0, -1).join("");
+            renderPass(el);
         }
     }
-
-    // Keep the password field masked
-    el.value = "🍕".repeat(adminPassTracker.length);
-}
+    // Fallback for phone keyboards (which don't send usable key names) and paste.
+    function handlePassInput(el) {
+        const chars = Array.from(el.value);
+        const pizzas = chars.filter(c => c === "🍕").length;
+        const typed = chars.filter(c => c !== "🍕" && !/[\uD800-\uDFFF]/.test(c)).join("");
+        adminPassTracker = Array.from(adminPassTracker).slice(0, pizzas).join("") + typed;
+        renderPass(el);
+    }
     
     async function verifyAdmin() {
     const candidate = adminPassTracker; // whatever the staff member typed
