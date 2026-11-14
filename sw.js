@@ -4,7 +4,7 @@ self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
 self.addEventListener('push', e => {
   let d = {};
   try { d = e.data.json(); } catch (_) {}
-  e.waitUntil(self.registration.showNotification(d.title || '🔔 New delivery assigned', {
+  e.waitUntil(self.registration.showNotification(d.title || '🔔 New delivery', {
     body: d.body || 'Open the app to view the order',
     icon: 'icon-192.png',
     badge: 'icon-192.png',
