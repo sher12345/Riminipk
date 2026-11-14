@@ -1,0 +1,2373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join the Team — Rimini Hiring</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════
+   ROOT TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --red: #e8231a;
+  --dark-red: #b01a13;
+  --amber: #f5a623;
+  --dark-amber: #c47d0e;
+  --black: #1a1a1a;
+  --slate: #f4f4f4;
+  --white: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --success: #16a34a;
+  --font: 'Outfit', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--slate); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+/* ═══════════════════════════════════════════
+   PUBLIC APP STYLES
+═══════════════════════════════════════════ */
+.top-banner { background: var(--black); color: white; text-align: center; padding: 10px 20px; font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+.top-banner span { color: var(--amber); }
+.site-header { background: var(--red); padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 20px rgba(232,35,26,0.3); }
+.logo { font-size: 24px; font-weight: 900; color: white; letter-spacing: -1px; }
+.logo span { color: var(--amber); }
+.header-badge { background: rgba(255,255,255,0.15); color: white; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.25); }
+.pipeline-wrap { background: white; border-bottom: 2px solid var(--border); padding: 20px 32px; }
+.pipeline { max-width: 800px; margin: 0 auto; display: flex; align-items: center; gap: 0; }
+.pipe-step { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; position: relative; cursor: default; }
+.pipe-step:not(:last-child)::after { content: ''; position: absolute; top: 18px; left: calc(50% + 18px); right: calc(-50% + 18px); height: 3px; background: var(--border); z-index: 0; transition: background 0.4s; }
+.pipe-step.done:not(:last-child)::after { background: var(--red); }
+.pipe-step.active:not(:last-child)::after { background: linear-gradient(90deg, var(--red), var(--border)); }
+.pipe-dot { width: 36px; height: 36px; border-radius: 50%; background: var(--border); color: var(--muted); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; position: relative; z-index: 1; transition: all 0.3s; border: 3px solid transparent; }
+.pipe-step.active .pipe-dot { background: var(--red); color: white; border-color: rgba(232,35,26,0.3); box-shadow: 0 0 0 5px rgba(232,35,26,0.12); animation: pipe-pulse 2s infinite; }
+.pipe-step.done .pipe-dot { background: var(--black); color: white; border-color: transparent; }
+@keyframes pipe-pulse { 0%,100% { box-shadow: 0 0 0 5px rgba(232,35,26,0.12); } 50% { box-shadow: 0 0 0 10px rgba(232,35,26,0.06); } }
+.pipe-label { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); text-align: center; line-height: 1.3; white-space: nowrap; }
+.pipe-step.active .pipe-label { color: var(--red); }
+.pipe-step.done .pipe-label { color: var(--black); }
+.main { max-width: 860px; margin: 0 auto; padding: 36px 20px 80px; }
+.stage { display: none; }
+.stage.active { display: block; animation: fadeUp 0.4s ease; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+.stage-hero { background: var(--black); border-radius: 20px; padding: 36px 40px; margin-bottom: 28px; position: relative; overflow: hidden; }
+.stage-hero::before { content: ''; position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(232,35,26,0.2), transparent 70%); }
+.stage-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--amber); margin-bottom: 10px; }
+.stage-title { font-size: clamp(26px, 4vw, 38px); font-weight: 900; color: white; line-height: 1.1; margin-bottom: 10px; letter-spacing: -0.5px; }
+.stage-title span { color: var(--amber); }
+.stage-sub { font-size: 14px; color: rgba(255,255,255,0.55); font-weight: 400; line-height: 1.6; max-width: 500px; }
+.card { background: white; border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.card-header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+.card-icon { width: 38px; height: 38px; border-radius: 10px; background: rgba(232,35,26,0.08); color: var(--red); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.card-title { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--black); }
+.card-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.card-body { padding: 24px; }
+.field-grid { display: grid; gap: 20px; }
+.field-grid.two { grid-template-columns: 1fr 1fr; }
+.field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+@media(max-width:600px) { .field-grid.two, .field-grid.three { grid-template-columns: 1fr; } }
+.field { display: flex; flex-direction: column; gap: 7px; }
+.field label { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--black); display: flex; align-items: center; gap: 5px; }
+.req { color: var(--red); font-size: 14px; line-height: 1; }
+.field input, .field select, .field textarea { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: var(--font); font-size: 14px; color: var(--text); background: #fafafa; outline: none; transition: border-color 0.2s, background 0.2s, box-shadow 0.2s; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--red); background: white; box-shadow: 0 0 0 3px rgba(232,35,26,0.08); }
+.field input.error, .field select.error, .field textarea.error { border-color: var(--red); background: #fff5f5; }
+.field .err-msg { font-size: 11px; color: var(--red); font-weight: 600; display: none; }
+.field.has-error .err-msg { display: block; }
+.field textarea { resize: vertical; min-height: 80px; }
+.field select { cursor: pointer; }
+.radio-group, .check-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.radio-pill, .check-pill { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); background: #fafafa; transition: all 0.2s; user-select: none; }
+.radio-pill input, .check-pill input { display: none; }
+.radio-pill:has(input:checked), .check-pill:has(input:checked) { border-color: var(--red); background: rgba(232,35,26,0.06); color: var(--red); }
+.submit-btn { width: 100%; padding: 16px 24px; background: var(--red); color: white; border: none; border-radius: 12px; font-family: var(--font); font-size: 15px; font-weight: 800; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 5px 0 var(--dark-red); transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 10px; text-transform: uppercase; }
+.submit-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--dark-red); }
+.submit-btn:disabled { background: #ccc; box-shadow: 0 3px 0 #aaa; cursor: not-allowed; }
+.submit-btn.amber { background: var(--amber); box-shadow: 0 5px 0 var(--dark-amber); }
+.submit-btn.amber:active { box-shadow: 0 2px 0 var(--dark-amber); }
+.submit-btn.black { background: var(--black); box-shadow: 0 5px 0 #000; }
+.btn-row { display: flex; gap: 12px; }
+.btn-row .submit-btn { flex: 1; }
+.btn-back { padding: 16px 20px; background: white; color: var(--muted); border: 1.5px solid var(--border); border-radius: 12px; font-family: var(--font); font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.btn-back:hover { border-color: var(--black); color: var(--black); }
+.test-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.q-counter { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+.timer-box { display: flex; align-items: center; gap: 6px; background: rgba(232,35,26,0.08); border: 1px solid rgba(232,35,26,0.2); color: var(--red); font-size: 13px; font-weight: 800; padding: 5px 12px; border-radius: 20px; font-variant-numeric: tabular-nums; }
+.timer-box.warning { background: rgba(245,166,35,0.1); border-color: var(--amber); color: var(--amber); animation: timer-pulse 1s infinite; }
+.timer-box.danger { background: rgba(232,35,26,0.15); border-color: var(--red); color: var(--red); animation: timer-pulse 0.5s infinite; }
+@keyframes timer-pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+.progress-bar-wrap { background: var(--border); border-radius: 4px; height: 5px; margin-bottom: 28px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--amber)); border-radius: 4px; transition: width 0.4s ease; }
+.q-card { background: white; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; }
+.q-card-header { padding: 16px 22px; background: var(--black); display: flex; align-items: flex-start; gap: 14px; }
+.q-num { background: var(--red); color: white; font-size: 11px; font-weight: 900; padding: 3px 9px; border-radius: 5px; letter-spacing: 1px; flex-shrink: 0; margin-top: 2px; }
+.q-text { font-size: 15px; font-weight: 600; color: white; line-height: 1.5; }
+.q-card-body { padding: 18px 22px; }
+.q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-opt { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text); background: #fafafa; transition: all 0.18s; user-select: none; }
+.q-opt:hover { border-color: var(--amber); background: rgba(245,166,35,0.05); }
+.q-opt.selected { border-color: var(--red); background: rgba(232,35,26,0.06); color: var(--red); font-weight: 700; }
+.q-opt input { display: none; }
+.opt-key { width: 26px; height: 26px; border-radius: 6px; background: var(--border); color: var(--muted); font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.q-opt.selected .opt-key { background: var(--red); color: white; }
+.result-hero { border-radius: 20px; padding: 40px; margin-bottom: 24px; text-align: center; position: relative; overflow: hidden; }
+.result-hero.pass { background: linear-gradient(135deg, #0a2a1a 0%, #0d4a2a 100%); }
+.result-hero.fail { background: linear-gradient(135deg, #2a0a0a 0%, #1a0808 100%); }
+.result-icon { font-size: 64px; margin-bottom: 16px; display: block; }
+.result-title { font-size: 32px; font-weight: 900; color: white; margin-bottom: 8px; letter-spacing: -0.5px; }
+.result-title.pass-text { color: #4ade80; }
+.result-title.fail-text { color: #f87171; }
+.result-sub { font-size: 15px; color: rgba(255,255,255,0.6); max-width: 480px; margin: 0 auto; line-height: 1.6; }
+.score-badge { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 10px 22px; border-radius: 50px; font-size: 16px; font-weight: 800; margin-top: 18px; }
+.score-badge.pass-bg { background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.3); color: #4ade80; }
+.score-badge.fail-bg { background: rgba(248,113,113,0.15); border-color: rgba(248,113,113,0.3); color: #f87171; }
+.interview-card { background: linear-gradient(135deg, var(--black) 0%, #2d1a00 100%); border-radius: 20px; padding: 36px; color: white; margin-bottom: 20px; position: relative; overflow: hidden; border: 2px solid var(--amber); }
+.interview-card::before { content: '🎉'; position: absolute; font-size: 120px; right: -20px; top: -20px; opacity: 0.08; }
+.interview-details { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+.int-detail { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px 16px; }
+.int-detail-label { font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
+.int-detail-val { font-size: 15px; font-weight: 700; color: white; }
+.int-detail-val.amber { color: var(--amber); }
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--black); color: white; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; border-left: 4px solid var(--red); opacity: 0; transform: translateY(16px); transition: all 0.3s; z-index: 9999; max-width: 300px; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success { border-left-color: var(--success); }
+.spinner { width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+.info-box { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.3); border-radius: 12px; padding: 14px 16px; display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #92400e; font-weight: 500; margin-bottom: 20px; line-height: 1.5; }
+.info-box-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+@media(max-width: 600px) { .pipeline-wrap { padding: 16px; } .pipe-label { font-size: 9px; } .stage-hero { padding: 24px 22px; } .card-body { padding: 18px 16px; } .main { padding: 20px 14px 60px; } .interview-details { grid-template-columns: 1fr; } .site-header { padding: 0 16px; } .logo { font-size: 20px; } }
+
+/* ═══════════════════════════════════════════
+   HR PORTAL STYLES
+═══════════════════════════════════════════ */
+#hr-portal { display: none; min-height: 100vh; background: #0f0f12; font-family: var(--font); }
+#hr-portal.active { display: flex; flex-direction: column; }
+
+/* HR Login */
+.hr-login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #0f0f12; padding: 20px; }
+.hr-login-box { background: #1a1a1f; border: 1px solid #2a2a32; border-radius: 20px; padding: 44px 40px; width: 100%; max-width: 400px; }
+.hr-login-logo { font-size: 28px; font-weight: 900; color: white; letter-spacing: -1px; margin-bottom: 6px; }
+.hr-login-logo span { color: var(--amber); }
+.hr-login-badge { font-size: 10px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: #555; margin-bottom: 32px; }
+.hr-field { margin-bottom: 16px; }
+.hr-field label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #888; margin-bottom: 8px; }
+.hr-field input { width: 100%; padding: 13px 16px; background: #0f0f12; border: 1.5px solid #2a2a32; border-radius: 10px; color: white; font-family: var(--font); font-size: 14px; outline: none; transition: border-color 0.2s; }
+.hr-field input:focus { border-color: var(--amber); }
+.hr-login-btn { width: 100%; padding: 14px; background: var(--amber); color: #1a1a1a; border: none; border-radius: 10px; font-family: var(--font); font-size: 14px; font-weight: 800; cursor: pointer; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 8px; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.hr-login-btn:hover { opacity: 0.9; }
+.hr-login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.hr-login-err { color: #f87171; font-size: 12px; font-weight: 600; margin-top: 10px; display: none; }
+.hr-login-err.show { display: block; }
+
+/* HR Header */
+.hr-header { background: #1a1a1f; border-bottom: 1px solid #2a2a32; padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.hr-header-logo { font-size: 18px; font-weight: 900; color: white; letter-spacing: -0.5px; }
+.hr-header-logo span { color: var(--amber); }
+.hr-header-right { display: flex; align-items: center; gap: 16px; }
+.hr-user-badge { font-size: 12px; color: #888; font-weight: 600; }
+.hr-logout-btn { padding: 7px 14px; background: transparent; border: 1px solid #2a2a32; border-radius: 8px; color: #888; font-family: var(--font); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.hr-logout-btn:hover { border-color: #f87171; color: #f87171; }
+
+/* HR Dashboard */
+.hr-body { flex: 1; padding: 24px 28px; overflow-y: auto; }
+
+/* Stats row */
+.hr-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.hr-stat { background: #1a1a1f; border: 1px solid #2a2a32; border-radius: 14px; padding: 18px 20px; }
+.hr-stat-val { font-size: 28px; font-weight: 900; color: white; line-height: 1; margin-bottom: 4px; }
+.hr-stat-val.amber { color: var(--amber); }
+.hr-stat-val.green { color: #4ade80; }
+.hr-stat-val.red { color: #f87171; }
+.hr-stat-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #555; }
+
+/* Filters */
+.hr-filters { background: #1a1a1f; border: 1px solid #2a2a32; border-radius: 14px; padding: 16px 20px; margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.hr-filter-select { padding: 9px 14px; background: #0f0f12; border: 1px solid #2a2a32; border-radius: 8px; color: #ccc; font-family: var(--font); font-size: 13px; outline: none; cursor: pointer; }
+.hr-filter-select:focus { border-color: var(--amber); }
+.hr-search { flex: 1; min-width: 200px; padding: 9px 14px; background: #0f0f12; border: 1px solid #2a2a32; border-radius: 8px; color: white; font-family: var(--font); font-size: 13px; outline: none; }
+.hr-search::placeholder { color: #555; }
+.hr-search:focus { border-color: var(--amber); }
+.hr-refresh-btn { padding: 9px 16px; background: #2a2a32; border: none; border-radius: 8px; color: #ccc; font-family: var(--font); font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+.hr-refresh-btn:hover { background: #3a3a44; }
+
+/* Table */
+.hr-table-wrap { background: #1a1a1f; border: 1px solid #2a2a32; border-radius: 14px; overflow: hidden; }
+.hr-table-header { padding: 14px 20px; border-bottom: 1px solid #2a2a32; display: flex; align-items: center; justify-content: space-between; }
+.hr-table-title { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: white; }
+.hr-count-badge { background: #2a2a32; color: #888; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+table.hr-table { width: 100%; border-collapse: collapse; }
+table.hr-table thead tr { background: #0f0f12; }
+table.hr-table thead th { padding: 12px 16px; text-align: left; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #555; border-bottom: 1px solid #2a2a32; white-space: nowrap; }
+table.hr-table tbody tr { border-bottom: 1px solid #1e1e24; transition: background 0.15s; cursor: pointer; }
+table.hr-table tbody tr:hover { background: #22222a; }
+table.hr-table tbody tr:last-child { border-bottom: none; }
+table.hr-table tbody td { padding: 13px 16px; font-size: 13px; color: #ccc; }
+.td-name { font-weight: 700; color: white; }
+.td-phone { color: #888; font-size: 12px; }
+.score-pill { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 800; }
+.score-pill.pass { background: rgba(74,222,128,0.12); color: #4ade80; }
+.score-pill.fail { background: rgba(248,113,113,0.12); color: #f87171; }
+.score-pill.na { background: #2a2a32; color: #555; }
+
+/* Status badge */
+.status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.status-badge.applied { background: rgba(99,102,241,0.15); color: #818cf8; }
+.status-badge.interview_shortlisted { background: rgba(74,222,128,0.12); color: #4ade80; }
+.status-badge.hired { background: rgba(245,166,35,0.15); color: var(--amber); }
+.status-badge.rejected { background: rgba(248,113,113,0.12); color: #f87171; }
+.status-badge.on_hold { background: rgba(156,163,175,0.15); color: #9ca3af; }
+
+/* Action buttons in table */
+.tbl-action-btn { padding: 5px 11px; border: 1px solid #2a2a32; border-radius: 6px; background: transparent; color: #888; font-family: var(--font); font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.tbl-action-btn:hover { background: #2a2a32; color: white; }
+.tbl-action-btn.dl { border-color: rgba(245,166,35,0.3); color: var(--amber); }
+.tbl-action-btn.dl:hover { background: rgba(245,166,35,0.1); }
+
+/* Empty state */
+.hr-empty { text-align: center; padding: 60px 20px; color: #555; }
+.hr-empty-icon { font-size: 40px; margin-bottom: 12px; }
+.hr-empty-text { font-size: 14px; font-weight: 600; }
+
+/* Loading spinner */
+.hr-loading { text-align: center; padding: 60px 20px; color: #555; }
+.hr-loading-spin { width: 32px; height: 32px; border: 3px solid #2a2a32; border-top-color: var(--amber); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
+
+/* ── DRAWER ── */
+.hr-drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.hr-drawer-overlay.open { opacity: 1; pointer-events: all; }
+.hr-drawer { position: fixed; top: 0; right: -600px; width: 560px; max-width: 95vw; height: 100vh; background: #1a1a1f; border-left: 1px solid #2a2a32; z-index: 1001; transition: right 0.35s cubic-bezier(.4,0,.2,1); overflow-y: auto; }
+.hr-drawer.open { right: 0; }
+.hr-drawer-header { position: sticky; top: 0; background: #1a1a1f; border-bottom: 1px solid #2a2a32; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 2; }
+.hr-drawer-title { font-size: 16px; font-weight: 800; color: white; }
+.hr-drawer-close { width: 32px; height: 32px; border-radius: 8px; background: #2a2a32; border: none; color: #888; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.hr-drawer-close:hover { background: #3a3a44; color: white; }
+.hr-drawer-body { padding: 24px; }
+.drawer-section { margin-bottom: 24px; }
+.drawer-section-title { font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #555; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #2a2a32; }
+.drawer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.drawer-field { }
+.drawer-field dt { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #555; margin-bottom: 3px; }
+.drawer-field dd { font-size: 13px; font-weight: 600; color: #ccc; }
+.drawer-field dd.white { color: white; }
+.score-box-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.score-box { background: #0f0f12; border: 1px solid #2a2a32; border-radius: 12px; padding: 16px; text-align: center; }
+.score-box-val { font-size: 30px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+.score-box-val.pass { color: #4ade80; }
+.score-box-val.fail { color: #f87171; }
+.score-box-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #555; }
+.per-answers { display: flex; flex-direction: column; gap: 8px; }
+.per-answer-item { background: #0f0f12; border: 1px solid #2a2a32; border-radius: 8px; padding: 10px 14px; }
+.per-answer-q { font-size: 11px; color: #555; font-weight: 600; margin-bottom: 3px; }
+.per-answer-a { font-size: 13px; color: #ccc; font-weight: 600; }
+.drawer-actions { display: flex; flex-direction: column; gap: 10px; }
+.drawer-status-select { width: 100%; padding: 11px 14px; background: #0f0f12; border: 1.5px solid #2a2a32; border-radius: 10px; color: white; font-family: var(--font); font-size: 14px; font-weight: 600; outline: none; cursor: pointer; transition: border-color 0.2s; }
+.drawer-status-select:focus { border-color: var(--amber); }
+.drawer-save-btn { width: 100%; padding: 12px; background: var(--amber); color: #1a1a1a; border: none; border-radius: 10px; font-family: var(--font); font-size: 13px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: opacity 0.2s; }
+.drawer-save-btn:hover { opacity: 0.9; }
+.drawer-pdf-btn { width: 100%; padding: 12px; background: transparent; color: var(--amber); border: 1.5px solid rgba(245,166,35,0.4); border-radius: 10px; font-family: var(--font); font-size: 13px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; }
+.drawer-pdf-btn:hover { background: rgba(245,166,35,0.08); }
+
+@media(max-width:700px) { .hr-stats { grid-template-columns: 1fr 1fr; } .hr-filters { flex-direction: column; } .hr-search, .hr-filter-select { width: 100%; } }
+@media(max-width:500px) { .hr-stats { grid-template-columns: 1fr 1fr; } .hr-body { padding: 16px; } }
+
+.hr-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #555;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+.hr-tab:hover { color: #ccc; background: #2a2a32; }
+.hr-tab.active { background: var(--amber); color: #1a1a1a; }
+
+</style>
+</head>
+<body>
+
+  <!-- ANTI-CHEAT OVERLAY -->
+<div id="cheat-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:9998;align-items:center;justify-content:center;flex-direction:column;gap:16px;text-align:center;padding:30px;">
+  <div id="cheat-icon" style="font-size:64px;">⚠️</div>
+  <div id="cheat-title" style="font-size:26px;font-weight:900;color:white;">Tab Switch Detected</div>
+  <div id="cheat-message" style="font-size:15px;color:rgba(255,255,255,.6);max-width:400px;line-height:1.6;">We noticed you switched away from the test. This is recorded. 3 violations = automatic disqualification.</div>
+  <button id="cheat-resume-btn" onclick="resumeTest()" style="padding:14px 32px;background:#e8231a;color:white;border:none;border-radius:12px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px;text-transform:uppercase;">I Understand — Resume Test</button>
+  <div id="cheat-warning-counter" style="font-size:12px;color:rgba(255,255,255,.3);margin-top:4px;">Warning <span id="cheat-count">1</span> of 3</div>
+  <div id="cheat-disqualified-msg" style="display:none;font-size:13px;color:#f87171;max-width:400px;line-height:1.7;margin-top:8px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.25);border-radius:12px;padding:16px 20px;">Your application has been permanently disqualified.<br>You cannot continue this session.<br><span style="font-size:12px;color:rgba(255,255,255,0.3);">You may reapply after 30 days.</span></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════
+     PUBLIC HIRING APP
+══════════════════════════════════════════ -->
+<div id="public-app">
+  <div class="top-banner">Positions open in <span>Multan & Bahawalpur</span> — Apply now, join the team</div>
+  <header class="site-header">
+    <div class="logo">RIMINI</div>
+    <div style="display:flex;align-items:center;gap:12px;">
+        <div class="header-badge">Hiring 2025</div>
+        <a href="?hr" style="background:rgba(255,255,255,0.15);color:white;font-size:12px;font-weight:700;padding:7px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.25);text-decoration:none;transition:all 0.2s;white-space:nowrap;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">🔒 HR Login</a>
+    </div>
+</header>
+  <div class="pipeline-wrap">
+    <div class="pipeline" id="pipeline">
+      <div class="pipe-step active" data-step="0"><div class="pipe-dot">1</div><div class="pipe-label">Application</div></div>
+      <div class="pipe-step" data-step="1"><div class="pipe-dot">2</div><div class="pipe-label">Aptitude<br>Test</div></div>
+      <div class="pipe-step" data-step="2"><div class="pipe-dot">3</div><div class="pipe-label">Situational<br>Test</div></div>
+      <div class="pipe-step" data-step="3"><div class="pipe-dot">4</div><div class="pipe-label">Personality<br>Check</div></div>
+      <div class="pipe-step" data-step="4"><div class="pipe-dot">🏆</div><div class="pipe-label">Interview<br>Invite</div></div>
+    </div>
+  </div>
+  <main class="main">
+    <!-- STAGE 0: APPLICATION FORM -->
+    <div class="stage active" id="stage-0">
+      <div class="stage-hero">
+        <div class="stage-eyebrow">Step 1 of 4 — Application</div>
+        <div class="stage-title">Start Your<br>Journey at <span>Rimini</span></div>
+        <div class="stage-sub">Fill in your details honestly. This takes about 3 minutes. We screen everyone equally — your attitude matters more than your experience.</div>
+      </div>
+      <div class="info-box"><span class="info-box-icon">⚠️</span><span>After submitting this form, you will be taken to a <strong>timed test</strong>. Make sure you are in a quiet place before clicking Submit.</span></div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon">👤</div><div><div class="card-title">Personal Information</div><div class="card-sub">Basic details about you</div></div></div>
+        <div class="card-body">
+          <div class="field" style="margin-bottom:20px;">
+  <label>Profile Photo <span class="req">*</span></label>
+  <div id="photo-upload-area" onclick="document.getElementById('photo-input').click()" style="border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;background:#fafafa;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--red)';this.style.background='rgba(232,35,26,0.03)'" onmouseout="this.style.borderColor='var(--border)';this.style.background='#fafafa'">
+    <div id="photo-preview-wrap" style="display:none;margin-bottom:10px;"><img id="photo-preview" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--red);" src=""></div>
+    <div id="photo-placeholder" style="font-size:32px;margin-bottom:6px;">📷</div>
+    <div style="font-size:13px;font-weight:600;color:var(--muted);" id="photo-label">Click to upload your photo</div>
+    <div style="font-size:11px;color:#9ca3af;margin-top:4px;">JPG or PNG · Max 2MB · Clear face photo preferred</div>
+  </div>
+  <input type="file" id="photo-input" accept="image/jpeg,image/png" style="display:none" onchange="handlePhotoUpload(this)">
+</div>
+          <div class="field-grid two">
+            <div class="field" id="f-fullname"><label>Full Name <span class="req">*</span></label><input type="text" id="fullname" placeholder="e.g. Muhammad Ali Khan" autocomplete="name"><span class="err-msg">Please enter your full name</span></div>
+            <div class="field" id="f-fathername"><label>Father's Name <span class="req">*</span></label><input type="text" id="fathername" placeholder="e.g. Muhammad Akram Khan"><span class="err-msg">Required</span></div>
+            <div class="field" id="f-cnic"><label>CNIC Number <span class="req">*</span></label><input type="text" id="cnic" placeholder="12345-1234567-1" maxlength="15"><span class="err-msg">Enter valid CNIC (e.g. 36302-1234567-1)</span></div>
+            <div class="field" id="f-dob"><label>Date of Birth <span class="req">*</span></label><input type="date" id="dob" max=""><span class="err-msg">Required</span></div>
+            <div class="field" id="f-gender"><label>Gender <span class="req">*</span></label><div class="radio-group"><label class="radio-pill"><input type="radio" name="gender" value="Male"> Male</label><label class="radio-pill"><input type="radio" name="gender" value="Female"> Female</label><label class="radio-pill"><input type="radio" name="gender" value="Prefer not to say"> Prefer not to say</label></div><span class="err-msg" id="gender-err">Select a gender</span></div>
+            <div class="field" id="f-marital"><label>Marital Status</label><div class="radio-group"><label class="radio-pill"><input type="radio" name="marital" value="Single"> Single</label><label class="radio-pill"><input type="radio" name="marital" value="Married"> Married</label></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon">📞</div><div><div class="card-title">Contact & Location</div><div class="card-sub">How we can reach you</div></div></div>
+        <div class="card-body">
+          <div class="field-grid two">
+            <div class="field" id="f-phone"><label>WhatsApp Number <span class="req">*</span></label><input type="tel" id="phone" placeholder="0300-1234567" maxlength="15"><span class="err-msg">Enter a valid Pakistani number</span></div>
+            <div class="field" id="f-email"><label>Email Address</label><input type="email" id="email" placeholder="you@gmail.com"><span class="err-msg">Enter a valid email</span></div>
+            <div class="field" id="f-city"><label>City <span class="req">*</span></label><select id="city"><option value="">Select city</option><option>Multan</option><option>Bahawalpur</option><option>Lahore</option><option>Karachi</option><option>Islamabad</option><option>Other</option></select><span class="err-msg">Select your city</span></div>
+            <div class="field"><label>Preferred Branch</label><select id="branch"><option value="">No preference</option><option value="MULTAN">Multan — Gulgasht Colony</option><option value="BWP">Bahawalpur — SS Tower, Sadiq Colony</option></select></div>
+            <div class="field" style="grid-column: 1 / -1" id="f-address"><label>Current Address <span class="req">*</span></label><input type="text" id="address" placeholder="House #, Street, Area, City"><span class="err-msg">Required</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🎓</div><div><div class="card-title">Education & Experience</div><div class="card-sub">Your background</div></div></div>
+        <div class="card-body">
+          <div class="field-grid two">
+            <div class="field" id="f-education"><label>Highest Education <span class="req">*</span></label><select id="education"><option value="">Select level</option><option>Matric (10th)</option><option>Intermediate (12th / FA / FSc)</option><option>Bachelor's Degree (BA / BSc / BCS)</option><option>Master's Degree</option><option>Diploma / Vocational</option><option>Below Matric</option></select><span class="err-msg">Required</span></div>
+            <div class="field" id="f-experience"><label>Work Experience <span class="req">*</span></label><select id="experience"><option value="">Select</option><option>No experience (Fresh)</option><option>Less than 6 months</option><option>6 months – 1 year</option><option>1 – 2 years</option><option>2 – 5 years</option><option>5+ years</option></select><span class="err-msg">Required</span></div>
+            <div class="field" id="f-prev-employer"><label>Previous Employer <small style="font-size:10px;color:#9ca3af;">(if any)</small></label><input type="text" id="prev-employer" placeholder="Company or restaurant name"></div>
+            <div class="field"><label>Previous Role</label><input type="text" id="prev-role" placeholder="e.g. Cashier, Cook, Waiter"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon">💼</div><div><div class="card-title">Position & Availability</div><div class="card-sub">What role are you applying for?</div></div></div>
+        <div class="card-body">
+          <div class="field-grid two">
+            <div class="field" id="f-position"><label>Applying For <span class="req">*</span></label><select id="position" onchange="updateSkills()"><option value="">Select position</option><option>Cashier / Counter Staff</option><option>Kitchen Staff / Cook</option><option>Delivery Rider</option><option>Floor / Service Staff</option><option>Shift Supervisor</option><option>Kitchen Manager</option><option>Branch Manager</option><option>Any Available Position</option></select><span class="err-msg">Select a position</span></div>
+            <div class="field" id="f-shift"><label>Preferred Shift <span class="req">*</span></label><div class="radio-group"><label class="radio-pill"><input type="radio" name="shift" value="Morning (9am–4pm)"> Morning</label><label class="radio-pill"><input type="radio" name="shift" value="Evening (4pm–12am)"> Evening</label><label class="radio-pill"><input type="radio" name="shift" value="Night (12am–8am)"> Night</label><label class="radio-pill"><input type="radio" name="shift" value="Any shift"> Any shift</label></div><span class="err-msg" id="shift-err">Select preferred shift</span></div>
+            <div class="field" id="f-joining"><label>Can join within <span class="req">*</span></label><select id="joining"><option value="">Select</option><option>Immediately</option><option>1 week</option><option>2 weeks</option><option>1 month</option></select><span class="err-msg">Required</span></div>
+            <div class="field"><label>Salary Expectation (Rs / month)</label><select id="salary"><option value="">Negotiable</option><option>25,000 – 35,000</option><option>35,000 – 50,000</option><option>50,000 – 75,000</option><option>75,000+</option></select></div>
+          </div>
+          <div class="divider"></div>
+          <div class="field-grid">
+            <div class="field">
+  <label>Skills & Strengths <span style="color:var(--muted);font-size:10px;font-weight:500;text-transform:none;letter-spacing:0;">(based on your selected position)</span></label>
+  <div class="check-group" id="skills-group">
+    <div style="font-size:13px;color:var(--muted);font-style:italic;">Select a position above to see relevant skills</div>
+  </div>
+</div>
+            <div class="field"><label>Languages</label><div class="check-group"><label class="check-pill"><input type="checkbox" name="lang" value="Urdu"> Urdu</label><label class="check-pill"><input type="checkbox" name="lang" value="Punjabi"> Punjabi</label><label class="check-pill"><input type="checkbox" name="lang" value="Saraiki"> Saraiki</label><label class="check-pill"><input type="checkbox" name="lang" value="English"> English</label></div></div>
+            <div class="field"><label>Why do you want to join Rimini? <span class="req">*</span></label><textarea id="motivation" placeholder="Write a few sentences about why you want this job." rows="3"></textarea><span class="err-msg">Please write at least 20 characters</span></div>
+<div class="field"><label>Anything else?</label><textarea id="extra" placeholder="Any other relevant information" rows="2"></textarea></div>
+          </div>
+        </div>
+      </div>
+      <div class="info-box" style="background:rgba(232,35,26,0.06); border-color:rgba(232,35,26,0.2); color:#7f1d1d;"><span class="info-box-icon">📝</span><span>By submitting you agree that all information is truthful. The next screen will be a <strong>15-minute timed aptitude test</strong>.</span></div>
+      <button class="submit-btn" id="submit-form-btn" onclick="submitApplicationForm()"><span class="spinner" id="form-spinner"></span><span id="form-btn-text">Submit Application & Start Test →</span></button>
+    </div>
+
+    <!-- STAGE 1: APTITUDE TEST -->
+    <div class="stage" id="stage-1">
+      <div class="stage-hero"><div class="stage-eyebrow">Step 2 of 4 — Aptitude Test</div><div class="stage-title">Test Your <span>Basic Skills</span></div><div class="stage-sub">20 questions · 15 minutes · Math, Urdu comprehension, and logical reasoning.</div></div>
+      <div class="test-meta"><div class="q-counter" id="apt-q-counter">Question 1 of 20</div><div class="timer-box" id="apt-timer">⏱ 15:00</div></div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="apt-progress" style="width:5%"></div></div>
+      <div id="apt-question-area"></div>
+      <div class="btn-row"><button class="submit-btn" id="apt-next-btn" onclick="aptNext()">Next Question →</button></div>
+    </div>
+
+    <!-- STAGE 1 RESULT -->
+    <div class="stage" id="stage-1-result">
+      <div class="result-hero" id="apt-result-hero"><span class="result-icon" id="apt-result-icon">✅</span><div class="result-title" id="apt-result-title">Aptitude Cleared!</div><div class="result-sub" id="apt-result-sub"></div><div class="score-badge" id="apt-score-badge"></div></div>
+      <div id="apt-result-action"></div>
+    </div>
+
+    <!-- STAGE 2: SITUATIONAL TEST -->
+    <div class="stage" id="stage-2">
+      <div class="stage-hero"><div class="stage-eyebrow">Step 3 of 4 — Situational Test</div><div class="stage-title">Real <span>Work Scenarios</span></div><div class="stage-sub">15 scenarios from a real fast food shift · 18 minutes · Choose the best action.</div></div>
+      <div class="test-meta"><div class="q-counter" id="sit-q-counter">Scenario 1 of 15</div><div class="timer-box" id="sit-timer">⏱ 18:00</div></div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="sit-progress" style="width:6.7%"></div></div>
+      <div id="sit-question-area"></div>
+      <div class="btn-row"><button class="submit-btn amber" id="sit-next-btn" onclick="sitNext()">Next Scenario →</button></div>
+    </div>
+
+    <!-- STAGE 2 RESULT -->
+    <div class="stage" id="stage-2-result">
+      <div class="result-hero" id="sit-result-hero"><span class="result-icon" id="sit-result-icon">✅</span><div class="result-title" id="sit-result-title"></div><div class="result-sub" id="sit-result-sub"></div><div class="score-badge" id="sit-score-badge"></div></div>
+      <div id="sit-result-action"></div>
+    </div>
+
+    <!-- STAGE 3: PERSONALITY CHECK -->
+    <div class="stage" id="stage-3">
+      <div class="stage-hero"><div class="stage-eyebrow">Step 4 of 4 — Personality Check</div><div class="stage-title">Tell Us Who<br><span>You Really Are</span></div><div class="stage-sub">10 quick questions about how you work. There are no wrong answers — just be honest.</div></div>
+      <div class="test-meta"><div class="q-counter" id="per-q-counter">Question 1 of 10</div><div class="timer-box" id="per-timer" style="background:rgba(22,163,74,0.08);border-color:rgba(22,163,74,0.2);color:var(--success);">🟢 No timer</div></div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="per-progress" style="width:10%; background: linear-gradient(90deg, #16a34a, #4ade80);"></div></div>
+      <div id="per-question-area"></div>
+      <div class="btn-row"><button class="submit-btn black" id="per-next-btn" onclick="perNext()">Next →</button></div>
+    </div>
+
+    <!-- STAGE 4: INTERVIEW INVITE -->
+    <div class="stage" id="stage-4">
+      <div class="interview-card">
+        <div style="font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--amber);margin-bottom:12px;">🎉 Congratulations!</div>
+        <div style="font-size:32px;font-weight:900;color:white;margin-bottom:10px;letter-spacing:-0.5px;">You Made It Through!</div>
+        <div style="font-size:15px;color:rgba(255,255,255,0.6);line-height:1.6;margin-bottom:20px;">You've passed all screening stages. Our hiring team will contact you within <strong style="color:var(--amber);">24–48 hours</strong> via WhatsApp.</div>
+        <div class="interview-details">
+          <div class="int-detail"><div class="int-detail-label">Applicant</div><div class="int-detail-val" id="final-name">—</div></div>
+          <div class="int-detail"><div class="int-detail-label">Position Applied</div><div class="int-detail-val amber" id="final-position">—</div></div>
+          <div class="int-detail"><div class="int-detail-label">WhatsApp Number</div><div class="int-detail-val" id="final-phone">—</div></div>
+          <div class="int-detail"><div class="int-detail-label">Preferred Branch</div><div class="int-detail-val" id="final-branch">—</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:rgba(22,163,74,0.1);color:var(--success);">📋</div><div><div class="card-title">What Happens Next</div><div class="card-sub">Your final steps before joining the team</div></div></div>
+        <div class="card-body">
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div style="display:flex;gap:14px;align-items:flex-start;"><div style="width:32px;height:32px;border-radius:8px;background:var(--black);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">1</div><div><div style="font-weight:700;font-size:14px;margin-bottom:3px;">Wait for WhatsApp contact</div><div style="font-size:13px;color:var(--muted);">Our HR team will message you on the number you provided within 48 hours.</div></div></div>
+            <div style="display:flex;gap:14px;align-items:flex-start;"><div style="width:32px;height:32px;border-radius:8px;background:var(--black);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">2</div><div><div style="font-weight:700;font-size:14px;margin-bottom:3px;">Bring your documents</div><div style="font-size:13px;color:var(--muted);">CNIC original + photocopy, 2 passport photos, and any certificates.</div></div></div>
+            <div style="display:flex;gap:14px;align-items:flex-start;"><div style="width:32px;height:32px;border-radius:8px;background:var(--black);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">3</div><div><div style="font-weight:700;font-size:14px;margin-bottom:3px;">In-person interview</div><div style="font-size:13px;color:var(--muted);">15–20 minute interview at your chosen branch. Dress neatly, arrive 5 minutes early.</div></div></div>
+            <div style="display:flex;gap:14px;align-items:flex-start;"><div style="width:32px;height:32px;border-radius:8px;background:var(--red);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;">🔥</div><div><div style="font-weight:700;font-size:14px;margin-bottom:3px;">Get your offer letter</div><div style="font-size:13px;color:var(--muted);">Successful candidates receive a joining date within the same week.</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;padding:20px 0;color:var(--muted);font-size:13px;line-height:1.6;">Questions? WhatsApp us at <strong style="color:var(--black);">0300-245-0301</strong><br><span style="font-size:12px;">Please do not call during rush hours (12pm–3pm, 7pm–10pm)</span></div>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════════
+     HR PORTAL
+══════════════════════════════════════════ -->
+<div id="hr-portal">
+  <!-- LOGIN SCREEN -->
+  <div id="hr-login-screen" class="hr-login-wrap">
+    <div class="hr-login-box">
+      <div class="hr-login-logo">RIMINI</div>
+      <div class="hr-login-badge">HR Portal · Staff Only</div>
+      <div class="hr-field">
+        <label>Email Address</label>
+        <input type="email" id="hr-email" placeholder="hr@riminipk.com" autocomplete="email">
+      </div>
+      <div class="hr-field">
+        <label>Password</label>
+        <input type="password" id="hr-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')hrLogin()">
+      </div>
+      <div class="hr-login-err" id="hr-login-err"></div>
+      <button class="hr-login-btn" id="hr-login-btn" onclick="hrLogin()">
+        <span class="spinner" id="hr-login-spinner" style="border-top-color:#1a1a1a;"></span>
+        <span id="hr-login-btn-text">Sign In to HR Portal</span>
+      </button>
+      <div style="margin-top:20px;font-size:11px;color:#444;text-align:center;line-height:1.6;">Access restricted to authorised Rimini HR staff.<br>Contact admin to create your account.</div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="hr-dashboard" style="display:none;flex-direction:column;flex:1;">
+    <div class="hr-header">
+      <div class="hr-header-logo">RIMINI <span style="font-size:12px;font-weight:600;color:#555;letter-spacing:2px;margin-left:8px;">HR PORTAL</span></div>
+      <div class="hr-header-right">
+        <div class="hr-user-badge" id="hr-user-email"></div>
+        <button class="hr-logout-btn" onclick="hrLogout()">Sign Out</button>
+      </div>
+    </div>
+    <div class="hr-body">
+      <!-- Stats -->
+      <div class="hr-stats" id="hr-stats">
+        <div class="hr-stat"><div class="hr-stat-val amber" id="stat-total">—</div><div class="hr-stat-label">Total Applicants</div></div>
+        <div class="hr-stat"><div class="hr-stat-val green" id="stat-shortlisted">—</div><div class="hr-stat-label">Shortlisted</div></div>
+        <div class="hr-stat"><div class="hr-stat-val" id="stat-applied" style="color:#818cf8;">—</div><div class="hr-stat-label">In Progress</div></div>
+        <div class="hr-stat"><div class="hr-stat-val red" id="stat-rejected">—</div><div class="hr-stat-label">Rejected / On Hold</div></div>
+      </div>
+
+      <!-- TAB BAR -->
+<div style="display:flex;gap:8px;margin-bottom:16px;background:#1a1a1f;border:1px solid #2a2a32;border-radius:12px;padding:6px;">
+  <button class="hr-tab active" id="tab-all" onclick="switchTab('all')">All Applicants</button>
+  <button class="hr-tab" id="tab-shortlisted" onclick="switchTab('shortlisted')">⭐ Shortlisted</button>
+  <button class="hr-tab" id="tab-hired" onclick="switchTab('hired')">★ Hired</button>
+  <button class="hr-tab" id="tab-rejected" onclick="switchTab('rejected')">✕ Rejected / On Hold</button>
+  <button class="hr-tab" id="tab-inprogress" onclick="switchTab('inprogress')">⏳ In Progress</button>
+</div>
+
+      <!-- Filters -->
+      <div class="hr-filters">
+        <input class="hr-search" id="hr-search" placeholder="🔍  Search by name, CNIC, or phone..." oninput="renderTable()">
+        <select class="hr-filter-select" id="filter-status" onchange="renderTable()">
+          <option value="">All Statuses</option>
+          <option value="applied">In Progress</option>
+          <option value="interview_shortlisted">Shortlisted</option>
+          <option value="hired">Hired</option>
+          <option value="rejected">Rejected</option>
+          <option value="on_hold">On Hold</option>
+        </select>
+        <select class="hr-filter-select" id="filter-position" onchange="renderTable()">
+          <option value="">All Positions</option>
+          <option>Cashier / Counter Staff</option>
+          <option>Kitchen Staff / Cook</option>
+          <option>Delivery Rider</option>
+          <option>Floor / Service Staff</option>
+          <option>Shift Supervisor</option>
+          <option>Kitchen Manager</option>
+          <option>Branch Manager</option>
+          <option>Any Available Position</option>
+        </select>
+        <select class="hr-filter-select" id="filter-branch" onchange="renderTable()">
+          <option value="">All Branches</option>
+          <option value="MULTAN">Multan</option>
+          <option value="BWP">Bahawalpur</option>
+        </select>
+        <button class="hr-refresh-btn" onclick="loadApplicants()">↻ Refresh</button>
+      </div>
+      <!-- Table -->
+      <div class="hr-table-wrap">
+        <div class="hr-table-header">
+          <div class="hr-table-title">Applicants</div>
+          <div class="hr-count-badge" id="hr-count-badge">— records</div>
+        </div>
+        <div id="hr-table-body">
+          <div class="hr-loading"><div class="hr-loading-spin"></div><div style="font-size:13px;font-weight:600;">Loading applicants...</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="hr-drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="hr-drawer" id="hr-drawer">
+  <div class="hr-drawer-header">
+    <div class="hr-drawer-title" id="drawer-title">Applicant Details</div>
+    <button class="hr-drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="hr-drawer-body" id="drawer-body"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════
+const SUPABASE_URL  = "https://YOUR-RIMINI-HR-PROJECT.supabase.co";
+const SUPABASE_KEY  = "YOUR_RIMINI_PUBLISHABLE_KEY";
+const EDGE_FUNC_URL = `${SUPABASE_URL}/functions/v1/send-whatsapp-pdf`;
+
+let sb = null;
+try { 
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+        auth: {
+            autoRefreshToken: true,
+            persistSession: true,
+            detectSessionInUrl: true
+        }
+    }); 
+} catch(e) { console.error('Supabase init failed:', e); }
+// ═══════════════════════════════════════════
+//  ROUTE: detect ?hr in URL
+// ═══════════════════════════════════════════
+function initRoute() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('hr') || window.location.hash === '#hr') {
+    document.getElementById('public-app').style.display = 'none';
+    document.getElementById('hr-portal').classList.add('active');
+    checkHrSession();
+  }
+}
+
+// ═══════════════════════════════════════════
+//  HR AUTH
+// ═══════════════════════════════════════════
+async function checkHrSession() {
+  if (!sb) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) showHrDashboard(session.user);
+}
+
+async function hrLogin() {
+  const email    = document.getElementById('hr-email').value.trim();
+  const password = document.getElementById('hr-password').value;
+  const errEl    = document.getElementById('hr-login-err');
+  const btn      = document.getElementById('hr-login-btn');
+  const spinner  = document.getElementById('hr-login-spinner');
+  const btnText  = document.getElementById('hr-login-btn-text');
+
+  errEl.classList.remove('show');
+  if (!email || !password) { errEl.textContent = 'Enter your email and password.'; errEl.classList.add('show'); return; }
+
+  btn.disabled = true; spinner.style.display = 'block'; btnText.textContent = 'Signing in...';
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  btn.disabled = false; spinner.style.display = 'none'; btnText.textContent = 'Sign In to HR Portal';
+
+  if (error) { errEl.textContent = error.message || 'Login failed. Check your credentials.'; errEl.classList.add('show'); return; }
+  showHrDashboard(data.user);
+}
+
+async function hrLogout() {
+  await sb.auth.signOut();
+  document.getElementById('hr-dashboard').style.display = 'none';
+  document.getElementById('hr-login-screen').style.display = 'flex';
+  document.getElementById('hr-email').value = '';
+  document.getElementById('hr-password').value = '';
+  allApplicants = [];
+}
+
+function showHrDashboard(user) {
+  document.getElementById('hr-login-screen').style.display = 'none';
+  document.getElementById('hr-dashboard').style.display = 'flex';
+  document.getElementById('hr-user-email').textContent = user.email;
+  loadApplicants();
+}
+
+// ═══════════════════════════════════════════
+//  APPLICANT DATA
+// ═══════════════════════════════════════════
+let allApplicants = [];
+
+async function loadApplicants() {
+  document.getElementById('hr-table-body').innerHTML = `<div class="hr-loading"><div class="hr-loading-spin"></div><div style="font-size:13px;font-weight:600;color:#555;">Loading...</div></div>`;
+  if (!sb) { document.getElementById('hr-table-body').innerHTML = `<div class="hr-empty"><div class="hr-empty-icon">⚠️</div><div class="hr-empty-text">Supabase not connected.</div></div>`; return; }
+
+  const { data, error } = await sb.from('job_applications').select('*').order('applied_at', { ascending: false });
+  if (error) { document.getElementById('hr-table-body').innerHTML = `<div class="hr-empty"><div class="hr-empty-icon">❌</div><div class="hr-empty-text">Error: ${error.message}</div></div>`; return; }
+
+  allApplicants = data || [];
+  updateStats();
+  renderTable();
+}
+
+function updateStats() {
+  const total       = allApplicants.length;
+  const shortlisted = allApplicants.filter(a => a.status === 'interview_shortlisted').length;
+  const applied     = allApplicants.filter(a => a.status === 'applied').length;
+  const rejected    = allApplicants.filter(a => a.status === 'rejected' || a.status === 'on_hold').length;
+  document.getElementById('stat-total').textContent       = total;
+  document.getElementById('stat-shortlisted').textContent = shortlisted;
+  document.getElementById('stat-applied').textContent     = applied;
+  document.getElementById('stat-rejected').textContent    = rejected;
+}
+
+function getFiltered() {
+  const search   = document.getElementById('hr-search').value.toLowerCase();
+  const status   = document.getElementById('filter-status').value;
+  const position = document.getElementById('filter-position').value;
+  const branch   = document.getElementById('filter-branch').value;
+  return allApplicants.filter(a => {
+    if (search && !`${a.full_name} ${a.cnic} ${a.phone}`.toLowerCase().includes(search)) return false;
+    if (status   && a.status !== status)            return false;
+    if (position && a.position !== position)        return false;
+    if (branch   && a.preferred_branch !== branch)  return false;
+    return true;
+  });
+}
+
+function scorePill(val, pass_threshold) {
+  if (val == null || val === undefined) return `<span class="score-pill na">N/A</span>`;
+  const cls = val >= pass_threshold ? 'pass' : 'fail';
+  return `<span class="score-pill ${cls}">${val}%</span>`;
+}
+
+function statusBadge(status) {
+  const labels = { applied: 'In Progress', interview_shortlisted: '✓ Shortlisted', hired: '★ Hired', rejected: '✕ Rejected', on_hold: '⏸ On Hold' };
+  return `<span class="status-badge ${status || 'applied'}">${labels[status] || status || 'In Progress'}</span>`;
+}
+
+function renderTable() {
+  // Sync tab with filter dropdown if changed manually
+const statusVal = document.getElementById('filter-status').value;
+if (statusVal === '' && activeTab !== 'all') { activeTab = 'all'; document.querySelectorAll('.hr-tab').forEach(el=>el.classList.remove('active')); document.getElementById('tab-all').classList.add('active'); }
+const rows = getFiltered();
+  document.getElementById('hr-count-badge').textContent = `${rows.length} record${rows.length !== 1 ? 's' : ''}`;
+  if (!rows.length) {
+    document.getElementById('hr-table-body').innerHTML = `<div class="hr-empty"><div class="hr-empty-icon">📭</div><div class="hr-empty-text">No applicants match your filters.</div></div>`;
+    return;
+  }
+  document.getElementById('hr-table-body').innerHTML = `
+    <div style="overflow-x:auto;">
+    <table class="hr-table">
+      <thead><tr>
+        <th>Name</th><th>Phone</th><th>Position</th><th>Branch</th>
+        <th>Apt.</th><th>Sit.</th><th>Status</th><th>Applied</th><th></th>
+      </tr></thead>
+      <tbody>
+        ${rows.map(a => `
+          <tr onclick="openDrawer('${a.id}')">
+            <td><div class="td-name">${esc(a.full_name)}</div><div class="td-phone">${esc(a.cnic||'')}</div></td>
+            <td><div class="td-phone">${esc(a.phone||'')}</div></td>
+            <td style="font-size:12px;max-width:140px;">${esc(a.position||'—')}</td>
+            <td style="font-size:12px;">${a.preferred_branch === 'MULTAN' ? 'Multan' : a.preferred_branch === 'BWP' ? 'Bahawalpur' : '—'}</td>
+            <td>${scorePill(a.aptitude_score, 60)}</td>
+            <td>${scorePill(a.situational_score, 65)}</td>
+            <td>${statusBadge(a.status)}</td>
+            <td style="font-size:11px;color:#555;white-space:nowrap;">${a.applied_at ? new Date(a.applied_at).toLocaleDateString('en-PK') : '—'}</td>
+            <td onclick="event.stopPropagation()"><button class="tbl-action-btn dl" onclick="downloadPDFFor('${a.id}')">⬇ PDF</button></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+    </div>`;
+}
+
+function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ═══════════════════════════════════════════
+//  DRAWER
+// ═══════════════════════════════════════════
+let currentApplicant = null;
+
+function openDrawer(id) {
+  currentApplicant = allApplicants.find(a => a.id === id);
+  if (!currentApplicant) return;
+  const a = currentApplicant;
+  document.getElementById('drawer-title').textContent = a.full_name || 'Applicant';
+
+  const perLines = a.personality_summary
+    ? a.personality_summary.split(' | ').map((line, i) => {
+        const [q, ...rest] = line.split(': ');
+        const ans = rest.join(': ');
+        return `<div class="per-answer-item"><div class="per-answer-q">Q${i+1}</div><div class="per-answer-a">${esc(ans||line)}</div></div>`;
+      }).join('')
+    : '<div style="color:#555;font-size:13px;">Not completed yet.</div>';
+
+  document.getElementById('drawer-body').innerHTML = `
+    <!-- Photo + Identity -->
+    ${a.photo_url ? `<div style="text-align:center;margin-bottom:20px;"><img src="${esc(a.photo_url)}" style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--amber);" onerror="this.style.display='none'"></div>` : ''}
+    <!-- Scores -->
+    <div class="drawer-section">
+      <div class="drawer-section-title">Test Scores</div>
+      <div class="score-box-row">
+        <div class="score-box">
+          <div class="score-box-val ${a.aptitude_score >= 60 ? 'pass' : 'fail'}">${a.aptitude_score != null ? a.aptitude_score + '%' : '—'}</div>
+          <div class="score-box-label">Aptitude · Pass ≥60%</div>
+        </div>
+        <div class="score-box">
+          <div class="score-box-val ${a.situational_score >= 65 ? 'pass' : 'fail'}">${a.situational_score != null ? a.situational_score + '%' : '—'}</div>
+          <div class="score-box-label">Situational · Pass ≥65%</div>
+        </div>
+      </div>
+    </div>
+    <!-- Personal -->
+    <div class="drawer-section">
+      <div class="drawer-section-title">Personal Information</div>
+      <div class="drawer-grid">
+        <div class="drawer-field"><dt>Full Name</dt><dd class="white">${esc(a.full_name)}</dd></div>
+        <div class="drawer-field"><dt>Father's Name</dt><dd>${esc(a.father_name)}</dd></div>
+        <div class="drawer-field"><dt>CNIC</dt><dd>${esc(a.cnic)}</dd></div>
+        <div class="drawer-field"><dt>Date of Birth</dt><dd>${esc(a.dob)}</dd></div>
+        <div class="drawer-field"><dt>Gender</dt><dd>${esc(a.gender)}</dd></div>
+        <div class="drawer-field"><dt>Marital Status</dt><dd>${esc(a.marital_status||'—')}</dd></div>
+      </div>
+    </div>
+    <!-- Contact -->
+    <div class="drawer-section">
+      <div class="drawer-section-title">Contact & Location</div>
+      <div class="drawer-grid">
+        <div class="drawer-field"><dt>WhatsApp</dt><dd class="white"><a href="https://wa.me/92${esc((a.phone||'').replace(/^0/,'').replace(/[-\s]/g,''))}" target="_blank" style="color:var(--amber);text-decoration:none;">${esc(a.phone)}</a></dd></div>
+        <div class="drawer-field"><dt>Email</dt><dd>${esc(a.email||'—')}</dd></div>
+        <div class="drawer-field"><dt>City</dt><dd>${esc(a.city)}</dd></div>
+        <div class="drawer-field"><dt>Branch Preference</dt><dd>${a.preferred_branch === 'MULTAN' ? 'Multan — Gulgasht' : a.preferred_branch === 'BWP' ? 'Bahawalpur — SS Tower' : '—'}</dd></div>
+        <div class="drawer-field" style="grid-column:1/-1"><dt>Address</dt><dd>${esc(a.address)}</dd></div>
+      </div>
+    </div>
+    <!-- Job -->
+    <div class="drawer-section">
+      <div class="drawer-section-title">Position & Availability</div>
+      <div class="drawer-grid">
+        <div class="drawer-field"><dt>Position Applied</dt><dd class="white">${esc(a.position)}</dd></div>
+        <div class="drawer-field"><dt>Preferred Shift</dt><dd>${esc(a.shift_pref)}</dd></div>
+        <div class="drawer-field"><dt>Can Join</dt><dd>${esc(a.joining)}</dd></div>
+        <div class="drawer-field"><dt>Salary Expectation</dt><dd>${esc(a.salary_exp||'Negotiable')}</dd></div>
+        <div class="drawer-field"><dt>Education</dt><dd>${esc(a.education)}</dd></div>
+        <div class="drawer-field"><dt>Experience</dt><dd>${esc(a.experience)}</dd></div>
+        <div class="drawer-field"><dt>Prev. Employer</dt><dd>${esc(a.prev_employer||'—')}</dd></div>
+        <div class="drawer-field"><dt>Prev. Role</dt><dd>${esc(a.prev_role||'—')}</dd></div>
+        <div class="drawer-field" style="grid-column:1/-1"><dt>Skills</dt><dd>${esc(a.skills||'—')}</dd></div>
+        <div class="drawer-field" style="grid-column:1/-1"><dt>Languages</dt><dd>${esc(a.languages||'—')}</dd></div>
+      </div>
+    </div>
+    <!-- Motivation -->
+    <div class="drawer-section">
+      <div class="drawer-section-title">Motivation</div>
+      <div style="font-size:13px;color:#ccc;line-height:1.7;">${esc(a.motivation||'—')}</div>
+    </div>
+    <!-- Personality -->
+    <div class="drawer-section">
+      <div class="drawer-section-title">Personality Answers</div>
+      <div class="per-answers">${perLines}</div>
+    </div>
+    <!-- Actions -->
+    <div class="drawer-section">
+      <div class="drawer-section-title">HR Actions</div>
+      <div class="drawer-actions">
+        <select class="drawer-status-select" id="drawer-status-select">
+          <option value="applied" ${a.status==='applied'?'selected':''}>In Progress</option>
+          <option value="interview_shortlisted" ${a.status==='interview_shortlisted'?'selected':''}>✓ Shortlisted for Interview</option>
+          <option value="hired" ${a.status==='hired'?'selected':''}>★ Hired</option>
+          <option value="rejected" ${a.status==='rejected'?'selected':''}>✕ Rejected</option>
+          <option value="on_hold" ${a.status==='on_hold'?'selected':''}>⏸ On Hold</option>
+        </select>
+        <button class="drawer-save-btn" onclick="saveStatus()">Save Status Change</button>
+        <button class="drawer-pdf-btn" onclick="downloadPDFFor('${a.id}')">⬇ Download PDF Report</button>
+      </div>
+    </div>`;
+
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.getElementById('hr-drawer').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer-overlay').classList.remove('open');
+  document.getElementById('hr-drawer').classList.remove('open');
+}
+
+async function saveStatus() {
+  const newStatus = document.getElementById('drawer-status-select').value;
+  if (!currentApplicant || !sb) return;
+  const btn = document.querySelector('.drawer-save-btn');
+  btn.textContent = 'Saving...'; btn.disabled = true;
+  const { error } = await sb.from('job_applications').update({ status: newStatus }).eq('id', currentApplicant.id);
+  btn.disabled = false; btn.textContent = 'Save Status Change';
+  if (error) { showToast('Error: ' + error.message); return; }
+  currentApplicant.status = newStatus;
+  const idx = allApplicants.findIndex(a => a.id === currentApplicant.id);
+  if (idx > -1) allApplicants[idx].status = newStatus;
+  updateStats(); renderTable();
+  showToast('Status updated!', 'success');
+}
+
+// ═══════════════════════════════════════════
+//  PDF GENERATION (HR version)
+// ═══════════════════════════════════════════
+async function generateHRPDF(a, aptS, sitS) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const W = 210, H = 297;
+  const SIDEBAR_W = 68;
+  const MAIN_X = SIDEBAR_W + 10;
+  const MAIN_W = W - MAIN_X - 12;
+  let leftY = 0;
+  let rightY = 0;
+
+  const RED    = [220, 38, 38];
+  const DARK   = [15, 15, 25];
+  const AMBER  = [245, 166, 35];
+  const GRAY1  = [245, 245, 248];
+  const GRAY2  = [200, 200, 210];
+  const GRAY3  = [120, 120, 135];
+  const WHITE  = [255, 255, 255];
+  const BLACK  = [20, 20, 30];
+
+  // ── UTILS ──────────────────────────────────────────────
+  function rgb(c) { doc.setTextColor(c[0], c[1], c[2]); }
+  function fill(c) { doc.setFillColor(c[0], c[1], c[2]); }
+  function stroke(c) { doc.setDrawColor(c[0], c[1], c[2]); }
+
+  function bold(size) { doc.setFont('helvetica', 'bold'); doc.setFontSize(size); }
+  function normal(size) { doc.setFont('helvetica', 'normal'); doc.setFontSize(size); }
+  function italic(size) { doc.setFont('helvetica', 'italic'); doc.setFontSize(size); }
+
+  // Left column text
+  function leftText(text, size, color, x, y, opts) {
+    doc.setFont('helvetica', opts && opts.bold ? 'bold' : 'normal');
+    doc.setFontSize(size);
+    rgb(color);
+    const lines = doc.splitTextToSize(String(text || ''), opts && opts.maxW ? opts.maxW : SIDEBAR_W - 10);
+    doc.text(lines, x || 7, y);
+    return lines.length;
+  }
+
+  // Right column text
+  function rightText(text, size, color, x, y, maxW, isBold) {
+    doc.setFont('helvetica', isBold ? 'bold' : 'normal');
+    doc.setFontSize(size);
+    rgb(color);
+    const lines = doc.splitTextToSize(String(text || '—'), maxW || MAIN_W);
+    doc.text(lines, x || MAIN_X, y);
+    return lines.length;
+  }
+
+  function checkLeft(needed) {
+    if (leftY + needed > 282) {
+      // Can't add pages for sidebar — just cap it
+      leftY = 282;
+    }
+  }
+
+  function checkRight(needed) {
+    if (rightY + needed > 282) {
+      doc.addPage();
+      // Redraw sidebar background on new page
+      fill(DARK);
+      doc.rect(0, 0, SIDEBAR_W, H, 'F');
+      fill(RED);
+      doc.rect(0, 0, SIDEBAR_W, 3, 'F');
+      rightY = 14;
+      leftY = 14;
+    }
+  }
+
+  // Left section label
+  function leftSection(title) {
+    checkLeft(14);
+    leftY += 6;
+    fill(RED);
+    doc.rect(7, leftY, SIDEBAR_W - 14, 0.6, 'F');
+    leftY += 3;
+    bold(7);
+    rgb(AMBER);
+    doc.text(title.toUpperCase(), 7, leftY);
+    leftY += 6;
+  }
+
+  // Right section label
+  function rightSection(title) {
+    checkRight(16);
+    rightY += 4;
+    // Accent bar
+    fill(RED);
+    doc.rect(MAIN_X, rightY, 2.5, 7, 'F');
+    bold(9);
+    rgb(DARK);
+    doc.text(title.toUpperCase(), MAIN_X + 5, rightY + 5.5);
+    // Underline
+    stroke(GRAY2);
+    doc.setLineWidth(0.3);
+    doc.line(MAIN_X + 5, rightY + 7.5, MAIN_X + MAIN_W, rightY + 7.5);
+    rightY += 12;
+  }
+
+  // Right two-col row
+  function rightRow(label, value) {
+    checkRight(13);
+    bold(6.5);
+    rgb(GRAY3);
+    doc.text(String(label).toUpperCase(), MAIN_X, rightY);
+    normal(8.5);
+    rgb(BLACK);
+    const lines = doc.splitTextToSize(String(value || '—'), MAIN_W);
+    doc.text(lines.slice(0, 3), MAIN_X, rightY + 4.5);
+    rightY += lines.slice(0, 3).length * 4.2 + 7;
+  }
+
+  function rightTwoCol(l1, v1, l2, v2) {
+    checkRight(13);
+    const hw = MAIN_W / 2 - 3;
+    const x2 = MAIN_X + MAIN_W / 2 + 3;
+
+    bold(6.5); rgb(GRAY3);
+    doc.text(String(l1).toUpperCase(), MAIN_X, rightY);
+    if (l2) doc.text(String(l2).toUpperCase(), x2, rightY);
+
+    normal(8.5); rgb(BLACK);
+    const l1lines = doc.splitTextToSize(String(v1 || '—'), hw);
+    const l2lines = l2 ? doc.splitTextToSize(String(v2 || '—'), hw) : [];
+    doc.text(l1lines.slice(0, 2), MAIN_X, rightY + 4.5);
+    if (l2) doc.text(l2lines.slice(0, 2), x2, rightY + 4.5);
+    rightY += Math.max(l1lines.slice(0,2).length, l2lines.slice(0,2).length) * 4.2 + 9;
+  }
+
+  // Skill tag pill in sidebar
+  function skillTag(text) {
+    const tw = doc.getStringUnitWidth(text) * 7 / doc.internal.scaleFactor;
+    const pH = 5, pPad = 3;
+    fill([40, 40, 60]);
+    doc.roundedRect(7, leftY - 4, Math.min(tw + pPad * 2, SIDEBAR_W - 14), pH, 1, 1, 'F');
+    normal(6.5); rgb([200, 200, 220]);
+    doc.text(text, 7 + pPad, leftY);
+    return Math.min(tw + pPad * 2, SIDEBAR_W - 14);
+  }
+
+  // ════════════════════════════════════════════════════════
+  //  BACKGROUND LAYOUT
+  // ════════════════════════════════════════════════════════
+  // Dark sidebar
+  fill(DARK);
+  doc.rect(0, 0, SIDEBAR_W, H, 'F');
+  // Red top stripe full width
+  fill(RED);
+  doc.rect(0, 0, W, 3, 'F');
+  // Main area white
+  fill(WHITE);
+  doc.rect(SIDEBAR_W, 0, W - SIDEBAR_W, H, 'F');
+  // Subtle right area top band
+  fill([250, 250, 253]);
+  doc.rect(SIDEBAR_W, 3, W - SIDEBAR_W, 52, 'F');
+
+  // ════════════════════════════════════════════════════════
+  //  PHOTO — top of sidebar
+  // ════════════════════════════════════════════════════════
+  leftY = 10;
+  const photoSrc = (a && a.photo_url) ? a.photo_url : (typeof applicantPhotoBase64 !== 'undefined' ? applicantPhotoBase64 : null);
+  const PS = 44; // photo size
+  const PX = (SIDEBAR_W - PS) / 2;
+
+  let photoOk = false;
+  if (photoSrc) {
+    try {
+      await new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = 300; canvas.height = 300;
+            const ctx = canvas.getContext('2d');
+            const side = Math.min(img.width, img.height);
+            ctx.drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, 300, 300);
+            const b64 = canvas.toDataURL('image/jpeg', 0.9);
+            // White circle border
+            fill(WHITE);
+            doc.circle(PX + PS / 2, leftY + PS / 2, PS / 2 + 1.5, 'F');
+            doc.addImage(b64, 'JPEG', PX, leftY, PS, PS);
+            // Red ring
+            stroke(RED); doc.setLineWidth(1.5);
+            doc.circle(PX + PS / 2, leftY + PS / 2, PS / 2 + 1.5, 'S');
+            photoOk = true;
+          } catch (e) {}
+          resolve();
+        };
+        img.onerror = () => resolve();
+        img.src = photoSrc;
+      });
+    } catch (e) {}
+  }
+
+  if (!photoOk) {
+    fill([35, 35, 55]);
+    doc.circle(PX + PS / 2, leftY + PS / 2, PS / 2, 'F');
+    stroke(GRAY3); doc.setLineWidth(0.5);
+    doc.circle(PX + PS / 2, leftY + PS / 2, PS / 2, 'S');
+    normal(7); rgb(GRAY3);
+    doc.text('NO PHOTO', SIDEBAR_W / 2, leftY + PS / 2 + 2.5, { align: 'center' });
+  }
+
+  leftY += PS + 8;
+
+  // Name in sidebar under photo
+  bold(11); rgb(WHITE);
+  const nameLines = doc.splitTextToSize(String(a.full_name || '—'), SIDEBAR_W - 10);
+  doc.text(nameLines, SIDEBAR_W / 2, leftY, { align: 'center' });
+  leftY += nameLines.length * 5.5 + 2;
+
+  // Position tag
+  fill(RED);
+  const posText = String(a.position || 'Applicant');
+  const posW = Math.min(doc.getStringUnitWidth(posText) * 7.5 / doc.internal.scaleFactor + 10, SIDEBAR_W - 10);
+  doc.roundedRect((SIDEBAR_W - posW) / 2, leftY, posW, 7, 1.5, 1.5, 'F');
+  bold(6); rgb(WHITE);
+  doc.text(posText, SIDEBAR_W / 2, leftY + 5, { align: 'center' });
+  leftY += 12;
+
+  // Status badge
+  const statusColors2 = { applied: [80,80,200], interview_shortlisted: [22,163,74], hired: [180,130,10], rejected: [200,30,20], on_hold: [100,100,115] };
+  const statusLabels2 = { applied: 'IN PROGRESS', interview_shortlisted: 'SHORTLISTED', hired: 'HIRED', rejected: 'REJECTED', on_hold: 'ON HOLD' };
+  const sc = statusColors2[a.status || 'applied'] || [80,80,200];
+  const sl = statusLabels2[a.status || 'applied'] || 'IN PROGRESS';
+  fill(sc);
+  doc.roundedRect(7, leftY, SIDEBAR_W - 14, 7, 1.5, 1.5, 'F');
+  bold(6.5); rgb(WHITE);
+  doc.text(sl, SIDEBAR_W / 2, leftY + 5, { align: 'center' });
+  leftY += 12;
+
+  // ── SIDEBAR — CONTACT ────────────────────────────────────
+  leftSection('Contact');
+  const contacts = [
+    { icon: 'PHONE', val: a.phone || '—' },
+    { icon: 'EMAIL', val: a.email || 'N/A' },
+    { icon: 'CITY',  val: a.city  || '—' },
+    { icon: 'BRANCH', val: a.preferred_branch === 'MULTAN' ? 'Multan' : a.preferred_branch === 'BWP' ? 'Bahawalpur' : '—' },
+  ];
+  contacts.forEach(c => {
+    checkLeft(12);
+    bold(5.5); rgb(AMBER);
+    doc.text(c.icon, 7, leftY);
+    normal(7); rgb([200, 200, 215]);
+    const vl = doc.splitTextToSize(c.val, SIDEBAR_W - 22);
+    doc.text(vl, 7 + doc.getStringUnitWidth(c.icon) * 5.5 / doc.internal.scaleFactor + 2, leftY);
+    leftY += vl.length * 4 + 4;
+  });
+
+  // ── SIDEBAR — PERSONAL ───────────────────────────────────
+  leftSection('Personal');
+  const personals = [
+    { label: 'CNIC', val: a.cnic || '—' },
+    { label: 'DOB', val: a.dob || '—' },
+    { label: 'GENDER', val: a.gender || '—' },
+    { label: 'MARITAL', val: a.marital_status || '—' },
+  ];
+  personals.forEach(p => {
+    checkLeft(11);
+    bold(5.5); rgb(AMBER);
+    doc.text(p.label, 7, leftY);
+    leftY += 3.5;
+    normal(7); rgb([200, 200, 215]);
+    const vl = doc.splitTextToSize(p.val, SIDEBAR_W - 14);
+    doc.text(vl, 7, leftY);
+    leftY += vl.length * 3.8 + 3;
+  });
+
+  // ── SIDEBAR — EDUCATION ──────────────────────────────────
+  leftSection('Education');
+  checkLeft(10);
+  normal(7.5); rgb(WHITE);
+  const eduLines = doc.splitTextToSize(String(a.education || '—'), SIDEBAR_W - 14);
+  doc.text(eduLines, 7, leftY);
+  leftY += eduLines.length * 4 + 3;
+  normal(6.5); rgb(GRAY3);
+  doc.text(String(a.experience || '—'), 7, leftY);
+  leftY += 8;
+
+  if (a.prev_employer) {
+    checkLeft(10);
+    bold(6.5); rgb(AMBER);
+    doc.text('PREV. EMPLOYER', 7, leftY);
+    leftY += 4;
+    normal(7); rgb([200, 200, 215]);
+    doc.text(String(a.prev_employer), 7, leftY);
+    leftY += 4;
+    normal(6.5); rgb(GRAY3);
+    doc.text(String(a.prev_role || ''), 7, leftY);
+    leftY += 7;
+  }
+
+  // ── SIDEBAR — SKILLS ─────────────────────────────────────
+  leftSection('Skills');
+  if (a.skills) {
+    a.skills.split(',').forEach(sk => {
+      const s = sk.trim();
+      if (!s) return;
+      checkLeft(8);
+      const tw = doc.getStringUnitWidth(s) * 6.5 / doc.internal.scaleFactor + 8;
+      fill([38, 38, 60]);
+      doc.roundedRect(7, leftY - 4.5, Math.min(tw, SIDEBAR_W - 14), 6.5, 1, 1, 'F');
+      normal(6.5); rgb([200, 200, 225]);
+      doc.text(s, 10, leftY);
+      leftY += 8;
+    });
+  }
+  leftY += 2;
+
+  // ── SIDEBAR — LANGUAGES ──────────────────────────────────
+  leftSection('Languages');
+  if (a.languages) {
+    a.languages.split(',').forEach(lg => {
+      const l = lg.trim();
+      if (!l) return;
+      checkLeft(8);
+      normal(7.5); rgb(WHITE);
+      doc.text('- ' + l, 7, leftY);
+      leftY += 5;
+    });
+  }
+
+  // ── SIDEBAR — TEST SCORES ────────────────────────────────
+  leftSection('Test Scores');
+  const aScore = (a.aptitude_score != null) ? a.aptitude_score : aptS;
+  const sScore = (a.situational_score != null) ? a.situational_score : sitS;
+  const aPass  = aScore != null && aScore >= 60;
+  const sPass  = sScore != null && sScore >= 65;
+
+  function sidebarScore(label, score, pass, hasData) {
+    checkLeft(18);
+    // Track bar background
+    fill([35, 35, 55]);
+    doc.roundedRect(7, leftY - 1, SIDEBAR_W - 14, 12, 2, 2, 'F');
+    // Fill bar
+    const barW = SIDEBAR_W - 22;
+    fill(!hasData ? [80,80,100] : pass ? [22,163,74] : [200,30,20]);
+    const fillW = hasData ? Math.max(barW * score / 100, 2) : 0;
+    doc.roundedRect(8, leftY + 4, fillW, 4, 1, 1, 'F');
+    // Label
+    bold(6.5); rgb(WHITE);
+    doc.text(label, 9, leftY + 3);
+    // Score
+    bold(8); rgb(hasData ? (pass ? [100,220,140] : [255,120,120]) : GRAY3);
+    doc.text(hasData ? score + '%' : 'N/A', SIDEBAR_W - 8, leftY + 3, { align: 'right' });
+    // Pass/Fail
+    normal(5.5); rgb(hasData ? (pass ? [100,200,120] : [255,100,100]) : GRAY3);
+    doc.text(hasData ? (pass ? 'PASS' : 'FAIL') : '—', SIDEBAR_W - 8, leftY + 10, { align: 'right' });
+    leftY += 16;
+  }
+
+  sidebarScore('Aptitude  (>=60%)',    aScore, aPass, aScore != null);
+  sidebarScore('Situational  (>=65%)', sScore, sPass, sScore != null);
+
+  // Cheat log
+  if (a.cheat_attempts > 0) {
+    checkLeft(10);
+    leftSection('Integrity');
+    fill(a.cheat_attempts >= 3 ? [80,10,10] : [60,45,10]);
+    doc.roundedRect(7, leftY - 3, SIDEBAR_W - 14, 9, 1.5, 1.5, 'F');
+    bold(6.5); rgb(a.cheat_attempts >= 3 ? [255,100,100] : AMBER);
+    doc.text('Tab Violations: ' + a.cheat_attempts + (a.cheat_attempts >= 3 ? ' (DISQ.)' : ''), SIDEBAR_W / 2, leftY + 2.5, { align: 'center' });
+    leftY += 12;
+  }
+
+  // ════════════════════════════════════════════════════════
+  //  RIGHT COLUMN — MAIN CONTENT
+  // ════════════════════════════════════════════════════════
+  rightY = 10;
+
+  // ── HEADER NAME BLOCK ────────────────────────────────────
+  bold(20); rgb(DARK);
+  const rNameLines = doc.splitTextToSize(String(a.full_name || '—'), MAIN_W);
+  doc.text(rNameLines, MAIN_X, rightY + 8);
+  rightY += rNameLines.length * 8 + 2;
+
+  bold(9); rgb(RED);
+  doc.text(String(a.position || 'Applicant'), MAIN_X, rightY);
+  rightY += 5;
+
+  normal(7.5); rgb(GRAY3);
+  doc.text(
+    'Father: ' + String(a.father_name || '—') +
+    '   |   Applied: ' + (a.applied_at ? new Date(a.applied_at).toLocaleDateString('en-PK') : '—'),
+    MAIN_X, rightY
+  );
+  rightY += 4;
+
+  // Red underline
+  fill(RED); doc.rect(MAIN_X, rightY, MAIN_W, 1.2, 'F');
+  rightY += 8;
+
+  // ── MOTIVATION / ABOUT ───────────────────────────────────
+  rightSection('About / Motivation');
+  checkRight(14);
+  normal(8.5); rgb([50, 50, 65]);
+  const motivLines = doc.splitTextToSize(String(a.motivation || '—'), MAIN_W);
+  doc.text(motivLines.slice(0, 8), MAIN_X, rightY);
+  rightY += motivLines.slice(0, 8).length * 4.5 + 5;
+
+  if (a.extra_notes && a.extra_notes.trim()) {
+    italic(7.5); rgb(GRAY3);
+    const enLines = doc.splitTextToSize(String(a.extra_notes), MAIN_W);
+    checkRight(enLines.length * 4 + 4);
+    doc.text(enLines.slice(0, 4), MAIN_X, rightY);
+    rightY += enLines.slice(0, 4).length * 4 + 5;
+  }
+
+  // ── WORK AVAILABILITY ────────────────────────────────────
+  rightSection('Availability & Expectations');
+  rightTwoCol('Preferred Shift', a.shift_pref, 'Can Join Within', a.joining);
+  rightTwoCol('Salary Expectation', a.salary_exp || 'Negotiable', 'Preferred Branch',
+    a.preferred_branch === 'MULTAN' ? 'Multan — Gulgasht Colony' :
+    a.preferred_branch === 'BWP'    ? 'Bahawalpur — SS Tower' : 'Any Branch');
+  rightTwoCol('City', a.city, 'Address', a.address);
+
+  // ── SCREENING RESULTS ────────────────────────────────────
+  rightSection('Screening Results');
+  checkRight(30);
+
+  // Overall verdict banner
+  const overallPass = aPass && sPass;
+  const vColor = overallPass ? [22,163,74] : aScore == null ? [130,130,145] : [200,30,20];
+  fill(vColor);
+  doc.roundedRect(MAIN_X, rightY, MAIN_W, 14, 2, 2, 'F');
+  bold(10); rgb(WHITE);
+  const vText = overallPass
+    ? 'CANDIDATE SHORTLISTED FOR INTERVIEW'
+    : aScore == null ? 'TESTS NOT COMPLETED'
+    : 'DID NOT MEET PASSING CRITERIA';
+  doc.text(vText, MAIN_X + MAIN_W / 2, rightY + 6, { align: 'center' });
+  normal(7); rgb([220,255,220]);
+  const vDetail = overallPass
+    ? 'Aptitude: ' + aScore + '%  (Pass >= 60%)    Situational: ' + sScore + '%  (Pass >= 65%)'
+    : aScore != null
+    ? 'Aptitude: ' + (aScore != null ? aScore + '%' : 'N/A') + '    Situational: ' + (sScore != null ? sScore + '%' : 'N/A')
+    : 'Applicant has not completed the screening tests.';
+  doc.text(vDetail, MAIN_X + MAIN_W / 2, rightY + 11, { align: 'center' });
+  rightY += 20;
+
+  // ── PERSONALITY PROFILE ──────────────────────────────────
+  if (a.personality_summary) {
+    rightSection('Personality Profile');
+    const pQuestions = [
+      'How do you handle problems at work?',
+      'How do you work in a team?',
+      'How do you handle a rude customer?',
+      'How do you perform under pressure?',
+      'How do you feel about learning new things?',
+      'What do you do when you make a mistake?',
+      'What is your attitude toward punctuality?',
+      'How do you view your work quality?',
+      'How do you respond to manager feedback?',
+      'Where do you see yourself long-term?'
+    ];
+    const entries = a.personality_summary.split(' | ');
+    entries.forEach((line, i) => {
+      checkRight(15);
+      const ci  = line.indexOf(': ');
+      const ans = ci > -1 ? line.slice(ci + 2) : line;
+      const qText = pQuestions[i] || ('Question ' + (i + 1));
+
+      // Alternating background
+      if (i % 2 === 0) {
+        fill(GRAY1);
+        doc.rect(MAIN_X, rightY - 1, MAIN_W, 13, 'F');
+      }
+
+      // Number circle
+      fill(DARK);
+      doc.circle(MAIN_X + 4, rightY + 3.5, 3.5, 'F');
+      bold(6); rgb(WHITE);
+      doc.text(String(i + 1), MAIN_X + 4, rightY + 5.2, { align: 'center' });
+
+      // Question
+      normal(6.5); rgb(GRAY3);
+      doc.text(qText, MAIN_X + 10, rightY + 2.5);
+
+      // Answer
+      bold(8); rgb(DARK);
+      const alines = doc.splitTextToSize(ans, MAIN_W - 12);
+      doc.text(alines, MAIN_X + 10, rightY + 7.5);
+      rightY += Math.max(alines.length * 4, 4) + 10;
+    });
+  }
+
+  // ── FOOTER on every page ─────────────────────────────────
+  const totalPages = doc.internal.getNumberOfPages();
+  for (let pg = 1; pg <= totalPages; pg++) {
+    doc.setPage(pg);
+    // Sidebar continues on all pages
+    if (pg > 1) {
+      fill(DARK);
+      doc.rect(0, 0, SIDEBAR_W, H, 'F');
+      fill(RED);
+      doc.rect(0, 0, SIDEBAR_W, 3, 'F');
+      // Repeat name + position on sidebar subsequent pages
+      bold(8); rgb(WHITE);
+      doc.text(String(a.full_name || ''), SIDEBAR_W / 2, 12, { align: 'center' });
+      normal(6.5); rgb(GRAY3);
+      doc.text('continued', SIDEBAR_W / 2, 18, { align: 'center' });
+    }
+    // Footer bar
+    fill(DARK);
+    doc.rect(SIDEBAR_W, H - 10, W - SIDEBAR_W, 10, 'F');
+    fill(AMBER);
+    doc.rect(SIDEBAR_W, H - 10, W - SIDEBAR_W, 1.2, 'F');
+    normal(6); rgb([160, 160, 175]);
+    doc.text('RIMINI HIRING SYSTEM  |  HR CONFIDENTIAL  |  NOT FOR DISTRIBUTION', SIDEBAR_W + (W - SIDEBAR_W) / 2, H - 5, { align: 'center' });
+    bold(6); rgb(AMBER);
+    doc.text('Page ' + pg + ' of ' + totalPages, W - 13, H - 5, { align: 'right' });
+    // Applicant ID bottom left of footer
+    normal(5.5); rgb([100,100,115]);
+    doc.text('ID: ' + String(a.id || a.cnic || '—'), SIDEBAR_W + 5, H - 5);
+  }
+
+  return doc;
+}
+
+async function downloadPDFFor(id) {
+  const a = allApplicants.find(x => x.id === id);
+  if (!a) return;
+  showToast('Generating PDF...');
+  const doc = await generateHRPDF(a, a.aptitude_score, a.situational_score);
+  doc.save(`Rimini_${(a.full_name||'applicant').replace(/\s+/g,'_')}_${a.cnic||id}.pdf`);
+  showToast('PDF downloaded!', 'success');
+}
+
+// ═══════════════════════════════════════════
+//  PUBLIC APP — STATE
+// ═══════════════════════════════════════════
+let currentStage          = 0;
+let applicantData         = {};
+let applicationId         = null;
+let aptScore              = 0;
+let sitScore              = 0;
+let testActive            = false;
+let cheatCount            = 0;
+let disqualified          = false;
+let applicantPhotoBase64  = null;
+
+// ═══════════════════════════════════════════
+//  QUESTIONS
+// ═══════════════════════════════════════════
+const aptBank = [
+  // EASY
+  { q:"Ek customer ka bill Rs 1,450 hai. Usne Rs 2,000 diye. Kitna change?", opts:["Rs 450","Rs 550","Rs 650","Rs 500"], ans:1, diff:"easy" },
+  { q:"3 customers ne order diya: Rs 350, Rs 720, Rs 450. Total?", opts:["Rs 1,400","Rs 1,520","Rs 1,480","Rs 1,350"], ans:1, diff:"easy" },
+  { q:"Shift 4 PM shuru, 12 AM khatam. Kitne ghante?", opts:["6","7","8","9"], ans:2, diff:"easy" },
+  { q:"Customer ka order galat aa gaya. Sahi reaction?", opts:["Ignore karo","Maafi maango aur foran replace karo","Argue karo","Manager ko baad mein batao"], ans:1, diff:"easy" },
+  { q:"100 − 37 + 15 − 8 = ?", opts:["70","72","68","74"], ans:0, diff:"easy" },
+  { q:"Ek item ki expiry kal hai. Aap kya karein ge?", opts:["Serve karte raho","Supervisor ko immediately report karo","Chupa do","Apni marzi se use karo"], ans:1, diff:"easy" },
+  { q:"Delivery order 7:30 PM receive, 8:05 PM deliver. Kitna time laga?", opts:["30 min","35 min","40 min","25 min"], ans:1, diff:"easy" },
+  { q:"Urdu mein 'استقبال' ka matlab?", opts:["Alvida","Khush aamdeed / Welcome","Shikayat","Payment"], ans:1, diff:"easy" },
+  { q:"1 ghante mein 24 orders. 2.5 ghante mein kitne?", opts:["48","60","52","72"], ans:1, diff:"easy" },
+  // MEDIUM
+  { q:"Rs 850 ka item, 10% discount. Final price?", opts:["Rs 750","Rs 800","Rs 765","Rs 720"], ans:2, diff:"medium" },
+  { q:"Queue mein 7 customers, har ek ko 3 min. Total time?", opts:["15 min","18 min","21 min","24 min"], ans:2, diff:"medium" },
+  { q:"Urdu mein 'معاوضہ' ka matlab?", opts:["Khana","Compensation / Payment","Protest","Meeting"], ans:1, diff:"medium" },
+  { q:"9 × 8 + 4 ÷ 2 = ?", opts:["76","74","72","78"], ans:0, diff:"medium" },
+  { q:"Fast food mein FIFO ka matlab?", opts:["First In First Out — pehle jo aaya pehle serve ho","Food Item Follow Order","Full Inventory Follow Overview","First Invoice Final Order"], ans:0, diff:"medium" },
+  { q:"Rs 4,500 ki sales. 7% service charge ke baad total?", opts:["Rs 4,715","Rs 4,765","Rs 4,815","Rs 4,700"], ans:1, diff:"medium" },
+  { q:"Staff 8 ghante/din, Rs 700/din. 30 din mein salary?", opts:["Rs 18,000","Rs 21,000","Rs 24,000","Rs 16,000"], ans:1, diff:"medium" },
+  { q:"250 plates, average Rs 600. Total revenue?", opts:["Rs 130,000","Rs 150,000","Rs 100,000","Rs 120,000"], ans:1, diff:"medium" },
+  { q:"Credit card Rs 2,200, 5% cashback. Cashback kitna?", opts:["Rs 90","Rs 110","Rs 100","Rs 120"], ans:1, diff:"medium" },
+  { q:"3 pizzas Rs 999 each, ek par Rs 100 discount. Total?", opts:["Rs 2,697","Rs 2,797","Rs 2,897","Rs 2,997"], ans:1, diff:"medium" },
+  // HARD
+  { q:"Rs 1,750 bill, Rs 2,000 diye. Change ke baad register mein Rs 500. Pehle register mein kitna tha?", opts:["Rs 250","Rs 750","Rs 700","Rs 500"], ans:0, diff:"hard" },
+  { q:"Agar kitchen temperature 60°C se upar ho toh bacteria?", opts:["Mar jaata hai — safe hai","Grow karta hai","Temperature matter nahin karta","Depends on food"], ans:0, diff:"hard" },
+  { q:"15 × 4 − 8 ÷ 2 = ?", opts:["56","54","58","52"], ans:0, diff:"hard" },
+  { q:"Urdu mein 'اعتراض' ka matlab?", opts:["Agreement","Objection / Complaint","Thanks","Payment"], ans:1, diff:"hard" },
+  { q:"End of day cash Rs 300 kam hain. Aap kya karein ge?", opts:["Apni jeb se nikalo","Immediately report karein, log karein","Ignore karo","Kal dekh lena"], ans:1, diff:"hard" },
+  // CASHIER-SPECIFIC
+  { q:"POS pe galti se Rs 5,000 ki jagah Rs 500 enter kiya. Kya karna chahiye?", opts:["Chhod do","Immediately manager ko batao aur reverse karein","Customer se maango","Kal dekhna"], ans:1, diff:"hard", pos:["Cashier / Counter Staff"] },
+  { q:"Void transaction ka correct tarika?", opts:["Seedha delete karo","Manager approval se void karein aur reason note karein","Ignore karo","Customer ko paise wapis do"], ans:1, diff:"hard", pos:["Cashier / Counter Staff"] },
+  // KITCHEN-SPECIFIC
+  { q:"Raw chicken aur cooked food same surface pe rakhna?", opts:["Theek hai","Cross-contamination — serious health risk","Taste better hoti hai","Cold chain break hoti hai"], ans:1, diff:"hard", pos:["Kitchen Staff / Cook"] },
+  { q:"Fridge temperature food safety ke liye kitni honi chahiye?", opts:["10°C se neeche","5°C se neeche","0°C se neeche","15°C se neeche"], ans:1, diff:"hard", pos:["Kitchen Staff / Cook"] },
+  { q:"HACCP ka matlab?", opts:["Hazard Analysis Critical Control Points","High Accuracy Cooking Control Protocol","Hygiene And Cleaning Compliance Policy","Hazardous Area Check"], ans:0, diff:"hard", pos:["Kitchen Staff / Cook"] },
+  // RIDER-SPECIFIC
+  { q:"GPS ne galat route dikhaya delivery mein. Aap kya karein ge?", opts:["GPS follow karo","Offline map use karo ya customer se address confirm karo","Order wapis le jao","Cancel karo"], ans:1, diff:"medium", pos:["Delivery Rider"] },
+  { q:"Customer delivery address pe nahin mila. Aap kya karein ge?", opts:["Order chhod ke chale jao","3 baar call karo, branch ko inform karo, wait karo","Order khud rakho","Return karo"], ans:1, diff:"medium", pos:["Delivery Rider"] },
+  // MANAGER-SPECIFIC
+  { q:"Staff member 3 baar late aaya. Aap kya karein ge?", opts:["Ignore karo","Warning de kar document karein, phir disciplinary action","Seedha fire karein","Dusron ko batao"], ans:1, diff:"hard", pos:["Shift Supervisor","Kitchen Manager","Branch Manager"] },
+  { q:"Peak hour mein 2 staff members absent. Priority kya hai?", opts:["Sab kaam khud karo","Roles reassign karein, queue manage karein, management ko inform karein","Band karo","Customers ko bhej do"], ans:1, diff:"hard", pos:["Shift Supervisor","Kitchen Manager","Branch Manager"] },
+  { q:"Monthly food cost 35% se upar ja raha hai. Pehla step?", opts:["Staff salary cut karein","Waste audit, portion sizes check, supplier prices review karein","Prices raise karein","Menu items hataao"], ans:1, diff:"hard", pos:["Kitchen Manager","Branch Manager"] },
+];
+
+const sitBank = {
+  // ── CASHIER ──────────────────────────────────────────────
+  'Cashier / Counter Staff': [
+    { q:"Rush hour, 12 customers queue mein. Ek aake bolta hai 'pehle serve karo, mujhe jaldi hai.' Aap kya karein ge?", opts:["Haan pehle serve karo","Politely bolao ke queue fair hai, baari par zaroor serve karein ge","Manager ko bulate ho","Ignore karo"], ans:1 },
+    { q:"Customer ne Rs 1,000 diye Rs 750 bill pe. Aap ne galti se Rs 500 change diya. Customer chala gaya. Aap kya karein ge?", opts:["Chhod do, kya fark parta hai","Immediately manager ko report karo aur discrepancy log karo","Apni jeb se Rs 250 nikalo","Kal dekh lena"], ans:1 },
+    { q:"POS system hang ho gaya rush hour mein. Queue badh rahi hai. Aap kya karein ge?", opts:["Customers ko bura bolo","Calmly customers ko inform karo, manual notepad pe orders lo, manager ko alert karo","Dukaan band karo","Ek ek customer ko wapis bhejo"], ans:1 },
+    { q:"Customer ne credit card se pay kiya, machine ne decline kiya. Customer ke paas cash nahin. Aap kya karein ge?", opts:["Order cancel karo aur agla customer serve karo","Politely retry karo, dusra payment method suggest karo, manager ko inform karo","Order free mein de do","Customer se argue karo"], ans:1 },
+    { q:"End of day till count mein Rs 500 zyada hain. Aap kya karein ge?", opts:["Ghar le jao — bonus hai","Immediately manager ko report karo aur document karein","Kal ke liye chhod do","Ignore karo"], ans:1 },
+    { q:"Ek customer bolta hai usne zyada paise diye the aur change galat mila. Aap ke paas proof nahin. Aap kya karein ge?", opts:["Customer ko jhootha bolo","Apologize karo, manager ko involve karo, CCTV check karne ko kaho","Paise wapis de do bina check kiye","Ignore karo"], ans:1 },
+    { q:"Colleague paise register mein nahin dal raha, seedha pocket mein rakh raha hai. Aap kya karein ge?", opts:["Chup raho","Manager ya owner ko immediately report karo","Colleague se seedha poocho","Aap bhi wohi karo"], ans:1 },
+    { q:"Customer ne spicy order ki, ab bolta hai non-spicy manga tha. Receipt check karo toh customer ki galti hai. Aap kya karein ge?", opts:["Customer ko blame karo receipt dikhake","Apologize karo aur manager permission se replace karo","Ignore karo","Argue karo"], ans:1 },
+    { q:"Aap akele counter pe hain aur 3 orders simultaneously aayi hain. Aap kya karein ge?", opts:["Panic karo","Ek ek karke handle karo, kitchen ko alert karo, customers ko wait time batao","Counter chhod do","Sab orders cancel karo"], ans:1 },
+    { q:"Regular customer ne claim kiya ke usse loyalty discount milti hai jo aapko nahin pata. Aap kya karein ge?", opts:["De do chup karke","Manager se confirm karo pehle, phir policy ke mutabiq act karo","Seedha refuse karo","Customer pe shout karo"], ans:1 },
+    { q:"Customer ne galat item receive kiya aur bohot upset hai. Aap kya karein ge?", opts:["Ignore karo","Foran apologize karo, sahi item replace karo, manager ko inform karo","Customer ko blame karo","Security bulate ho"], ans:1 },
+    { q:"Closing time hai aur ek customer aakar bolta hai sirf ek order chahiye. Aap kya karein ge?", opts:["Zor se bolo BAND HAI","Politely bolao ke kitchen band ho gaya, kal zaroor aaiye","Argue karo","Chup raho"], ans:1 },
+    { q:"Aapne galti se ek item double charge kar diya. Customer ne notice kiya. Aap kya karein ge?", opts:["Deny karo","Foran apologize karo, refund process karo, manager ko inform karo","Ignore karo","Customer ko blame karo"], ans:1 },
+    { q:"New promotion launch hua hai. Customer pooch raha hai details. Aap ko fully pata nahin. Aap kya karein ge?", opts:["Jo mann mein aaye bol do","Honestly bolo ke confirm karta hoon, manager ya poster se check karo","Kuch bhi bol do","Ignore karo"], ans:1 },
+    { q:"Bohot rush mein aapne order wrong bag mein pack kiya. Customers exchange ho gaye. Aap kya karein ge?", opts:["Chhod do ab kya hoga","Immediately dono customers ko contact karne ki koshish karo, manager ko inform karo","Ignore karo","Customers ko blame karo"], ans:1 },
+  ],
+
+  // ── KITCHEN ──────────────────────────────────────────────
+  'Kitchen Staff / Cook': [
+    { q:"Colleague ne haath dhoye baghair raw chicken handle karke seedha bread cut karne lagi. Aap kya karein ge?", opts:["Chup raho","Foran politely rok ke haath dhone ko kaho — food safety emergency hai","Baad mein manager ko batao","Khud bread change karo chup kar ke"], ans:1 },
+    { q:"Ek ingredient ki stock khatam hone wali hai aur customer ne wohi order diya hai. Aap kya karein ge?", opts:["Order lo aur baad mein batao","Counter ko immediately inform karo taake customer ko pehle bataya jaye","Order refuse karo","Dusre ki plate se ingredient lo"], ans:1 },
+    { q:"Health inspector achanak aa gayi. Kitchen mein thodi gandhagi hai. Aap kya karein ge?", opts:["Ghabi jaate ho","Calmly greet karo, immediately clean karna shuru karo, manager ko inform karo","Rokne ki koshish karo","Bahana banao"], ans:1 },
+    { q:"Ek dish banate waqt aapko realize hua ke ingredient expired hai. Aap kya karein ge?", opts:["Phir bhi use karo","Foran throw karo, supervisor ko inform karo, stock check karo","Thoda use karo kuch nahin hoga","Chupa do"], ans:1 },
+    { q:"Rush hour mein aap 3 orders simultaneously handle kar rahe hain. Kya approach hogi?", opts:["Panic karo","FIFO follow karo, complex orders pehle start karo taake timing sahi rahe","Sirf ek order banao baki ignore karo","Counter se help maango"], ans:1 },
+    { q:"Aapne galti se customer ki allergy item dish mein daal di. Order already counter pe ja rahi hai. Aap kya karein ge?", opts:["Ummeed karo ke customer notice na kare","Foran counter ko rok lo, dish wapis lo, fresh banao, supervisor ko inform karo","Chhod do","Customer ko inform karne ki zimmedari counter ki hai"], ans:1 },
+    { q:"Fryer mein aag lag gayi. Aap kya karein ge?", opts:["Paani dalo","Fire extinguisher use karo, kitchen evacuation karo, manager ko immediately alert karo","Ignore karo thodi dair mein theek ho jaye gi","Continue cooking"], ans:1 },
+    { q:"Aapke saath kaam karne wala colleague continuously galat portion sizes use kar raha hai. Aap kya karein ge?", opts:["Chup raho","Politely privately batao, agar na mane toh supervisor ko inform karo","Loudly embarrass karo","Aap bhi wohi karo"], ans:1 },
+    { q:"Shift khatam hone se pehle supervisor ne kaha kitchen deep clean karni hai. Aap karo kya ge?", opts:["Refuse karo shift khatam hai","Haan karo — kitchen hygiene non-negotiable hai","Sirf upar upar se saaf karo","Kal karte hain bol do"], ans:1 },
+    { q:"Ek customer ne special dietary request ki (no oil). Ticket pe clearly likha hai. Aap kya karein ge?", opts:["Ignore karo","Carefully follow karo, double check karo before sending, ticket pe confirm karo","Normal banao koi nahin dekhta","Counter se confirm karo"], ans:0 },
+    { q:"Refrigerator ka temperature normal se zyada high dikh raha hai. Aap kya karein ge?", opts:["Ignore karo","Immediately supervisor ko report karo aur perishable items check karo","Thoda baad dekhna","Adjust karo khud"], ans:1 },
+    { q:"Closing time pe kitchen clean karte waqt aapko rotten ingredient mila storeroom mein. Aap kya karein ge?", opts:["Wapis rakh do","Dispose karo properly, supervisor ko report karo, stock log update karo","Chupa do","Kal manager ko batana"], ans:1 },
+    { q:"New recipe add hui hai menu mein. Aap ne abhi properly train nahin kiya. Order aa gaya. Aap kya karein ge?", opts:["Apni marzi se banao","Supervisor ko immediately inform karo ke training chahiye, help maango","Refuse karo order banana","Guess work pe banao"], ans:1 },
+    { q:"Aap notice karte hain ke ek colleague phone use kar raha hai food handling ke dauraan. Aap kya karein ge?", opts:["Chup raho","Politely remind karo ke phone use food safety violation hai","Supervisor ko immediately report karo","Aap bhi phone nikalo"], ans:1 },
+    { q:"Customer ne bola food mein kuch foreign object tha (hair/plastic). Aap kitchen mein hain. Manager ne aapko poochha. Aap kya karein ge?", opts:["Inkaar karo meri zimmedari nahin","Honestly investigate karo, cooperate karo, procedure follow karo","Blame dusre pe karo","Ignore karo"], ans:1 },
+  ],
+
+  // ── DELIVERY RIDER ───────────────────────────────────────
+  'Delivery Rider': [
+    { q:"GPS ne galat route dikhaya aur aap stuck ho gaye. Customer ka call aa raha hai. Aap kya karein ge?", opts:["GPS follow karte raho chahe der ho jaye","Customer ko honestly update karo, alternative route dhundho, branch ko inform karo","Order wapis le jao","Cancel karo"], ans:1 },
+    { q:"Customer delivery address pe nahin mila. 3 calls kiye koi jawab nahin. Aap kya karein ge?", opts:["Order chhod ke chale jao","Branch ko immediately inform karo, 5-10 min wait karo, written note chhod o","Order khud rakho","Wapis le jao bina bataye"], ans:1 },
+    { q:"Delivery ke dauraan accident ho gaya, aap theek hain lekin order spill ho gaya. Aap kya karein ge?", opts:["Customer ko deliver karo waise hi","Branch ko immediately call karo, situation report karo, fresh order arrange karo","Ignore karo","Order chhod do sadak pe"], ans:1 },
+    { q:"Customer ne COD payment ke liye exact change nahin diya. Rs 50 zyada de raha hai. Aap kya karein ge?", opts:["Extra rakho — tip samjho","Sahi change waapis do ya branch se confirm karo","Ignore karo","Argue karo customer se"], ans:1 },
+    { q:"Raat ki delivery mein bike ka tyre puncture ho gaya. Customer wait kar raha hai. Aap kya karein ge?", opts:["Order abandon karo","Branch ko immediately call karo, customer ko inform karo, nearest help dhundho","Customer ko ignore karo","Order kisi pedestrian ko de do"], ans:1 },
+    { q:"Customer ne delivery receive karne se inkaar kar diya, bola order cancel kiya tha. Aap kya karein ge?", opts:["Argue karo","Branch ko immediately call karo, situation explain karo, instructions follow karo","Order rakh do aur chale jao","Customer se fight karo"], ans:1 },
+    { q:"Bohot tez barish ho rahi hai. Delivery incomplete rehne ka risk hai. Aap kya karein ge?", opts:["Delivery cancel karo","Branch ko inform karo, customer ko update karo, safely continue karo ya shelter lo","Speed badhao weather ignore karo","Ghar wapis jao"], ans:1 },
+    { q:"Aap notice karte hain ke bag mein galat order hai already pickup ke baad. Aap kya karein ge?", opts:["Deliver karo jo bhi hai","Immediately branch ko call karo, wapis jao sahi order lo, customer ko update karo","Customer ko blame karo","Ignore karo"], ans:1 },
+    { q:"Delivery area mein aapko suspicious activity dikh rahi hai. Aap kya karein ge?", opts:["Ignore karo aur deliver karo","Branch manager ko inform karo aur situation assess karo, safety first","Delivery chhod do wahan hi","Customer ko call karo area mein aane ko"], ans:1 },
+    { q:"Customer ne delivery receive ki lekin bola item missing hai. Sealed bag tha. Aap kya karein ge?", opts:["Customer ko jhootha kaho","Calmly listen karo, branch ko call karo, proper process follow karo","Argue karo bag sealed tha","Ignore karo"], ans:1 },
+    { q:"Aap ek saath 2 deliveries handle kar rahe hain. Ek urgent hai. Aap kya karein ge?", opts:["Dono ignore karo","Pehle closer/urgent deliver karo, dusre customer ko ETA update karo","Dono ek saath attempt karo illogically","Branch se guidance lo"], ans:3 },
+    { q:"Helmet na pehne hue traffic police ne roka. Aap kya karein ge?", opts:["Bhag jao","Politely cooperate karo, fine accept karo, future mein helmet pehno","Argue karo","Branch ko blame karo"], ans:1 },
+    { q:"Customer ka address incomplete hai. Delivery pe jaate time realize hua. Aap kya karein ge?", opts:["Guess karo aur kisi bhi ghar pe chhod do","Customer ko call karo pehle complete address lo, phir jao","Branch ko inform karo order cancel karein","Return karo bina deliver kiye"], ans:1 },
+    { q:"Delivery ke baad customer ne review mein complain ki ke order late tha aur aap rude the. Aap kya karein ge?", opts:["Review ignore karo","Branch manager ko inform karo, honestly explain karo kya hua, seerha attitude maintain karo","Social media pe jawab do","Customer ko message karo argue karo"], ans:1 },
+    { q:"Aap notice karte hain ke dusra rider apna mileage fake kar raha hai expenses ke liye. Aap kya karein ge?", opts:["Aap bhi wohi karo","Manager ko report karo — yeh company fraud hai","Ignore karo","Rider ko seedha confront karo publicly"], ans:1 },
+  ],
+
+  // ── FLOOR / SERVICE ──────────────────────────────────────
+  'Floor / Service Staff': [
+    { q:"Ek table pe customers bohot der se wait kar rahe hain aur order nahin aaya. Aap kya karein ge?", opts:["Ignore karo","Apologize karo, kitchen se status check karo, customers ko update karo","Blame kitchen pe dalo","Customers ko wapis bhejo"], ans:1 },
+    { q:"Customer ne floor pe paani gira diya. Dusre customers walk kar rahe hain. Aap kya karein ge?", opts:["Baad mein saaf karo","Immediately wet floor sign lagao, saaf karo, safety first","Ignore karo","Customer ko saaf karne kaho"], ans:1 },
+    { q:"Ek table ke customers bohot zor zor se baat kar rahe hain, dusre disturb ho rahe hain. Aap kya karein ge?", opts:["Ignore karo","Politely aur respectfully request karo thoda quieter rehne ki","Shout karo unhe","Manager ko bhejo directly"], ans:1 },
+    { q:"Customer ne order mein change manga after placing. Kitchen already start kar chuka hai. Aap kya karein ge?", opts:["Ignore karo","Kitchen ko immediately inform karo, agar possible ho toh change karo, customer ko honestly batao","Customer ko bura bolo","Change kar do bina kitchen ko bataye"], ans:1 },
+    { q:"Ek customer ne complain ki ke unki table saaf nahin thi. Aap kya karein ge?", opts:["Deny karo","Apologize karo, immediately saaf karo, ensure better service aage","Ignore karo","Dusre staff ko blame karo"], ans:1 },
+    { q:"Closing time se 15 min pehle ek group of 6 aa gaya. Aap kya karein ge?", opts:["Refuse karo band ho raha hai","Politely seat karo, inform karo ke kitchen jaldi band hogi, efficiently serve karo","Ignore karo","Manager ko bhejo"], ans:1 },
+    { q:"Customer ne bill mein galti point ki. Aap ne check kiya toh customer sahi hai. Aap kya karein ge?", opts:["Deny karo","Apologize karo, correct bill lao, manager ko inform karo","Ignore karo","Customer ko blame karo"], ans:1 },
+    { q:"Ek customer wheelchair mein hai. Unhe seating mein help chahiye. Aap kya karein ge?", opts:["Ignore karo","Warmly assist karo, accessible table arrange karo, extra care do","Dusre staff ko bhejo","Kaho khud kar lo"], ans:1 },
+    { q:"Aapne notice kiya ke ek colleague customer ke saath rude tha. Aap kya karein ge?", opts:["Ignore karo","Situation dekhte raho, baad mein supervisor ko inform karo","Colleague ke saamne immediately confront karo","Customer ko apologize karo khud"], ans:3 },
+    { q:"Rush hour mein 3 tables simultaneously service chahte hain. Aap akele hain. Aap kya karein ge?", opts:["Panic karo","Sab ko acknowledge karo, priority set karo, supervisor se help maango","Ek table ignore karo","Sab tables chhod do"], ans:1 },
+    { q:"Customer ne ek dish wapis bheji ke yeh unki expectation jaisi nahin thi. Aap kya karein ge?", opts:["Argue karo dish sahi thi","Apologize karo, kitchen ko inform karo, replacement ya alternative suggest karo","Ignore karo","Customer ko menu dikhao phir se"], ans:1 },
+    { q:"Table pe customers ka wait 30 min ho gaya. Kitchen mein delay hai. Aap kya karein ge?", opts:["Ignore karo kitchen ki zimmedari hai","Customers ko update karo, apologize karo, manager ko involve karo, complimentary item offer karo","Customers ko kaho kitchen slow hai","Table se door raho"], ans:1 },
+    { q:"Aap notice karte hain ke ek table pe underage customers alcohol maang rahe hain. Aap kya karein ge?", opts:["De do koi nahin dekhta","Firmly lekin politely refuse karo, manager ko immediately inform karo","Ignore karo","Dusre staff pe chhod do"], ans:1 },
+    { q:"Customer ne tip dene se inkaar kiya aur rude tha. Aap kya karein ge?", opts:["Argue karo","Professional rehna — tip optional hai, service standard maintain karo","Revenge lao next visit mein","Complain karo manager ko immediately"], ans:1 },
+    { q:"Bohot busy night mein ek customer ka birthday hai. Unke saath koi arrangement nahin tha. Aap kya karein ge?", opts:["Ignore karo","Simple gesture karo — birthday wish karo, agar possible ho toh manager se check karo kuch special ho sake","Kaho pehle bolna chahiye tha","Dusre customers pe focus karo"], ans:1 },
+  ],
+
+  // ── SUPERVISOR ───────────────────────────────────────────
+  'Shift Supervisor': [
+    { q:"Peak hour mein 2 staff members ne suddenly call out kiya. Aap kya karein ge?", opts:["Panic karo","Roles reassign karo, manager ko inform karo, quality vs speed balance karo","Dukaan band karo","Customers ko bhej do"], ans:1 },
+    { q:"Ek staff member consistently late aa raha hai. Aap kya karein ge?", opts:["Ignore karo","Private conversation karo, document karo, verbal warning do, HR process follow karo","Publicly embarrass karo","Seedha fire karo"], ans:1 },
+    { q:"Cash register mein closing pe Rs 1,000 discrepancy hai. Aap kya karein ge?", opts:["Apni jeb se fill karo","Thorough investigation karo, all staff se poochho, manager ko report karo, CCTV review karo","Ignore karo","Junior cashier ko blame karo"], ans:1 },
+    { q:"Ek staff member aur customer ke darmiyan argument ho raha hai. Aap kya karein ge?", opts:["Ignore karo","Immediately intervene karo, staff ko side le jao, customer ko handle karo professionally","Staff ki side lo publicly","Customer ko nikaalo"], ans:1 },
+    { q:"Health inspection aayi unexpectedly. Kitchen unprepared hai. Aap kya karein ge?", opts:["Panic karo","Calmly inspector ko receive karo, simultaneously team ko quietly prepare karo, cooperate fully","Inspector ko rokne ki koshish karo","Blame kitchen staff pe dalo"], ans:1 },
+    { q:"Ek staff member complaints kar raha hai ke dusra staff unfair behavior kar raha hai unke saath. Aap kya karein ge?", opts:["Ignore karo","Privately dono se suno, fair investigation karo, appropriate action lo","Publicly judgment do","Ek ki side lo"], ans:1 },
+    { q:"Manager shift ke dauraan available nahin hai. Emergency situation aagayi. Aap kya karein ge?", opts:["Kuch mat karo","Apni best judgment use karo, manager ko inform karo ASAP, situation document karo","Dukaan band karo","Junior staff pe responsibility daal do"], ans:1 },
+    { q:"New staff member bohot slow hai aur team frustrated ho rahi hai. Aap kya karein ge?", opts:["New staff ko ignore karo","Training boost karo, buddy system use karo, team ko patient rehne ko encourage karo","New staff ko fire karo","Team ki frustration validate karo publicly"], ans:1 },
+    { q:"Customer ne bada complaint kiya aur compensation maang raha hai. Aap kya karein ge?", opts:["Refuse karo","Complaint seriously lo, reasonable compensation offer karo policy ke mutabiq, manager ko inform karo","Argue karo","Free meal de do bina process kiye"], ans:1 },
+    { q:"End of shift report mein sales target miss ho gaya. Aap manager ko kaise report karein ge?", opts:["Report mat karo","Honestly report karo with reasons aur improvement plan suggest karo","Blame staff pe dalo","Numbers manipulate karo"], ans:1 },
+    { q:"Ek staff member ne shift ke dauraan phone pe personal call pe zyada time spend kiya. Aap kya karein ge?", opts:["Ignore karo","Privately remind karo policy ke baare mein, document karo","Publicly embarrass karo","Immediately suspend karo"], ans:1 },
+    { q:"Kitchen aur counter ke beech miscommunication se orders mix up ho rahe hain. Aap kya karein ge?", opts:["Dono ko blame karo","System improve karo — clear communication protocol set karo, briefing karo","Ignore karo","Sirf kitchen ko blame karo"], ans:1 },
+    { q:"Ek VIP customer aayi hai bina reservation ke. Dukaan full hai. Aap kya karein ge?", opts:["Refuse karo politely","Warmly greet karo, wait time honestly batao, best available solution dhundho, manager ko inform karo","Dusre customers ko nikaalo","Ignore karo"], ans:1 },
+    { q:"Aap notice karte hain ke ek staff member alcohol ki smell aa rahi hai shift pe. Aap kya karein ge?", opts:["Ignore karo","Immediately privately address karo, duty se remove karo, manager ko report karo","Publicly announce karo","Warning de ke shift continue karne do"], ans:1 },
+    { q:"Staff member ne request ki ke personal emergency ke liye jaldi jaana chahte hain mid-shift. Aap kya karein ge?", opts:["Seedha refuse karo","Situation assess karo, coverage arrange karne ki koshish karo, compassion rakhao","Bina coverage ke jaane do","Manager pe responsibility daal do"], ans:1 },
+  ],
+
+  // ── KITCHEN MANAGER ──────────────────────────────────────
+  'Kitchen Manager': [
+    { q:"Monthly food cost suddenly 38% ho gaya (target 30%). Pehla step?", opts:["Staff ki salary cut karo","Waste audit karo, portion sizes check karo, supplier prices review karo, recipes analyze karo","Menu se items hataao","Prices raise karo"], ans:1 },
+    { q:"Head chef ne resign kar diya 2 din ki notice pe. Aap kya karein ge?", opts:["Panic karo","Immediate coverage arrange karo, responsibilities redistribute karo, hiring process shuru karo, management ko inform karo","Dukaan band karo","Remaining staff ko zyada hours force karo"], ans:1 },
+    { q:"Food safety audit mein critical violation mili. Aap kya karein ge?", opts:["Audit results hide karo","Immediate corrective action lo, staff ko retrain karo, management ko report karo, follow-up audit schedule karo","Auditor ko blame karo","Violation ignore karo"], ans:1 },
+    { q:"New menu item launch hone wali hai. Team properly trained nahin hai. Launch date 3 din baad hai. Aap kya karein ge?", opts:["Postpone request karo bina planning ke","Emergency training sessions schedule karo, recipe cards banao, management se launch date discuss karo agar unfeasible ho","Untrained team pe launch karo","Menu item remove karo"], ans:1 },
+    { q:"Supplier ne last minute delivery cancel kar di. Aaj ka menu affect hoga. Aap kya karein ge?", opts:["Menu cancel karo","Backup supplier contact karo, affected items temporarily remove karo, management ko inform karo, customers ko politely batao","Customers ko blame karo","Staff ko blame karo"], ans:1 },
+    { q:"Ek kitchen staff member ne food safety protocol repeatedly violate kiya. Aap kya karein ge?", opts:["Ignore karo","Formal disciplinary process follow karo — warning, documentation, HR involve karo, improvement plan banao","Immediately fire karo bina process ke","Publicly humiliate karo"], ans:1 },
+    { q:"Peak season aa raha hai. Current staff insufficient lagti hai. Aap kya karein ge?", opts:["Same staff pe kaam chalao","Workload assess karo, hiring request submit karo, existing staff overtime plan banao, management se budget discuss karo","Untrained staff hire karo quickly","Quality sacrifice karo speed ke liye"], ans:1 },
+    { q:"Two kitchen staff members ke darmiyan serious conflict ho raha hai jo productivity affect kar raha hai. Aap kya karein ge?", opts:["Ignore karo","Dono se alag alag privately baat karo, mediation karo, agar na sudhre toh HR involve karo","Ek ko fire karo","Public mein resolve karo"], ans:1 },
+    { q:"Customer ne serious food allergy reaction ki complaint ki after eating at your restaurant. Aap kya karein ge?", opts:["Deny karo restaurant ki zimmedari nahin","Immediately apologize karo, incident report karo, management aur legal ko inform karo, kitchen audit karo, medical help ensure karo","Social media pe jawab do","Staff pe blame dalo publicly"], ans:1 },
+    { q:"New equipment install hua hai kitchen mein. Staff trained nahin hai. Aap kya karein ge?", opts:["Staff khud seekh legi","Proper training arrange karo, SOPs banao, supervised practice karo pehle", "Equipment use hi mat karo","Junior staff pe training ki zimmedari daal do"], ans:1 },
+    { q:"Quality control check mein aapne notice kiya ke food presentation standard se below ja rahi hai. Aap kya karein ge?", opts:["Ignore karo customers nahin notice karein ge","Standards remind karo team ko, refresher training do, plating examples show karo, monitoring badhaao","Kitchen manager ko blame karo","Menu change karo"], ans:1 },
+    { q:"Ek staff member consistently kam perform kar raha hai lekin attendance theek hai. Aap kya karein ge?", opts:["Ignore karo","Root cause identify karo, performance improvement plan banao, regular feedback do, support provide karo","Immediately fire karo","Dusre staff pe extra burden dalo"], ans:1 },
+    { q:"Health department ne unannounced inspection ki aur kuch issues point kiye. Aap kya karein ge?", opts:["Issues hide karo","All issues document karo, immediate corrective actions lo, follow-up inspection ke liye prepare karo, management ko report karo","Inspector ko argue karo","Staff ko blame karo publicly"], ans:1 },
+    { q:"Budget cut announce hua hai. Aapko kitchen costs 15% reduce karni hain. Aap kya karein ge?", opts:["Staff fire karo immediately","Waste reduction, menu optimization, bulk purchasing, energy efficiency aur supplier renegotiation explore karo","Quality sacrifice karo","Management ki decision ko ignore karo"], ans:1 },
+    { q:"Aapki team mein diversity issues aa rahe hain — kuch staff comfortable nahin. Aap kya karein ge?", opts:["Ignore karo","Open conversation facilitate karo, inclusive environment create karo, HR involve karo agar needed","Complaining staff ko transfer karo","Issue publicly announce karo"], ans:1 },
+  ],
+
+  // ── BRANCH MANAGER ───────────────────────────────────────
+  'Branch Manager': [
+    { q:"Monthly sales target miss ho gaya. Aap board ko kaise present karein ge?", opts:["Numbers manipulate karo","Honest analysis present karo — reasons, lessons, concrete action plan with timeline","Blame staff pe dalo","Targets ko unfair bolo"], ans:1 },
+    { q:"Online review mein branch ki reputation girne lagi hai. Aap kya karein ge?", opts:["Reviews ignore karo","Root causes identify karo, operational improvements karo, negative reviews pe professionally respond karo, team training karo","Fake positive reviews likhao","Competitors ko blame karo"], ans:1 },
+    { q:"Key employee ne competitor offer ki wajah se resign kar diya. Aap kya karein ge?", opts:["Ja jaane do","Exit interview karo, retention strategies assess karo, role quickly fill karo, team morale manage karo","Immediately counter-offer blindly karo","Team ko demoralize mat karo — positively communicate karo"], ans:3 },
+    { q:"Ek staff member ne HR ke paas discrimination complaint file ki. Aap kya karein ge?", opts:["Ignore karo","Seriously lo, proper investigation ensure karo, HR involve karo, confidentiality maintain karo","Complaint karne wale ko transfer karo","Publicly discuss karo"], ans:1 },
+    { q:"Branch ka P&L negative ja raha hai. Short term mein kya karo ge?", opts:["Sab staff fire karo","Cost audit karo, quick wins identify karo (waste, energy, scheduling), revenue drivers focus karo, HQ ko inform karo","Branch band karo","Staff ki salaries cut karo"], ans:1 },
+    { q:"Local competitor ne same price pe better deal launch ki. Aap kya karein ge?", opts:["Panic karo","Market analysis karo, differentiation points strengthen karo, customer loyalty programs focus karo, HQ se guidance lo","Prices blindly cut karo","Competitor ko copycat karo exactly"], ans:1 },
+    { q:"Major equipment breakdown hua hai dinner rush se pehle. Aap kya karein ge?", opts:["Panic karo aur close karo","Immediate repair attempt karo, contingency plan activate karo, customers ko transparently communicate karo, losses document karo","Customers ko bina bataye serve karte raho","Staff ko blame karo"], ans:1 },
+    { q:"Ek investor branch visit karne aa raha hai kal. Aap kya karein ge?", opts:["Kuch special mat karo","Branch best condition mein ensure karo, team brief karo, data prepare karo, normal operations smoothly chalao — authentic show karo","Sab kuch fake karo","Investors visit cancel karwao"], ans:1 },
+    { q:"Staff mein rumor chal raha hai ke branch close ho sakti hai. Morale gir raha hai. Aap kya karein ge?", opts:["Ignore karo","Transparent communication karo jo aap share kar sakte ho, positive environment maintain karo, concerns address karo","Rumor spread karne wale ko punish karo","Confirm karo bina information ke"], ans:1 },
+    { q:"Aapki branch ka food quality inconsistent ho rahi hai across shifts. Aap kya karein ge?", opts:["Ignore karo","Standardized recipes aur SOPs enforce karo, quality checks schedule karo, all shift managers ko align karo","Sirf ek shift pe focus karo","Chef ko blame karo"], ans:1 },
+    { q:"Local community ne branch ke baare mein noise complaint ki hai. Aap kya karein ge?", opts:["Ignore karo","Community se respectfully engage karo, legitimate concerns address karo, solutions implement karo, relationship build karo","Complain karne walo ko ignore karo","Legal team pe immediately rely karo"], ans:1 },
+    { q:"Branch mein theft ki incident report aayi staff se related. Aap kya karein ge?", opts:["Secretly investigate karo akele","Proper investigation protocol follow karo, HR aur legal involve karo, evidence preserve karo, confidentiality maintain karo","Accused ko immediately fire karo bina investigation ke","Ignore karo"], ans:1 },
+    { q:"New HQ policy aayi hai jisse aapki branch ke operations significantly affect honge. Team resistant hai. Aap kya karein ge?", opts:["Policy implement mat karo","Policy clearly communicate karo, concerns HQ tak raise karo proper channels se, team ko transition mein support karo","Team ki resistance publicly support karo","Policy selectively implement karo"], ans:1 },
+    { q:"Aapki branch ka turnover rate industry average se 2x zyada hai. Aap kya karein ge?", opts:["Ignore karo","Exit interviews analyze karo, workplace culture assess karo, compensation review karo, retention programs implement karo","Blame HR pe dalo","Quickly hire karte raho bina fixing ke"], ans:1 },
+    { q:"Ek loyal long-term customer ne bohot serious complaint ki directly aap se. Aap kya karein ge?", opts:["Defensively respond karo","Personally engage karo, complaint genuinely listen karo, appropriate resolution provide karo, relationship nurture karo","Junior staff pe bhej do","Complaint dismiss karo"], ans:1 },
+  ],
+
+  // ── ANY POSITION (general fallback) ──────────────────────
+  'Any Available Position': [
+    { q:"Rush hour, 12 customers queue mein. Ek aake bolta hai 'pehle serve karo.' Aap kya karein ge?", opts:["Haan pehle serve karo","Politely bolao ke queue fair hai, baari par zaroor serve karein ge","Manager ko bulate ho","Ignore karo"], ans:1 },
+    { q:"Colleague ne haath dhoye baghair raw chicken handle karke seedha bread cut karne lagi. Aap kya karein ge?", opts:["Chup raho","Foran politely rok ke haath dhone ko kaho — food safety emergency hai","Baad mein batao","Bread khud change karo"], ans:1 },
+    { q:"Customer 40 minute delay par zor se shikayat kar raha hai. Aap kya karein ge?", opts:["Argument karo","Quietly apologize karo, manager ko batao, complimentary item offer karo","Ignore karo","Security bulate ho"], ans:1 },
+    { q:"Shift khatam se 10 min pehle colleague sick ho gaya, replacement nahin. Manager ne 1 ghanta aur rukne ko kaha.", opts:["Haan bolte hain","Chup rehte aur nikal jaate ho","Argue karo","Doctor ka bahana lagate ho"], ans:0 },
+    { q:"Cash register mein Rs 500 zyada hain end of shift. Aap kya karein ge?", opts:["Ghar le jao","Immediately manager ko report karo aur document karein","Kal ke liye chhod do","Ignore karo"], ans:1 },
+    { q:"Manager ne kaam diya jo samajh nahin aaya. Aap kya karein ge?", opts:["Apni marzi se karo","Clarity maango — poochna weakness nahin","Kuch bhi karo","Kaam hi mat karo"], ans:1 },
+    { q:"Colleague paise register mein nahin dal raha, pocket mein rakh raha hai. Aap kya karein ge?", opts:["Chup raho","Manager ya owner ko immediately report karo","Colleague se poocho","Aap bhi wohi karo"], ans:1 },
+    { q:"Closing time. Ek customer aaya, sirf ek order chahiye. Kitchen band hai. Best response?", opts:["Zor se BAND HAI bolo","Politely bolao kitchen band ho gaya, kal zaroor aaiye","Argue karo","Chup raho"], ans:1 },
+    { q:"Bohot rush hai, aap akele counter pe hain, kitchen understaffed. Aapka next step?", opts:["Panic karo","Calmly customers ko update karo, prioritize karo, supervisor ko alert karo","Counter chhod do","Sab orders cancel karo"], ans:1 },
+    { q:"Apni galti se customer ka order mix-up kiya, allergy reaction ka risk hai. Aap kya karein ge?", opts:["Ummeed karo kuch nahin hoga","Foran customer ko rok ke situation bataao aur supervisor ko inform karo","Silently replace karo","Ignore karo"], ans:1 },
+    { q:"Health inspector achanak aayi. Kitchen thodi untidy hai. Aap kya karein ge?", opts:["Ghabi jaate ho","Calmly greet karo, immediately clean karna shuru karo, manager ko inform karo","Rokne ki koshish karo","Bahana banao"], ans:1 },
+    { q:"Online order confirm hua par kitchen mein nahin gaya. Customer collect karne aa gaya. Aap kya karein ge?", opts:["Argue karo ke order nahin aaya","Apologize karo, manually process karo, manager ko inform karo","Wapis bhej do","Free bana do"], ans:1 },
+    { q:"New trainee baar baar same galti karta hai. Aap supervisor hain. Aap kya karein ge?", opts:["Zor se daanto","Patient ho kar step-by-step explain karo, progress document karo","Ignore karo","Fire karo"], ans:1 },
+    { q:"Customer ne spicy order ki, bolta hai non-spicy manga tha. Receipt mein customer ki galti hai. Aap kya karein ge?", opts:["Customer ko blame karo","Apologize karo aur replace karo (manager permission se)","Ignore karo","Argue karo"], ans:1 },
+    { q:"Rush hour mein galat order pack kiya. Customer ghar pahunch ke complain ki. Aap kya karein ge?", opts:["Phone cut karo","Maafi maango, replacement ya refund offer karo — manager se approval lo","Galat prove karo","Ignore karo"], ans:1 },
+  ],
+  };
+
+const perQuestions = [
+  { q:"Kaam ke dauran problem aa jaye toh aap kya karein ge?", opts:["Akele solve karne ki koshish karo","Supervisor ko immediately batao","Ignore karo","Dusron pe blame karo"] },
+  { q:"Aap team mein kaise kaam karte hain?", opts:["Akela kaam prefer karta/karti hoon","Team ke saath milke kaam karna pasand hai","Depends on mood","Dusron ka kaam bhi khud karta/karti hoon"] },
+  { q:"Agar koi customer aap se rude ho toh?", opts:["Wapis rude ho jaata/jaati hoon","Calm rehta/rehti hoon aur professionally handle karta/karti hoon","Manager ke paas bhej deta/deti hoon","Chup ho jaata/jaati hoon"] },
+  { q:"Aap pressure mein kaise perform karte hain?", opts:["Ghabra jaata/jaati hoon","Pressure mein acha/achi perform karta/karti hoon","Slow ho jaata/jaati hoon","Kaam chhod deta/deti hoon"] },
+  { q:"Naye kaam seekhne ke baare mein aapka kya khayal hai?", opts:["Bilkul pasand nahin","Hamesha naya seekhne ke liye tayyar hoon","Sirf zaroorat par seekhta/seekhti hoon","Time waste lagta hai"] },
+  { q:"Agar aap se galti ho jaye toh aap kya karein ge?", opts:["Chhupaane ki koshish karo","Foran acknowledge karo aur theek karne ki koshish karo","Kisi aur par blame karo","Ignore karo"] },
+  { q:"Punctuality ke baare mein aapka kya attitude hai?", opts:["Thodi der se aana normal hai","Hamesha time par ya pehle aata/aati hoon","Depends on situation","Koi importance nahin"] },
+  { q:"Aap apne kaam ki quality ko kaise dekhte hain?", opts:["Bas theek thak ho jaye kafi hai","Hamesha best karne ki koshish karta/karti hoon","Dusron jitna hi karta/karti hoon","Manager dekhta hai toh acha karta/karti hoon"] },
+  { q:"Agar manager aapko feedback de toh aap kya karein ge?", opts:["Defensive ho jaata/jaati hoon","Sunke improve karne ki koshish karta/karti hoon","Ignore karta/karti hoon","Upset ho jaata/jaati hoon"] },
+  { q:"Long term mein aap khud ko kahan dekhte hain?", opts:["Koi plan nahin","Grow karna chahta/chahti hoon is field mein","Sirf paise chahiye","Jaldi dusri job dhundhunga/dhundhugi"] },
+];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function buildAptQuestions(position) {
+  const pos = (position || '').toLowerCase().trim();
+  const posSpecific = aptBank.filter(q =>
+    q.pos && q.pos.some(p => {
+      const pNorm = p.toLowerCase().trim();
+      // Exact match first
+      if (pos === pNorm) return true;
+      // Both directions partial — position contains tag OR tag contains position
+      // But require at least 6 chars to avoid false short matches like "manager"
+      const shorter = pos.length < pNorm.length ? pos : pNorm;
+      if (shorter.length >= 6 && (pos.includes(pNorm) || pNorm.includes(pos))) return true;
+      return false;
+    })
+  );
+  // Core questions (no pos restriction)
+  const core = aptBank.filter(q => !q.pos);
+  // Balanced: ensure at least 3 hard, 7 medium, 5 easy + position-specific
+  const hard   = shuffle(core.filter(q=>q.diff==='hard')).slice(0,4);
+  const medium = shuffle(core.filter(q=>q.diff==='medium')).slice(0,8);
+  const easy   = shuffle(core.filter(q=>q.diff==='easy')).slice(0,5);
+  const pos3   = shuffle(posSpecific).slice(0,3);
+  // Combine and deduplicate
+  const combined = [...easy,...medium,...hard,...pos3];
+  const seen = new Set();
+  return combined.filter(q=>{ if(seen.has(q.q)) return false; seen.add(q.q); return true; }).slice(0,20);
+}
+
+function buildSitQuestions(position) {
+  const pos = position || applicantData.position || 'Any Available Position';
+  const bank = sitBank[pos] || sitBank['Any Available Position'];
+  return shuffle(bank).slice(0, 15);
+}
+
+// ═══════════════════════════════════════════
+//  TEST STATE
+// ═══════════════════════════════════════════
+const APT_TIMER_SECONDS = 15 * 60;
+const SIT_TIMER_SECONDS = 18 * 60;
+let aptIdx=0, aptAnswers=[], aptTimerInt=null;
+let sitIdx=0, sitAnswers=[], sitTimerInt=null;
+let perIdx=0, perAnswers=[];
+let selectedOpt=null;
+let builtAptQuestions = [];
+let builtSitQuestions = [];
+
+// ═══════════════════════════════════════════
+//  PIPELINE
+// ═══════════════════════════════════════════
+function setPipelineStage(stage) {
+  document.querySelectorAll('.pipe-step').forEach((el,i) => {
+    el.classList.remove('active','done');
+    if (i < stage) el.classList.add('done');
+    else if (i === stage) el.classList.add('active');
+  });
+}
+function goToStage(id) {
+  document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════
+let toastTimer;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ═══════════════════════════════════════════
+//  FORM VALIDATION
+// ═══════════════════════════════════════════
+function validateField(id, check) {
+  const wrap = document.getElementById('f-'+id);
+  const el   = document.getElementById(id);
+  if (!wrap || !el) return check;
+  if (!check) { wrap.classList.add('has-error'); el.classList.add('error'); }
+  else        { wrap.classList.remove('has-error'); el.classList.remove('error'); }
+  return check;
+}
+
+function submitApplicationForm() {
+  let valid = true;
+  if (!applicantPhotoBase64) {
+    document.getElementById('photo-upload-area').style.borderColor = 'var(--red)';
+    document.getElementById('photo-upload-area').style.background = '#fff5f5';
+    showToast('Please upload your profile photo.');
+    document.getElementById('photo-upload-area').scrollIntoView({behavior:'smooth', block:'center'});
+    valid = false;
+  } else {
+    document.getElementById('photo-upload-area').style.borderColor = '';
+    document.getElementById('photo-upload-area').style.background = '';
+  }
+  valid = validateField('fullname',   document.getElementById('fullname').value.trim().length >= 3) && valid;
+  valid = validateField('fathername', document.getElementById('fathername').value.trim().length >= 3) && valid;
+  valid = validateField('cnic',       /^\d{5}-\d{7}-\d$/.test(document.getElementById('cnic').value.trim())) && valid;
+  valid = validateField('dob',        document.getElementById('dob').value !== '') && valid;
+  const gender = document.querySelector('input[name="gender"]:checked');
+  if (!gender) { document.getElementById('gender-err').style.display='block'; valid=false; }
+  else           document.getElementById('gender-err').style.display='none';
+  const phone = document.getElementById('phone').value.trim();
+  valid = validateField('phone',      /^0\d{9,11}$/.test(phone.replace(/[-\s]/g,''))) && valid;
+  valid = validateField('city',       document.getElementById('city').value !== '') && valid;
+  valid = validateField('address',    document.getElementById('address').value.trim().length >= 5) && valid;
+  valid = validateField('education',  document.getElementById('education').value !== '') && valid;
+  valid = validateField('experience', document.getElementById('experience').value !== '') && valid;
+  valid = validateField('position',   document.getElementById('position').value !== '') && valid;
+  const shift = document.querySelector('input[name="shift"]:checked');
+  if (!shift) { document.getElementById('shift-err').style.display='block'; valid=false; }
+  else          document.getElementById('shift-err').style.display='none';
+  valid = validateField('joining', document.getElementById('joining').value !== '') && valid;
+  const motivation = document.getElementById('motivation').value.trim();
+  const motivWrap  = document.getElementById('motivation').closest('.field');
+  if (motivation.length < 20) { motivWrap.classList.add('has-error'); document.getElementById('motivation').classList.add('error'); valid=false; }
+  else { motivWrap.classList.remove('has-error'); document.getElementById('motivation').classList.remove('error'); }
+  if (!valid) { showToast('Please fill all required fields correctly.'); document.querySelector('.has-error')?.scrollIntoView({behavior:'smooth',block:'center'}); return; }
+
+  const skills = [...document.querySelectorAll('input[name="skills"]:checked')].map(c=>c.value);
+  const langs  = [...document.querySelectorAll('input[name="lang"]:checked')].map(c=>c.value);
+  applicantData = {
+    full_name: document.getElementById('fullname').value.trim(),
+    father_name: document.getElementById('fathername').value.trim(),
+    cnic: document.getElementById('cnic').value.trim(),
+    dob: document.getElementById('dob').value,
+    gender: gender.value,
+    marital_status: document.querySelector('input[name="marital"]:checked')?.value||'',
+    phone: document.getElementById('phone').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    city: document.getElementById('city').value,
+    preferred_branch: document.getElementById('branch').value,
+    address: document.getElementById('address').value.trim(),
+    education: document.getElementById('education').value,
+    experience: document.getElementById('experience').value,
+    prev_employer: document.getElementById('prev-employer').value.trim(),
+    prev_role: document.getElementById('prev-role').value.trim(),
+    position: document.getElementById('position').value,
+    shift_pref: shift.value,
+    joining: document.getElementById('joining').value,
+    salary_exp: document.getElementById('salary').value,
+    skills: skills.join(', '),
+    languages: langs.join(', '),
+    motivation: document.getElementById('motivation').value.trim(),
+    extra_notes: document.getElementById('extra').value.trim(),
+    status: 'applied',
+    applied_at: new Date().toISOString(),
+  };
+
+  const btn=document.getElementById('submit-form-btn'), spinner=document.getElementById('form-spinner'), btnText=document.getElementById('form-btn-text');
+  btn.disabled=true; spinner.style.display='block'; btnText.textContent='Saving...';
+
+  const save = sb
+    ? sb.from('job_applications').insert([applicantData]).select().then(async ({data,error})=>{
+        if (!error && data && data[0]) {
+          applicationId = data[0].id;
+
+          // Upload photo to storage if provided
+          if (applicantPhotoBase64) {
+            try {
+              const ext      = applicantPhotoBase64.includes('image/png') ? 'png' : 'jpg';
+              const fileName = `${applicationId}.${ext}`;
+
+              if (applicantData._tempPhotoName) {
+                // Temp file already uploaded — move it to the permanent name
+                await sb.storage.from('applicant-photos').move(
+                  applicantData._tempPhotoName, fileName
+                );
+              } else {
+                // Fallback: upload now if pre-upload didn't happen
+                const res  = await fetch(applicantPhotoBase64);
+                const blob = await res.blob();
+                await sb.storage.from('applicant-photos')
+                  .upload(fileName, blob, { contentType: blob.type, upsert: true });
+              }
+
+              const { data: urlData } = sb.storage
+                .from('applicant-photos')
+                .getPublicUrl(fileName);
+
+              await sb.from('job_applications')
+                .update({ photo_url: urlData.publicUrl })
+                .eq('id', applicationId);
+
+              applicantData.photo_url = urlData.publicUrl;
+              delete applicantData._tempPhotoName;
+            } catch(e) { console.error('Photo upload failed:', e); }
+          }
+
+          localStorage.setItem('ovx_application_id', applicationId);
+          localStorage.setItem('ovx_applicant_data', JSON.stringify(applicantData));
+        }
+      }).catch(()=>{})
+    : Promise.resolve();
+
+  save.then(()=>{
+    btn.disabled=false; spinner.style.display='none'; btnText.textContent='Submit Application & Start Test →';
+    showToast('Application saved! Starting aptitude test...','success');
+    setPipelineStage(1); startAptitudeTest();
+  }).catch(()=>{
+    btn.disabled=false; spinner.style.display='none'; btnText.textContent='Submit Application & Start Test →';
+    showToast('Something went wrong. Please try again.');
+  });
+}
+
+// ═══════════════════════════════════════════
+//  APTITUDE TEST
+// ═══════════════════════════════════════════
+function startAptitudeTest() {
+  localStorage.removeItem('ovx_application_id');
+  localStorage.removeItem('ovx_applicant_data');
+  testActive = true;
+  aptIdx=0; aptAnswers=[]; selectedOpt=null;
+  goToStage('stage-1');
+  builtAptQuestions = buildAptQuestions(applicantData.position || '');
+  renderAptQuestion();
+  startTimer('apt', APT_TIMER_SECONDS, ()=>{ showToast('Time is up!'); evaluateAptitude(); });
+}
+function renderAptQuestion() {
+  const q=builtAptQuestions[aptIdx]; selectedOpt=null;
+  document.getElementById('apt-q-counter').textContent=`Question ${aptIdx+1} of ${builtAptQuestions.length}`;
+  document.getElementById('apt-progress').style.width=((aptIdx+1)/builtAptQuestions.length*100)+'%';
+  document.getElementById('apt-next-btn').textContent=aptIdx===builtAptQuestions.length-1?'Submit Test →':'Next Question →';
+  document.getElementById('apt-question-area').innerHTML=`<div class="q-card"><div class="q-card-header"><span class="q-num">Q${aptIdx+1}</span><div class="q-text">${q.q}</div></div><div class="q-card-body"><div class="q-options">${q.opts.map((opt,i)=>`<div class="q-opt" id="apt-opt-${i}" onclick="selectAptOpt(${i})"><span class="opt-key">${String.fromCharCode(65+i)}</span>${opt}</div>`).join('')}</div></div></div>`;
+}
+function selectAptOpt(i) { document.querySelectorAll('[id^="apt-opt-"]').forEach(el=>el.classList.remove('selected')); document.getElementById('apt-opt-'+i).classList.add('selected'); selectedOpt=i; }
+function aptNext() {
+  if (!guardStageTransition()) return;
+  if (selectedOpt===null) { showToast('Please select an answer first.'); return; }
+  aptAnswers[aptIdx]=selectedOpt; aptIdx++;
+  if (aptIdx>=builtAptQuestions.length) { clearInterval(aptTimerInt); evaluateAptitude(); return; }
+  renderAptQuestion();
+}
+function evaluateAptitude() {
+  testActive = false;
+  let correct=0; aptAnswers.forEach((a,i)=>{ if(a===builtAptQuestions[i].ans) correct++; });
+  aptScore=Math.round(correct/builtAptQuestions.length*100);
+  const pass=aptScore>=60;
+  updateApplicationStatus('aptitude_score', aptScore);
+  setPipelineStage(pass?2:1); showAptResult(correct,aptScore,pass);
+}
+function showAptResult(correct,pct,pass) {
+  const hero=document.getElementById('apt-result-hero');
+  hero.className='result-hero '+(pass?'pass':'fail');
+  document.getElementById('apt-result-icon').textContent=pass?'✅':'❌';
+  document.getElementById('apt-result-title').textContent=pass?'Aptitude Test Cleared!':'Not Enough This Time';
+  document.getElementById('apt-result-title').className='result-title '+(pass?'pass-text':'fail-text');
+  document.getElementById('apt-result-sub').textContent=pass?`You got ${correct} out of ${builtAptQuestions.length} correct. Well done!`:`You scored ${correct} out of ${builtAptQuestions.length}. Minimum score is 60%. You can reapply in 30 days.`;
+  document.getElementById('apt-score-badge').textContent=`${pct}% — ${correct}/${builtAptQuestions.length} correct`;
+  document.getElementById('apt-score-badge').className='score-badge '+(pass?'pass-bg':'fail-bg');
+  document.getElementById('apt-result-action').innerHTML=pass?`<button class="submit-btn" onclick="startSituationalTest()">Continue to Situational Test →</button>`:`<div class="info-box"><span class="info-box-icon">📅</span><span>Thank you for applying. Reapply after 30 days.</span></div>`;
+  goToStage('stage-1-result');
+}
+
+// ═══════════════════════════════════════════
+//  SITUATIONAL TEST
+// ═══════════════════════════════════════════
+function startSituationalTest() {
+  testActive = true;
+  sitIdx=0; sitAnswers=[]; selectedOpt=null;
+  goToStage('stage-2');
+  builtSitQuestions = buildSitQuestions(applicantData.position);
+  setPipelineStage(2);
+  renderSitQuestion();
+  startTimer('sit', SIT_TIMER_SECONDS, ()=>{ showToast('Time is up!'); evaluateSituational(); });
+}
+function renderSitQuestion() {
+  const q=builtSitQuestions[sitIdx]; selectedOpt=null;
+  document.getElementById('sit-q-counter').textContent=`Scenario ${sitIdx+1} of ${builtSitQuestions.length}`;
+  document.getElementById('sit-progress').style.width=((sitIdx+1)/builtSitQuestions.length*100)+'%';
+  document.getElementById('sit-next-btn').textContent=sitIdx===builtSitQuestions.length-1?'Submit & See Results →':'Next Scenario →';
+  document.getElementById('sit-question-area').innerHTML=`<div class="q-card"><div class="q-card-header" style="background:linear-gradient(135deg,#1a1a1a,#2d1a00);"><span class="q-num" style="background:var(--amber);color:#1a1a1a;">S${sitIdx+1}</span><div class="q-text">${q.q}</div></div><div class="q-card-body"><div class="q-options">${q.opts.map((opt,i)=>`<div class="q-opt" id="sit-opt-${i}" onclick="selectSitOpt(${i})"><span class="opt-key">${String.fromCharCode(65+i)}</span>${opt}</div>`).join('')}</div></div></div>`;
+}
+function selectSitOpt(i) { document.querySelectorAll('[id^="sit-opt-"]').forEach(el=>el.classList.remove('selected')); document.getElementById('sit-opt-'+i).classList.add('selected'); selectedOpt=i; }
+function sitNext() {
+  if (!guardStageTransition()) return;
+  if (selectedOpt===null) { showToast('Please select an answer first.'); return; }
+  sitAnswers[sitIdx]=selectedOpt; sitIdx++;
+  if (sitIdx>=builtSitQuestions.length) { clearInterval(sitTimerInt); evaluateSituational(); return; }
+  renderSitQuestion();
+}
+function evaluateSituational() {
+  testActive = false;
+  let correct=0; sitAnswers.forEach((a,i)=>{ if(a===builtSitQuestions[i].ans) correct++; });
+  sitScore=Math.round(correct/builtSitQuestions.length*100);
+  const pass=sitScore>=65;
+  updateApplicationStatus('situational_score', sitScore);
+  setPipelineStage(pass?3:2);
+  const hero=document.getElementById('sit-result-hero');
+  hero.className='result-hero '+(pass?'pass':'fail');
+  document.getElementById('sit-result-icon').textContent=pass?'🌟':'❌';
+  document.getElementById('sit-result-title').textContent=pass?'Great Situational Judgment!':'Below Passing Score';
+  document.getElementById('sit-result-title').className='result-title '+(pass?'pass-text':'fail-text');
+  document.getElementById('sit-result-sub').textContent=pass?`You got ${correct} of ${builtSitQuestions.length} scenarios right. One last step!`:`You scored ${correct} of ${builtSitQuestions.length}. Minimum is 65%. Reapply in 30 days.`;
+  document.getElementById('sit-score-badge').textContent=`${sitScore}% — ${correct}/${builtSitQuestions.length} scenarios`;
+  document.getElementById('sit-score-badge').className='score-badge '+(pass?'pass-bg':'fail-bg');
+  document.getElementById('sit-result-action').innerHTML=pass?`<button class="submit-btn amber" onclick="startPersonalityCheck()">Continue to Personality Check →</button>`:`<div class="info-box"><span class="info-box-icon">📅</span><span>Thank you for applying. Reapply in 30 days.</span></div>`;
+  goToStage('stage-2-result');
+}
+
+// ═══════════════════════════════════════════
+//  PERSONALITY CHECK
+// ═══════════════════════════════════════════
+function startPersonalityCheck() {
+  perIdx=0; perAnswers=[]; selectedOpt=null;
+  goToStage('stage-3'); setPipelineStage(3); renderPerQuestion();
+}
+function renderPerQuestion() {
+  const q=perQuestions[perIdx]; selectedOpt=null;
+  document.getElementById('per-q-counter').textContent=`Question ${perIdx+1} of ${perQuestions.length}`;
+  document.getElementById('per-progress').style.width=((perIdx+1)/perQuestions.length*100)+'%';
+  document.getElementById('per-next-btn').textContent=perIdx===perQuestions.length-1?'Submit & Get Result →':'Next →';
+  document.getElementById('per-question-area').innerHTML=`<div class="q-card"><div class="q-card-header" style="background:linear-gradient(135deg,#0a1a0a,#0d2a0d);"><span class="q-num" style="background:var(--success);color:white;">P${perIdx+1}</span><div class="q-text">${q.q}</div></div><div class="q-card-body"><div class="q-options">${q.opts.map((opt,i)=>`<div class="q-opt" id="per-opt-${i}" onclick="selectPerOpt(${i})"><span class="opt-key">${String.fromCharCode(65+i)}</span>${opt}</div>`).join('')}</div></div></div>`;
+}
+function selectPerOpt(i) { document.querySelectorAll('[id^="per-opt-"]').forEach(el=>el.classList.remove('selected')); document.getElementById('per-opt-'+i).classList.add('selected'); selectedOpt=i; }
+function perNext() {
+  if (!guardStageTransition()) return;
+  if (selectedOpt===null) { showToast('Please select an answer first.'); return; }
+  perAnswers[perIdx]=selectedOpt; perIdx++;
+  if (perIdx>=perQuestions.length) { finishFunnel(); return; }
+  renderPerQuestion();
+}
+
+// ═══════════════════════════════════════════
+//  FINISH FUNNEL
+// ═══════════════════════════════════════════
+async function finishFunnel() {
+  setPipelineStage(4);
+  if (!applicantData.full_name) {
+    const saved = localStorage.getItem('ovx_applicant_data');
+    if (saved) applicantData = JSON.parse(saved);
+  }
+  const perSummary = perAnswers.map((a,i)=>`Q${i+1}: ${perQuestions[i].opts[a]}`).join(' | ');
+  updateApplicationStatus('personality_summary', perSummary);
+  updateApplicationStatus('status', 'interview_shortlisted');
+  document.getElementById('final-name').textContent     = applicantData.full_name || '—';
+  document.getElementById('final-position').textContent = applicantData.position  || '—';
+  document.getElementById('final-phone').textContent    = applicantData.phone     || '—';
+  document.getElementById('final-branch').textContent   =
+    applicantData.preferred_branch==='MULTAN'?'Multan — Gulgasht Colony':
+    applicantData.preferred_branch==='BWP'   ?'Bahawalpur — SS Tower':'Any Branch';
+  showToast('🎉 Congratulations! You have been shortlisted!','success');
+  goToStage('stage-4');
+  try {
+    const pdfBase64 = await generateApplicantPDF();
+    await sendWhatsApp(pdfBase64, perSummary);
+    localStorage.removeItem('ovx_application_id');
+    localStorage.removeItem('ovx_applicant_data');
+  } catch(e) { console.error('WhatsApp send failed:',e); }
+}
+
+// ═══════════════════════════════════════════
+//  PDF FOR APPLICANT (same as before)
+// ═══════════════════════════════════════════
+async function generateApplicantPDF() {
+  const a = applicantData;
+  const doc = await generateHRPDF(a, aptScore, sitScore);
+  return doc.output('datauristring').split(',')[1];
+}
+
+// ═══════════════════════════════════════════
+//  WHATSAPP EDGE FUNCTION
+// ═══════════════════════════════════════════
+async function sendWhatsApp(pdfBase64, perSummary) {
+  try {
+    const res = await fetch(EDGE_FUNC_URL, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${SUPABASE_KEY}` },
+      body: JSON.stringify({ applicant:applicantData, aptScore, sitScore, perSummary, pdfBase64 }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+  } catch(e) { console.error('sendWhatsApp error:',e); }
+}
+
+
+// ═══════════════════════════════════════════
+//  SUPABASE UPDATE
+// ═══════════════════════════════════════════
+async function updateApplicationStatus(field, value) {
+  if (!sb || !applicationId) return;
+  try { await sb.from('job_applications').update({[field]:value}).eq('id',applicationId); } catch(e){}
+}
+
+// ═══════════════════════════════════════════
+//  PHOTO UPLOAD
+// ═══════════════════════════════════════════
+
+async function handlePhotoUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { showToast('Photo must be under 2MB.'); input.value=''; return; }
+
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    applicantPhotoBase64 = e.target.result;
+    document.getElementById('photo-preview').src = applicantPhotoBase64;
+    document.getElementById('photo-preview-wrap').style.display = 'block';
+    document.getElementById('photo-placeholder').style.display = 'none';
+    document.getElementById('photo-label').textContent = 'Uploading photo...';
+
+    // Pre-upload to storage immediately using a temp filename
+    if (sb) {
+      try {
+        const ext      = file.type === 'image/png' ? 'png' : 'jpg';
+        const tempName = `temp_${Date.now()}.${ext}`;
+        const { data: upData, error: upErr } = await sb.storage
+          .from('applicant-photos')
+          .upload(tempName, file, { contentType: file.type, upsert: true });
+
+        if (!upErr) {
+          const { data: urlData } = sb.storage
+            .from('applicant-photos')
+            .getPublicUrl(tempName);
+          // Store the temp URL so it's available if form submits quickly
+          applicantData.photo_url = urlData.publicUrl;
+          // Also store temp filename so submitApplicationForm can rename it
+          applicantData._tempPhotoName = tempName;
+          document.getElementById('photo-label').textContent = 'Photo uploaded ✓ — click to change';
+        } else {
+          document.getElementById('photo-label').textContent = 'Photo saved locally — will upload on submit';
+        }
+      } catch(e) {
+        document.getElementById('photo-label').textContent = 'Photo saved locally — will upload on submit';
+      }
+    } else {
+      document.getElementById('photo-label').textContent = 'Photo uploaded ✓ — click to change';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+// ═══════════════════════════════════════════
+//  CNIC FORMAT + DOB MAX
+// ═══════════════════════════════════════════
+document.getElementById('cnic').addEventListener('input', function() {
+  let v=this.value.replace(/[^0-9]/g,'');
+  if (v.length>5&&v.length<=12) v=v.slice(0,5)+'-'+v.slice(5);
+  else if (v.length>12)          v=v.slice(0,5)+'-'+v.slice(5,12)+'-'+v.slice(12,13);
+  this.value=v;
+});
+const maxDob=new Date(); maxDob.setFullYear(maxDob.getFullYear()-18);
+document.getElementById('dob').max=maxDob.toISOString().split('T')[0];
+
+// ═══════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════
+initRoute();
+
+// ── ANTI-CHEAT ──────────────────────────────
+
+// Unified timer reference so we can always clear cleanly
+const activeTimers = { apt: null, sit: null };
+
+function startTimer(prefix, seconds, onEnd) {
+  let remaining = seconds;
+  const timerEl = document.getElementById(prefix + '-timer');
+
+  // Clear any existing timer for this prefix before starting
+  if (activeTimers[prefix]) {
+    clearInterval(activeTimers[prefix]);
+    activeTimers[prefix] = null;
+  }
+
+  activeTimers[prefix] = setInterval(() => {
+    remaining--;
+    const m = Math.floor(remaining / 60);
+    const s = remaining % 60;
+    timerEl.textContent = `⏱ ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if (remaining <= 120) timerEl.className = 'timer-box warning';
+    if (remaining <= 60)  timerEl.className = 'timer-box danger';
+    if (remaining <= 0)   { clearAllTimers(); onEnd(); }
+  }, 1000);
+
+  // Keep legacy references in sync for anything that uses them directly
+  if (prefix === 'apt') aptTimerInt = activeTimers[prefix];
+  if (prefix === 'sit') sitTimerInt = activeTimers[prefix];
+}
+
+function clearAllTimers() {
+  Object.keys(activeTimers).forEach(key => {
+    if (activeTimers[key]) {
+      clearInterval(activeTimers[key]);
+      activeTimers[key] = null;
+    }
+  });
+  aptTimerInt = null;
+  sitTimerInt = null;
+}
+
+function lockTestPermanently() {
+  disqualified = true;
+  testActive   = false;
+
+  // Stop all timers cleanly
+  clearAllTimers();
+
+  // Disable all interactive test elements
+  document.querySelectorAll('.q-opt').forEach(el => {
+    el.style.pointerEvents = 'none';
+    el.style.opacity = '0.4';
+  });
+  ['apt-next-btn', 'sit-next-btn', 'per-next-btn'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.disabled      = true;
+      el.style.opacity = '0.4';
+      el.style.cursor  = 'not-allowed';
+    }
+  });
+
+  // Update overlay using stable IDs
+  const overlay       = document.getElementById('cheat-overlay');
+  const icon          = document.getElementById('cheat-icon');
+  const title         = document.getElementById('cheat-title');
+  const message       = document.getElementById('cheat-message');
+  const resumeBtn     = document.getElementById('cheat-resume-btn');
+  const counter       = document.getElementById('cheat-warning-counter');
+  const disqMsg       = document.getElementById('cheat-disqualified-msg');
+
+  icon.textContent            = '🚫';
+  title.textContent           = 'Application Disqualified';
+  title.style.color           = '#f87171';
+  message.style.display       = 'none';
+  resumeBtn.style.display     = 'none';
+  counter.style.display       = 'none';
+  disqMsg.style.display       = 'block';
+  overlay.style.display       = 'flex';
+
+  // Persist to database
+  updateApplicationStatus('status', 'rejected');
+  updateApplicationStatus('disqualified_reason', 'Tab switch x3 during test');
+  if (sb && applicationId) {
+    sb.from('job_applications')
+      .update({ cheat_attempts: cheatCount })
+      .eq('id', applicationId)
+      .catch(() => {});
+  }
+}
+
+function resumeTest() {
+  // Permanently blocked — keep overlay visible, do nothing
+  if (disqualified) {
+    document.getElementById('cheat-overlay').style.display = 'flex';
+    return;
+  }
+  document.getElementById('cheat-overlay').style.display = 'none';
+}
+
+function guardStageTransition() {
+  if (disqualified) {
+    document.getElementById('cheat-overlay').style.display = 'flex';
+    return false;
+  }
+  return true;
+}
+
+document.addEventListener('visibilitychange', () => {
+  // Keep overlay locked for disqualified users regardless of tab switches
+  if (disqualified) {
+    document.getElementById('cheat-overlay').style.display = 'flex';
+    return;
+  }
+  if (!testActive)      return;
+  if (!document.hidden) return;
+
+  cheatCount++;
+  document.getElementById('cheat-count').textContent = cheatCount;
+  document.getElementById('cheat-overlay').style.display = 'flex';
+
+  if (sb && applicationId) {
+    sb.from('job_applications')
+      .update({ cheat_attempts: cheatCount })
+      .eq('id', applicationId)
+      .catch(() => {});
+  }
+
+  if (cheatCount >= 3) {
+    lockTestPermanently();
+  }
+});
+
+document.addEventListener('contextmenu', e => {
+  if (testActive || disqualified) e.preventDefault();
+});
+
+document.addEventListener('keydown', e => {
+  if (!testActive && !disqualified) return;
+  if ((e.ctrlKey || e.metaKey) && ['c','v','u','a','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
+  if (e.key === 'F12') e.preventDefault();
+});
+// ── POSITION-BASED SKILLS ────────────────────────────────
+const positionSkills = {
+  'Cashier / Counter Staff': [
+    'Cash Handling',
+    'POS / Register Operation',
+    'Customer Service',
+    'Basic Math & Change Calculation',
+    'Order Taking & Billing',
+    'Urdu Communication',
+    'English Communication',
+    'Queue Management',
+    'Complaint Handling',
+    'Upselling & Promotions',
+  ],
+  'Kitchen Staff / Cook': [
+    'Food Preparation',
+    'Cooking & Grilling',
+    'Food Safety & Hygiene (HACCP)',
+    'Recipe Following',
+    'Portion Control',
+    'Kitchen Equipment Operation',
+    'Speed & Efficiency Under Pressure',
+    'Stock & Ingredient Management',
+    'Cleaning & Sanitization',
+    'Team Coordination',
+  ],
+  'Delivery Rider': [
+    'Motorcycle / Bike Riding',
+    'GPS & Navigation',
+    'Route Optimization',
+    'Cash Handling (COD)',
+    'Customer Communication',
+    'Time Management',
+    'Package Handling',
+    'Traffic Rules Knowledge',
+    'Phone Order Coordination',
+    'Problem Solving (Delivery Issues)',
+  ],
+  'Floor / Service Staff': [
+    'Table Service & Etiquette',
+    'Customer Service',
+    'Order Taking',
+    'Complaint Handling',
+    'Cleanliness & Presentation',
+    'Team Coordination',
+    'Urdu Communication',
+    'English Communication',
+    'Upselling',
+    'Fast-Paced Environment Adaptability',
+  ],
+  'Shift Supervisor': [
+    'Team Leadership',
+    'Staff Scheduling',
+    'Opening & Closing Procedures',
+    'Cash Drawer Management',
+    'Customer Complaint Resolution',
+    'Quality Control',
+    'Inventory Monitoring',
+    'POS System Management',
+    'Training Junior Staff',
+    'Shift Reporting',
+  ],
+  'Kitchen Manager': [
+    'Kitchen Operations Management',
+    'Menu Planning & Costing',
+    'Food Safety Compliance',
+    'Staff Supervision',
+    'Inventory & Stock Control',
+    'Supplier Coordination',
+    'Recipe Standardization',
+    'Waste Reduction',
+    'Health & Safety Regulations',
+    'Kitchen Equipment Maintenance',
+  ],
+  'Branch Manager': [
+    'Branch Operations Management',
+    'P&L / Financial Reporting',
+    'Staff Hiring & Training',
+    'Customer Experience Management',
+    'Sales Target Achievement',
+    'Vendor & Supplier Management',
+    'Inventory Control',
+    'Health & Safety Compliance',
+    'Conflict Resolution',
+    'Team Building & Motivation',
+  ],
+  'Any Available Position': [
+    'Customer Service',
+    'Cash Handling',
+    'Food Preparation',
+    'Delivery & Navigation',
+    'Team Leadership',
+    'Urdu Literacy',
+    'Basic English',
+    'Computer / POS',
+    'Cleaning & Hygiene',
+    'Time Management',
+  ],
+};
+
+function updateSkills() {
+  const pos = document.getElementById('position').value;
+  const group = document.getElementById('skills-group');
+
+  if (!pos || !positionSkills[pos]) {
+    group.innerHTML = '<div style="font-size:13px;color:var(--muted);font-style:italic;">Select a position above to see relevant skills</div>';
+    return;
+  }
+
+  const skills = positionSkills[pos];
+  group.innerHTML = skills.map(skill =>
+    `<label class="check-pill">
+      <input type="checkbox" name="skills" value="${skill}"> ${skill}
+    </label>`
+  ).join('');
+}
+
+// ── TAB SWITCHING ────────────────────────────────────────
+let activeTab = 'all';
+
+function switchTab(tab) {
+  activeTab = tab;
+  // Update tab button styles
+  document.querySelectorAll('.hr-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  // Update status filter to match tab
+  const statusEl = document.getElementById('filter-status');
+  if (tab === 'all')         statusEl.value = '';
+  if (tab === 'shortlisted') statusEl.value = 'interview_shortlisted';
+  if (tab === 'hired')       statusEl.value = 'hired';
+  if (tab === 'rejected')    statusEl.value = 'rejected';
+  if (tab === 'inprogress')  statusEl.value = 'applied';
+  renderTable();
+}
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"80b7337066234d5c97e6656da5a7fef3","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
