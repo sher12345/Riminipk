@@ -11,12 +11,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href='data:application/manifest+json,{"name":"Rimini Official","short_name":"Rimini","start_url":".","display":"standalone","background_color":"#5b3a7e","theme_color":"#5b3a7e","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/5973/5973307.png","sizes":"512x512","type":"image/png","purpose":"any"}]}'>
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Rimini Official","short_name":"Rimini","start_url":".","display":"standalone","background_color":"#5b3a7e","theme_color":"#5b3a7e","icons":[{"src":"https://riminipk.com/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"}]}'>
 
     <title>Rimini - Official Order System</title>
-<meta property="og:image" content="https://i.postimg.cc/Z5DCNtZY/Whats-App-Image-2024-03-31-at-9-52-10-PM-removebg-preview.png">
-<link rel="icon" type="image/png" href="https://i.postimg.cc/Z5DCNtZY/Whats-App-Image-2024-03-31-at-9-52-10-PM-removebg-preview.png?v=2">
-<link rel="apple-touch-icon" href="https://i.postimg.cc/Z5DCNtZY/Whats-App-Image-2024-03-31-at-9-52-10-PM-removebg-preview.png">
+<meta property="og:image" content="https://riminipk.com/icon-512.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -4501,7 +4501,7 @@ function sendTrackNotification(status) {
         READY: { title: '🔥 Order Ready!', body: 'Your food is hot and ready — come get it!' }
     };
     const m = msgs[status];
-    if (m) new Notification(m.title, { body: m.body, icon: 'https://cdn-icons-png.flaticon.com/512/5973/5973307.png', tag: 'order-status', requireInteraction: true });
+    if (m) new Notification(m.title, { body: m.body, icon: 'https://riminipk.com/icon-512.png', tag: 'order-status', requireInteraction: true });
 }
 
 function openTrackingSheet() {
@@ -8243,8 +8243,8 @@ if (incomingOrderType === 'Delivery') {
             if ("Notification" in window && Notification.permission === "granted") {
                 new Notification("🔥 NEW ORDER RECEIVED!", {
                     body: `Type: ${payload.new.type}\nLocation: ${payload.new.location}`,
-                    icon: "https://cdn-icons-png.flaticon.com/512/5973/5973307.png",
-                    badge: "https://cdn-icons-png.flaticon.com/512/5973/5973307.png",
+                    icon: "https://riminipk.com/icon-512.png",
+                    badge: "https://riminipk.com/icon-512.png",
                     tag: 'new-order',
                     requireInteraction: true
                 });
