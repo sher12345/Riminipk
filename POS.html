@@ -3377,22 +3377,19 @@ async function _loadActiveTables() {
       const isClosed = order.id &&
   (closedStatusIds.has(order.id) || closedTxIds.has(order.id));
 
-const originalStart = order.startTime;
-const safeStart = _ovenxSafeStartTime(originalStart);
-const isTooOld = (Date.now() - safeStart) > MAX_AGE_MS;
+const startMs = _ovenxSafeStartTime(order.startTime);
+const isTooOld = (Date.now() - startMs) > MAX_AGE_MS;
 
 if (isClosed || isTooOld) {
   staleRows.push(tname);
   continue;
 }
 
-order.startTime = safeStart;
-tableOrders[tname] = order;
-
-if (safeStart !== originalStart) {
-  _saveActiveTable(tname, order);
+// Keep the stored start time exactly as it is. No re-saving, so devices can't fight over it.
+if (!Number.isFinite(Number(order.startTime)) && typeof order.startTime !== 'string') {
+  order.startTime = startMs;   // only fills in a missing value
 }
-
+tableOrders[tname] = order;
 restored++;
     }
 
@@ -3913,48 +3910,28 @@ function getFloorForTable(tname) {
 
 
 function _ovenxSafeStartTime(value) {
-  const now = Date.now();
   let ms = NaN;
-
-  if (typeof value === 'number') {
-    ms = value;
-  } else if (typeof value === 'string') {
-    const v = value.trim();
-
-    if (/^\d{10,13}$/.test(v)) {
-      const n = Number(v);
-      ms = v.length === 10 ? n * 1000 : n;
-    } else {
+  if (typeof value === 'number') ms = value;
+  else if (value instanceof Date) ms = value.getTime();
+  else if (typeof value === 'string') {
+    let v = value.trim();
+    if (/^\d{10,13}$/.test(v)) { const n = Number(v); ms = v.length === 10 ? n * 1000 : n; }
+    else {
+      // Postgres timestamps with no timezone are UTC: treat them as UTC, not local time
+      if (/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}/.test(v) && !/(Z|[+-]\d{2}:?\d{2})$/i.test(v)) v = v.replace(' ', 'T') + 'Z';
       ms = Date.parse(v);
     }
   }
-
-  // Invalid or future timestamp: use current time
-  if (!Number.isFinite(ms) || ms <= 0 || ms > now) {
-    return now;
-  }
-
+  // Only an invalid value falls back to now. A future value is left alone.
+  if (!Number.isFinite(ms) || ms <= 0) return Date.now();
   return ms;
 }
 
-function getTableElapsedSeconds(order, tableName) {
+function getTableElapsedSeconds(order /*, tableName */) {
   if (!order) return 0;
-
-  const safeStart = _ovenxSafeStartTime(order.startTime);
-
-  // Save only when the original timestamp needs correction
-  if (safeStart !== order.startTime) {
-    order.startTime = safeStart;
-
-    if (tableName) {
-      _saveActiveTable(tableName, order);
-    }
-  }
-
-  return Math.max(
-    0,
-    Math.floor((Date.now() - safeStart) / 1000)
-  );
+  const start = _ovenxSafeStartTime(order.startTime);
+  // Display-only clamp. We never change or save startTime here.
+  return Math.max(0, Math.floor((Date.now() - start) / 1000));
 }
 
 
