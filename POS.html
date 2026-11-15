@@ -3374,16 +3374,26 @@ async function _loadActiveTables() {
       if (tname.startsWith('DEL-')) { staleRows.push(tname); continue; }   // delivery is handled by Kitchen Panel + Fleet
 
       // We also check if the order exists in kitchen_orders and has a closing status (OUT, PAID, etc.)
-      const isClosed = order.id && (closedStatusIds.has(order.id) || closedTxIds.has(order.id));
-      const isTooOld = order.startTime && (Date.now() - order.startTime) > MAX_AGE_MS;
+      const isClosed = order.id &&
+  (closedStatusIds.has(order.id) || closedTxIds.has(order.id));
 
-      if (isClosed || isTooOld) {
-        staleRows.push(tname);
-        continue;
-      }
+const originalStart = order.startTime;
+const safeStart = _ovenxSafeStartTime(originalStart);
+const isTooOld = (Date.now() - safeStart) > MAX_AGE_MS;
 
-      tableOrders[tname] = order;
-      restored++;
+if (isClosed || isTooOld) {
+  staleRows.push(tname);
+  continue;
+}
+
+order.startTime = safeStart;
+tableOrders[tname] = order;
+
+if (safeStart !== originalStart) {
+  _saveActiveTable(tname, order);
+}
+
+restored++;
     }
 
     // 5. Clean up the database for every row we identified as finished/stale
@@ -3592,7 +3602,7 @@ async function pollWebOrders() {
       }
       if (!tableId) continue;
 
-      const parsedTime = new Date(order.created_at).getTime();
+      const parsedTime = _ovenxSafeStartTime(order.created_at);
       const existing = tableOrders[tableId];
 
       // Table already has a manual POS order -> let the cashier decide
@@ -3901,28 +3911,52 @@ function getFloorForTable(tname) {
   return 'A Floor';
 }
 
-function getTableElapsedSeconds(order, tableName) {
-  const now = Date.now();
-  let start = order ? order.startTime : null;
 
-  if (typeof start === 'string') {
-    start = Date.parse(start);
-  } else {
-    start = Number(start);
+function _ovenxSafeStartTime(value) {
+  const now = Date.now();
+  let ms = NaN;
+
+  if (typeof value === 'number') {
+    ms = value;
+  } else if (typeof value === 'string') {
+    const v = value.trim();
+
+    if (/^\d{10,13}$/.test(v)) {
+      const n = Number(v);
+      ms = v.length === 10 ? n * 1000 : n;
+    } else {
+      ms = Date.parse(v);
+    }
   }
 
-  // Fix missing, invalid or future timestamps
-  if (!Number.isFinite(start) || start <= 0 || start > now) {
-    start = now;
-    order.startTime = now;
+  // Invalid or future timestamp: use current time
+  if (!Number.isFinite(ms) || ms <= 0 || ms > now) {
+    return now;
+  }
+
+  return ms;
+}
+
+function getTableElapsedSeconds(order, tableName) {
+  if (!order) return 0;
+
+  const safeStart = _ovenxSafeStartTime(order.startTime);
+
+  // Save only when the original timestamp needs correction
+  if (safeStart !== order.startTime) {
+    order.startTime = safeStart;
 
     if (tableName) {
       _saveActiveTable(tableName, order);
     }
   }
 
-  return Math.max(0, Math.floor((now - start) / 1000));
+  return Math.max(
+    0,
+    Math.floor((Date.now() - safeStart) / 1000)
+  );
 }
+
 
 function renderTableMap() {
   const wrap = document.getElementById('table-grid-wrap');
