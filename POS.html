@@ -3901,6 +3901,29 @@ function getFloorForTable(tname) {
   return 'A Floor';
 }
 
+function getTableElapsedSeconds(order, tableName) {
+  const now = Date.now();
+  let start = order ? order.startTime : null;
+
+  if (typeof start === 'string') {
+    start = Date.parse(start);
+  } else {
+    start = Number(start);
+  }
+
+  // Fix missing, invalid or future timestamps
+  if (!Number.isFinite(start) || start <= 0 || start > now) {
+    start = now;
+    order.startTime = now;
+
+    if (tableName) {
+      _saveActiveTable(tableName, order);
+    }
+  }
+
+  return Math.max(0, Math.floor((now - start) / 1000));
+}
+
 function renderTableMap() {
   const wrap = document.getElementById('table-grid-wrap');
   wrap.innerHTML = '';
@@ -3914,7 +3937,7 @@ function renderTableMap() {
       const cell = document.createElement('div'); cell.className = 'table-cell';
       let timer = '—';
       if (order) {
-        const elapsed = Math.floor((Date.now() - order.startTime) / 1000);
+        const elapsed = getTableElapsedSeconds(order, tname);
         const mins = Math.floor(elapsed/60);
 
         if (order.fromWeb && !order.confirmed) {
@@ -3972,7 +3995,7 @@ function startTableTimers() {
     for (let tname in tableOrders) {
       const el = document.getElementById('timer-'+tname);
       if (el) {
-        const elapsed = Math.floor((Date.now() - tableOrders[tname].startTime) / 1000);
+        const elapsed = getTableElapsedSeconds(tableOrders[tname], tname);
         el.textContent = fmtSeconds(elapsed);
         const cell = el.closest('.table-cell');
         if (cell) {
