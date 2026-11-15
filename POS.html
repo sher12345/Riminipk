@@ -1971,7 +1971,10 @@ function genId() {
       return crypto.randomUUID();
     }
   } catch (e) { /* fall through */ }
-  return Date.now() + '-' + Math.random().toString(36).slice(2) + '-' + Math.random().toString(36).slice(2);
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
 }
 let DEVICE_CODE = localStorage.getItem('rimini_device_code') || null;
 function ensureDeviceCode() {
@@ -5798,7 +5801,7 @@ async function sendToKitchen() {
   const delCharge = orderSnap.type==='Delivery' ? (parseFloat(document.getElementById('delivery-charge').value)||orderSnap.deliveryCharge||0) : 0;
   const location = orderSnap.type==='Delivery' ? (delAddr || orderSnap.table||'Delivery') : (orderSnap.table?orderSnap.table.replace('-',' '):orderSnap.type);
 
-  const clientId = (crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(36).slice(2));
+  const clientId = genId();
   const obj = { id: clientId, type:orderSnap.type, location:location, items:itemsText, status:'WAITING', subtotal:grand, tax:(tax||0), delivery_fee:delCharge, branch:activeBranch, customer_name:custName||null, phone:custPhone||null, source:'POS' };
   orderSnap.id = clientId;
   try {
