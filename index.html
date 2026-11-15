@@ -1423,6 +1423,11 @@ background:var(--char);color:var(--flour);font-family:var(--body);font-size:1.05
 @media(min-width:800px){#landing-page .dock{display:none}}
 @media(prefers-reduced-motion:reduce){#landing-page{scroll-behavior:auto}#landing-page *{animation:none!important;transition:none!important}}
 </style>
+<style id="lp-reveal">
+#landing-page:not(.ready){opacity:0;pointer-events:none}
+#landing-page{transition:opacity .35s ease}
+body:has(#landing-page:not(.ready)){background:#2a1238!important}
+</style>
 </head>
 <body>
 
@@ -12005,7 +12010,29 @@ header .logo span:not(#header-branch-badge){background:var(--primary)!important;
 </style>
 <!-- PASTE right before the final </body> (after the other patches). Put hero-waffle.webp in the same folder as index.html -->
 <script>
-(function(){var i=document.querySelector('#landing-page .hero-bg img');if(i){i.src='hero-waffle.webp';i.alt='Chocolate Oreo waffle';}})();
+(function(){
+  var lp=document.getElementById('landing-page');
+  function show(){ if(lp) lp.classList.add('ready'); }
+  var i=document.querySelector('#landing-page .hero-bg img');
+  if(i){
+    i.alt='Chocolate Oreo waffle';
+    i.onload=show; i.onerror=show;
+    i.src='hero-waffle.webp';
+  } else { show(); }
+  setTimeout(show,2500); // safety net so the page never stays hidden
+})();
 </script>
+<style id="interior-bg">
+body::before,body::after{transition:opacity .5s ease}
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:url('https://riminipk.com/interior-1.jpg') center/cover no-repeat;
+  opacity:.22;
+}
+body:has(#nav-tabs[data-tab="deals"])::after{
+  background-image:url('https://riminipk.com/interior-2.jpg');
+}
+@media print{body::after{display:none!important}}
+</style>
 </body>
 </html>
