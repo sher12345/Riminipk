@@ -113,13 +113,54 @@
 
         /* Loading spinner for async actions */
         @keyframes spin { to { transform: rotate(360deg); } }
-        .spinner { 
+                .spinner { 
             display: inline-block; 
             width: 20px; height: 20px; 
             border: 3px solid rgba(255,255,255,0.3); 
             border-top-color: white; 
             border-radius: 50%; 
             animation: spin 0.7s linear infinite; 
+        }
+
+        /* ===== RESPONSIVE FIXES ===== */
+        html, body { height: 100%; }
+        .h-screen { height: 100vh !important; height: 100dvh !important; }
+
+        /* Kiosk area scrolls; card centres when there is room, scrolls from top when not */
+        .kiosk-wrap {
+            display: flex; flex-direction: column; align-items: center;
+            overflow-y: auto; overflow-x: hidden;
+            padding: 1rem; -webkit-overflow-scrolling: touch;
+        }
+        .kiosk-wrap > * { margin-top: auto; margin-bottom: auto; flex-shrink: 0; }
+        .kiosk-card { max-width: 100%; }
+        .kiosk-card h2 { overflow-wrap: anywhere; }
+
+        /* Short screens (laptops, landscape tablets, small monitors) */
+        @media (max-height: 820px) {
+            .kiosk-card { padding: 1.25rem !important; }
+            .kiosk-card h2.text-5xl { font-size: 2rem !important; line-height: 1.1 !important; }
+            .kiosk-card .grid button { height: 3.25rem !important; }
+            .kiosk-card .p-6, .kiosk-card .p-10 { padding: 1rem !important; }
+            .kiosk-card .text-5xl.font-mono { font-size: 2.25rem !important; }
+            .kiosk-card .text-4xl { font-size: 1.75rem !important; }
+            .kiosk-card .py-7 { padding-top: 1rem !important; padding-bottom: 1rem !important; font-size: 1.25rem !important; }
+            .kiosk-card .mt-10 { margin-top: 1rem !important; }
+            .kiosk-card .mb-10 { margin-bottom: 1rem !important; }
+        }
+
+        /* Phones and narrow windows */
+        @media (max-width: 768px) {
+            nav.h-20 { height: 4rem !important; padding-left: 1rem !important; padding-right: 1rem !important; }
+            nav .text-3xl { font-size: 1.5rem !important; }
+            nav button { padding: 0.6rem 1rem !important; }
+            .admin-sidebar { width: 4.5rem !important; padding: 0.75rem !important; }
+            .admin-sidebar button { font-size: 0 !important; justify-content: center; padding: 1rem 0 !important; }
+            main.custom-scroll { padding: 1rem !important; }
+            main .text-4xl { font-size: 1.5rem !important; }
+            main .overflow-hidden { overflow-x: auto !important; }
+            main table { min-width: 640px; }
+            .glass-bubble { padding: 1.5rem !important; }
         }
     </style>
 </head>
@@ -1099,7 +1140,7 @@ if (autoEnd.getTime() <= checkIn.getTime()) {
 
                     <div className="flex-1 flex overflow-hidden">
                         {view === 'kiosk' ? (
-                            <div className="flex-1 flex items-center justify-center p-6 bg-[#F1F5F9] relative overflow-hidden font-black uppercase">
+                            <div className="kiosk-wrap flex-1 bg-[#F1F5F9] relative font-black uppercase">
                                 {!employee ? (
                                     <div className="kiosk-card p-10 max-w-md w-full animate-fade relative overflow-hidden">
                                         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-orange-50/50 via-white to-red-50/50 pointer-events-none"></div>
