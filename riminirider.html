@@ -289,7 +289,11 @@ let _tt;function showToast(m,t='success'){const e=$('toast');e.textContent=m;e.c
 function unlockAudio(){try{_audio=_audio||new(window.AudioContext||window.webkitAudioContext)();if(_audio.state==='suspended')_audio.resume()}catch(e){}}
 document.addEventListener('click',unlockAudio);document.addEventListener('touchstart',unlockAudio,{passive:true});
 function ringAlarm(){unlockAudio();if(!_audio)return;const t0=_audio.currentTime;[0,.35,.7].forEach(t=>{const o=_audio.createOscillator(),g=_audio.createGain();o.type='square';o.frequency.value=880;g.gain.setValueAtTime(.001,t0+t);g.gain.exponentialRampToValueAtTime(.25,t0+t+.02);g.gain.exponentialRampToValueAtTime(.001,t0+t+.28);o.connect(g);g.connect(_audio.destination);o.start(t0+t);o.stop(t0+t+.3)})}
-async function showLocalNotification(o){if(!('Notification' in window)||Notification.permission!=='granted')return;
+const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
+const LN=()=>window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.LocalNotifications;
+async function showLocalNotification(o){
+if(NATIVE&&LN()){try{await LN().schedule({notifications:[{id:Math.floor(Date.now()%2147483647),title:'🔔 '+((SRCS[o&&o._s]||{name:''}).name.toUpperCase())+' — New delivery',body:o&&o.location?'📍 '+o.location:'A new order was assigned to you',channelId:'orders'}]})}catch(e){console.error(e)}return}
+if(!('Notification' in window)||Notification.permission!=='granted')return;
 const br=(SRCS[o&&o._s]||{name:''}).name.toUpperCase(),ttl='🔔 '+(br?br+' — ':'')+'New delivery';
 const opts={body:o&&o.location?'📍 '+o.location:'A new order was assigned to you',icon:'icon-192.png',badge:'icon-192.png',tag:'new-order',renotify:true,requireInteraction:true,vibrate:[400,150,400,150,800]};
 try{const reg=await navigator.serviceWorker.getRegistration();if(reg)reg.showNotification(ttl,opts);else new Notification(ttl,opts)}catch(e){}}
@@ -307,8 +311,10 @@ if(cur&&(cur.length!==key.length||cur.some((v,i)=>v!==key[i]))){try{await sub.un
 if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key});
 /* save the same device subscription separately in each project, under that project's own rider id */
 await Promise.all(ACTIVE.filter(s=>s.rid&&!String(s.rid).startsWith('local-')).map(s=>s.sb.from('push_subscriptions').upsert([{rider_id:String(s.rid),rider_name:riderName,branch:riderBranch,subscription:sub.toJSON(),updated_at:new Date().toISOString()}],{onConflict:'rider_id'})))}
-function refreshAlertBanner(){const ok='Notification' in window&&Notification.permission==='granted';$('alert-setup').style.display=ok?'none':'flex';$('me-al').textContent=ok?'On':'Off';$('me-al').style.color=ok?'var(--green)':'var(--orange)'}
-async function enableAlerts(){unlockAudio();if(!('Notification' in window)){showToast('On iPhone: Share → Add to Home Screen first','error');return}
+async function refreshAlertBanner(){let ok=false;if(NATIVE&&LN()){try{ok=(await LN().checkPermissions()).display==='granted'}catch(e){}}else ok='Notification' in window&&Notification.permission==='granted';$('alert-setup').style.display=ok?'none':'flex';$('me-al').textContent=ok?'On':'Off';$('me-al').style.color=ok?'var(--green)':'var(--orange)'}
+async function enableAlerts(){unlockAudio();
+if(NATIVE){const ln=LN();if(!ln)return showToast('Notification plugin missing','error');const p=await ln.requestPermissions();if(p.display==='granted'){try{await ln.createChannel({id:'orders',name:'New orders',importance:5,vibration:true,visibility:1})}catch(e){}showToast('Alerts enabled')}else showToast('Allow notifications in Android Settings','error');refreshAlertBanner();return}
+if(!('Notification' in window)){showToast('On iPhone: Share → Add to Home Screen first','error');return}
 const p=await Notification.requestPermission();if(p==='granted'){try{await subscribePush();showToast('Alerts enabled')}catch(e){console.error(e)}}else showToast('Notifications are blocked in browser settings','error');refreshAlertBanner()}
 let _wl=null;async function requestWakeLock(){try{if('wakeLock' in navigator)_wl=await navigator.wakeLock.request('screen')}catch(e){}}
 async function initAlerts(){if('serviceWorker' in navigator){try{await navigator.serviceWorker.register('./sw.js')}catch(e){console.error('SW',e)}}
