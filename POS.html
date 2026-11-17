@@ -2094,8 +2094,9 @@ currentStaffPermissions = staffRecord.permissions || {};
   const _ssKey = 'rimini_shift_start_' + activeBranch + '_' + currentStaff;
   const _saved = localStorage.getItem(_ssKey);
   const _d = _saved ? new Date(_saved) : null;
-  shiftStart = (_d && !isNaN(_d)) ? _d : new Date();
-  if (!_d || isNaN(_d)) localStorage.setItem(_ssKey, shiftStart.toISOString());
+  const _stale = !_d || isNaN(_d) || _d < new Date(_dtLocalToISO(bizDayFrom()));
+  shiftStart = _stale ? new Date() : _d;
+  if (_stale) localStorage.setItem(_ssKey, shiftStart.toISOString());
 }
 ensureDeviceCode();
 _loadSharedDateRange();
@@ -7844,7 +7845,13 @@ async function exportClosingStatement() {
   const cashInHand = computeCashInHand(txs, opening);
   const sessions = {};
   decls.forEach(d => { const k = d.session_id || d.id; (sessions[k] = sessions[k] || []).push(d); });
-  const finals = Object.values(sessions).map(l => l.sort((a, b) => (a.attempt_no || 1) - (b.attempt_no || 1))[l.length - 1]).sort((a, b) => new Date(a.shift_end) - new Date(b.shift_end)).slice(-1);
+  const _latestByStaff = {};
+  Object.values(sessions).forEach(l => {
+    const last = l.sort((a, b) => (a.attempt_no || 1) - (b.attempt_no || 1))[l.length - 1];
+    const prev = _latestByStaff[last.staff];
+    if (!prev || new Date(last.shift_end) > new Date(prev.shift_end)) _latestByStaff[last.staff] = last;
+  });
+  const finals = Object.values(_latestByStaff);
   const hasDecl = finals.length > 0;
   const submitted = sum(finals, d => d.cash_amount);
   const difference = Math.round(submitted - (cashInHand - opening));
@@ -8068,7 +8075,13 @@ async function _exportClosingStatementOld() {
   // Submitted cash = final attempt of each cashier's end-of-shift report
   const sessions = {};
   decls.forEach(d => { const k = d.session_id || d.id; (sessions[k] = sessions[k] || []).push(d); });
-  const finals = Object.values(sessions).map(l => l.sort((a, b) => (a.attempt_no || 1) - (b.attempt_no || 1))[l.length - 1]).sort((a, b) => new Date(a.shift_end) - new Date(b.shift_end)).slice(-1);
+  const _latestByStaff = {};
+  Object.values(sessions).forEach(l => {
+    const last = l.sort((a, b) => (a.attempt_no || 1) - (b.attempt_no || 1))[l.length - 1];
+    const prev = _latestByStaff[last.staff];
+    if (!prev || new Date(last.shift_end) > new Date(prev.shift_end)) _latestByStaff[last.staff] = last;
+  });
+  const finals = Object.values(_latestByStaff);
   const hasDecl = finals.length > 0;
   const submitted = sum(finals, d => d.cash_amount);
   const expectedComparable = cashInHand - opening;   // declared cash excludes the opening float
@@ -9223,7 +9236,7 @@ function askCashierDeclaration() {
 
 function renderDeclForm() {
   document.getElementById('decl-sub').textContent = _declAttempt === 1
-    ? 'Enter the TOTAL figures for the whole day (all cashiers combined) before logging out. Use 0 if none.'
+    ? 'Enter the figures for YOUR shift only (your own bills and expenses) before logging out. Use 0 if none.'
     : 'Please re-check and enter the correct figures.';
   document.getElementById('decl-body').innerHTML = `
     <div class="of-label">Cash amount collected (Rs)</div>
@@ -9343,7 +9356,11 @@ async function submitDeclaration() {
 let sys;
 try {
   // Fetch the whole business day (no staff filter)
-  const rows = await _xcFetchAll(_dtLocalToISO(bizDayFrom()), new Date().toISOString());
+  const rows = await _xcFetchAll(
+    shiftStart ? shiftStart.toISOString() : _dtLocalToISO(bizDayFrom()),
+    new Date().toISOString(),
+    currentStaff
+  );
   sys = _xcCalc(rows);
 } catch (e) { btn.disabled = false; showToast('Could not load system figures — check internet', 'error'); return; }
 
@@ -9573,8 +9590,11 @@ async function loadCrossCheck() {
 
     // Recalculate _pos for ALL declarations (including old ones) based on the WHOLE day
     await Promise.all(_xcDecls.map(async d => {
-      const start = getBizDayFromForDate(d.shift_end);
-      d._pos = _xcCalc(await _xcFetchAll(_dtLocalToISO(start), toISO)); // whole day, up to end of selected range
+      // Only THIS cashier's own bills, from his login until the moment he submitted
+      let startISO = d.shift_start || _dtLocalToISO(getBizDayFromForDate(d.shift_end));
+if (new Date(startISO) < new Date(fromISO)) startISO = fromISO;   // clamp to selected range
+d._winStart = startISO;
+      d._pos = _xcCalc(await _xcFetchAll(startISO, d.shift_end, d.staff));
     }));
   } catch (e) {
     content.innerHTML = '<div style="text-align:center;padding:36px;color:var(--red);">Could not load: ' + _xcEsc(e.message) + '</div>';
@@ -9623,7 +9643,13 @@ function renderCrossCheck() {
   const sessions = {};
   decls.forEach(d => { const k = d.session_id || d.id; (sessions[k] = sessions[k] || []).push(d); });
   const sessList = Object.values(sessions).map(l => l.sort((a, b) => (a.attempt_no || 1) - (b.attempt_no || 1)));
-  const finals = sessList.map(l => l[l.length - 1]).sort((a, b) => new Date(a.shift_end) - new Date(b.shift_end)).slice(-1);
+  const _latestByStaff = {};
+  sessList.forEach(l => {
+    const last = l[l.length - 1];
+    const cur = _latestByStaff[last.staff];
+    if (!cur || new Date(last.shift_end) > new Date(cur.shift_end)) _latestByStaff[last.staff] = last;
+  });
+  const finals = Object.values(_latestByStaff);
 
   const sessHtml = sessList.map(list => {
     const first = list[0], last = list[list.length - 1];
@@ -9641,7 +9667,7 @@ function renderCrossCheck() {
     }).join('');
     return `<div class="cb-section" style="margin-bottom:12px;">
       <div class="cb-head" style="display:flex;justify-content:space-between;align-items:center;">
-        <span>👤 ${_xcEsc(first.staff)} · shift ${first.shift_start ? fmtT(first.shift_start) : '?'} → ${fmtT(first.shift_end)}</span>
+        <span>👤 ${_xcEsc(first.staff)} · shift ${fmtT(first._winStart || first.shift_start)} → ${fmtT(first.shift_end)}</span>
         <span style="background:${chip[1]};color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">${chip[0]}</span>
       </div>
       <table class="transactions-table"><thead><tr><th></th><th>Item</th><th style="text-align:right;">Cashier says</th><th style="text-align:right;">POS actual</th><th>Difference</th></tr></thead><tbody>${body}</tbody></table>
