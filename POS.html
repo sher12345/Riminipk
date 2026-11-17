@@ -4347,7 +4347,7 @@ card.onclick = () => {
     const card = document.createElement('div'); card.className = 'menu-item-card';
     const priceStr = typeof item.p==='object'?'From Rs '+Object.values(item.p)[0]:'Rs '+item.p;
     card.innerHTML = `<div class="mic-name">${item.n}</div><div class="mic-price">${priceStr}</div><div class="mic-cat">${activeCategory}</div>`;
-    card.onclick = () => { if(typeof item.p==='object') openSizeModal(item); else addItemToOrder(item,item.p); };
+    card.onclick = () => { if(typeof item.p==='object') openSizeModal(item); else openDealWithNote({n:item.n, d:'', p:item.p}); };
     ig.appendChild(card);
   });
   grid.appendChild(ig);
@@ -4370,7 +4370,7 @@ function filterMenu(val) {
 menuData[cat].filter(i => !i._unavailable && i.n.toLowerCase().includes(filter) && (!i.bwp || activeBranch==='BWP')).forEach(item => {      const card = document.createElement('div'); card.className = 'menu-item-card';
       const priceStr = typeof item.p==='object'?'From Rs '+Object.values(item.p)[0]:'Rs '+item.p;
       card.innerHTML = `<div class="mic-name">${item.n}</div><div class="mic-price">${priceStr}</div><div class="mic-cat">${cat}</div>`;
-      card.onclick = () => { if(typeof item.p==='object') openSizeModal(item); else addItemToOrder(item,item.p); };
+      card.onclick = () => { if(typeof item.p==='object') openSizeModal(item); else openDealWithNote({n:item.n, d:'', p:item.p}); };
       ig.appendChild(card); found++;
     });
   }
@@ -4762,6 +4762,7 @@ function renderOrderItems() {
           <button class="oir-del" onclick="changeItemQty(${idx},-1)" style="background:rgba(255,255,255,0.08);color:${wasSent?'var(--text3)':'var(--text2)'}; width:26px; height:26px; border-radius:6px; font-size:16px; font-weight:bold;" title="${wasSent ? 'Requires Admin PIN' : 'Decrease quantity'}">−</button>
         ` : ''}
       </div>
+      ${!item.returned ? `<button class="oir-return" onclick="editItemNote(${idx})" title="Kitchen note" style="background:rgba(232,143,180,0.15);color:var(--orange);">📝</button>` : ''}
       ${!item.returned ? `<button class="oir-return" onclick="returnItem(${idx})" title="Return item">↩</button>` : ''}
       ${isAdmin && !item.returned && !wasSent ? `<button class="oir-del" onclick="removeItem(${idx})" title="Delete">✕</button>` : ''}
     `;
@@ -4787,6 +4788,19 @@ function changeItemQty(idx, d) {
   }
 }
 function removeItem(idx) { requestItemAdjustment(idx, 'remove', 0); }
+
+async function editItemNote(idx) {
+  const item = currentOrder.items[idx];
+  if (!item || item.returned) return;
+  const wasSent = !!currentOrder.id || !!currentOrder.sentToKitchen;
+  const val = await askText('Kitchen note for "' + item.name + '"\n(e.g. no onions, extra spicy, less sugar)\nLeave empty to clear:', item.note || '');
+  if (val === null) return;
+  item.note = val.trim();
+  saveTableOrder();
+  renderOrderItems();
+  if (wasSent && item.note) showToast('Note added — this item was already sent, tell the kitchen or reprint 🖨️', 'error');
+  else showToast(item.note ? 'Note saved' : 'Note cleared', 'success');
+}
 
 async function requestItemAdjustment(idx, action, qtyDelta) {
   const item = currentOrder.items[idx];
