@@ -8936,15 +8936,7 @@ function fpSearch(v) {
   v = (v || '').toLowerCase().trim();
   if (v.length < 2) { box.innerHTML = ''; return; }
   
-  // --- DEBUG START ---
-  const allItems = fpAllItems();
-  if (v === 'combo') {
-    const combosFound = allItems.filter(i => i.name.toLowerCase().includes('combo'));
-    alert("Total items in POS memory: " + allItems.length + "\n\nCombos found in memory: " + combosFound.length + "\n\nNames:\n" + combosFound.map(c => c.name).join("\n"));
-  }
-  // --- DEBUG END ---
-
-  const m = allItems.filter(i => i.name.toLowerCase().includes(v)).slice(0, 30);
+  const m = fpAllItems().filter(i => i.name.toLowerCase().includes(v)).slice(0, 30);
   window._fpMatches = m;
   
   box.innerHTML = m.length ? m.map((i,k) =>
@@ -8958,6 +8950,15 @@ function fpSearch(v) {
       </div>
     </div>`).join('')
     : '<div style="padding:12px;color:var(--text3);font-size:13px;">Not found — use "+ New item / deal"</div>';
+}
+function fpAdd(k) {
+  const item = (window._fpMatches || [])[k];
+  if (!item) return;
+  fpPush(item.name, item.price);
+  showToast(item.name + ' added', 'success');
+  const s = document.getElementById('fp-search');
+  if (s) { s.value = ''; s.focus(); }
+  document.getElementById('fp-results').innerHTML = '';
 }
 async function fpEditPrice(k) {
   const item = window._fpMatches[k];
