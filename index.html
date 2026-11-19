@@ -1553,11 +1553,11 @@ body:has(#landing-page:not(.ready)){background:#2a1238!important}
 <section class="club" id="club" aria-labelledby="ch">
   <div class="wrap">
     <div>
-      <h2 id="ch">Eat. Collect. Win free meals.</h2>
-      <p class="lede">Every order above Rs 1000 earns a stamp. Collect 10, and your 11th order comes with a free meal.</p>
+      <h2 id="ch">Scoop. Collect. Win Free Treats.</h2>
+      <p class="lede">Every order above Rs 1000 earns a stamp. Collect 10, and your 11th order comes with a free treat.</p>
       <ul class="perks">
         <li>One stamp per order above Rs 1000.</li>
-        <li>After 10 stamps, your 11th order includes a free mystery meal: a small pan pizza, Classic Zinger, club sandwich, loaded fries, 6 wings or a chipotle wrap.</li>
+        <li>After 10 stamps, your 11th order includes a free mystery treat: a kiddie gelato cup, classic brownie, caramel cake slice, waffle quarter, Choco Holic sundae or a chocolate jumbo cone.</li>
         <li>Stamps never expire and work at both branches.</li>
         <li>Your WhatsApp number is your card, so your stamps follow you to any device.</li>
       </ul>
@@ -1566,7 +1566,7 @@ body:has(#landing-page:not(.ready)){background:#2a1238!important}
     <div class="card" aria-labelledby="cardt">
       <div class="chead"><strong id="cardt">Rimini Club</strong><span id="stampCount" aria-live="polite">3 of 10 stamps</span></div>
       <div class="nstamps" id="stamps" role="group" aria-label="Preview your stamp card"></div>
-      <footer><span>Tap a stamp to preview your card.</span><b>Free meal on order 11</b></footer>
+      <footer><span>Tap a stamp to preview your card.</span><b>Free treat on order 11</b></footer>
     </div>
   </div>
 </section>
@@ -1648,7 +1648,7 @@ body:has(#landing-page:not(.ready)){background:#2a1238!important}
     items.forEach(function(s,i){ s.classList.toggle('on',i<filled); s.setAttribute('aria-pressed',i<filled?'true':'false'); });
     count.textContent=filled+' of 10 stamps';
     gift.classList.toggle('on',filled===10);
-    giftText.textContent=filled===10?'Unlocked: your next order comes with a free meal':'Your 11th order comes with a free meal';
+    giftText.textContent=filled===10?'Unlocked: your next order comes with a free treat':'Your 11th order comes with a free treat';
   }
   paint();
 
@@ -1708,7 +1708,7 @@ body:has(#landing-page:not(.ready)){background:#2a1238!important}
     <button onclick="recoverStamps()" style="margin-top:15px; background:rgba(212,175,55,0.15); color:#d4af37; border:1px solid rgba(212,175,55,0.3); padding:8px 18px; border-radius:10px; font-size:11px; font-weight:700; cursor:pointer; width:100%;">Lost your stamps? Recover here</button>
 </div>
     
-<button id="join-club-btn" onclick="openLoyaltySetup()" class="gate-btn btn-gold btn-3d">Join Rimini Club & Win Free Meals!</button>
+<button id="join-club-btn" onclick="openLoyaltySetup()" class="gate-btn btn-gold btn-3d">Join Rimini Club & Win Free Treats!</button>
 <button id="recover-stamps-btn" onclick="recoverStamps()" style="display:none; background:rgba(212,175,55,0.15); color:#d4af37; border:1px solid rgba(212,175,55,0.3); padding:10px 20px; border-radius:12px; font-size:12px; font-weight:700; cursor:pointer; margin-bottom:10px; width:85%; max-width:340px;">🔄 Already a member? Recover Stamps</button>
         <div class="gateway-options">
         <button class="gate-btn btn-3d btn-orange" onclick="enterApp('deals')">Best Deals!</button>
@@ -2046,18 +2046,18 @@ body:has(#landing-page:not(.ready)){background:#2a1238!important}
             </svg>
           </div>
           <div class="gold-text" style="margin-bottom:0.6rem">Rimini Club</div>
-          <h2 class="oc-h">Eat. Collect.<br><em>Win Free Meals.</em></h2>
-          <p class="oc-sub">Our loyalty program rewards you for every order. Collect stamps, reach 10, and unlock a mystery free meal on us.</p>
+          <h2 class="oc-h">Scoop. Collect.<br><em>Win Free Treats.</em>
+          <p class="oc-sub">Our loyalty program rewards you for every order. Collect stamps, reach 10, and unlock a mystery free treat on us.</p>
           <div class="perk-grid">
             <div class="perk"><div class="perk-line"></div><div class="perk-name">1 stamp per order</div><div class="perk-desc">On orders above Rs 1000</div></div>
-            <div class="perk"><div class="perk-line" style="background:#d4af37"></div><div class="perk-name">Free mystery meal</div><div class="perk-desc">Unlocked at stamp 10</div></div>
+            <div class="perk"><div class="perk-line" style="background:#d4af37"></div><div class="perk-name">Free mystery treat</div><div class="perk-desc">Unlocked at stamp 10</div></div>
             <div class="perk"><div class="perk-line" style="background:rgba(255,255,255,0.2)"></div><div class="perk-name">Never expires</div><div class="perk-desc">Stamps last forever</div></div>
             <div class="perk"><div class="perk-line"></div><div class="perk-name">Our branch</div><div class="perk-desc">Bahawalpur Cantt</div></div>
           </div>
           <div class="nav-row" style="padding-top:0">
-            <button class="btn-red" onclick="go(1)" style="box-shadow:0 5px 0px #5b3a7e">GET STARTED</button>
-          </div>
-        </div>
+  <button class="btn-back" onclick="doCancel()" aria-label="Back to menu">&#8592;</button>
+  <button class="btn-red" onclick="go(1)" style="flex:1;width:auto;box-shadow:0 5px 0px #5b3a7e">GET STARTED</button>
+</div>
 
         <div class="oc-slide" id="s1">
           <div class="gold-text" style="margin-bottom:0.6rem;margin-top:0.5rem">How it works</div>
@@ -2092,12 +2092,12 @@ body:has(#landing-page:not(.ready)){background:#2a1238!important}
           <h2 class="oc-h">One of these is<br><em>yours at stamp 10</em></h2>
           <p class="oc-sub">Randomly selected at checkout — every option is worth the wait.</p>
           <div class="prize-list">
-            <div class="prize-item"><div class="prize-dot"></div><span class="prize-name">Pan Pizza (Small)</span></div>
-            <div class="prize-item"><div class="prize-dot"></div><span class="prize-name">Classic Zinger Burger</span></div>
-            <div class="prize-item"><div class="prize-dot"></div><span class="prize-name">Club Sandwich</span></div>
-            <div class="prize-item"><div class="prize-dot"></div><span class="prize-name">Loaded Fries</span></div>
-            <div class="prize-item"><div class="prize-dot"></div><span class="prize-name">6 pcs Wings</span></div>
-            <div class="prize-item"><div class="prize-dot"></div><span class="prize-name">Chipotle Wrap</span></div>
+<div class="prize-item"><div class="prize-dot"></div><span class="prize-name">Kiddie Gelato Cup</span></div>
+<div class="prize-item"><div class="prize-dot"></div><span class="prize-name">Classic Brownie</span></div>
+<div class="prize-item"><div class="prize-dot"></div><span class="prize-name">Caramel Cake Slice</span></div>
+<div class="prize-item"><div class="prize-dot"></div><span class="prize-name">Waffle Quarter</span></div>
+<div class="prize-item"><div class="prize-dot"></div><span class="prize-name">Choco Holic Sundae</span></div>
+<div class="prize-item"><div class="prize-dot"></div><span class="prize-name">Chocolate Jumbo Cone</span></div>
           </div>
           <div class="nav-row">
             <button class="btn-back" onclick="go(1)">&#8592;</button>
@@ -2115,7 +2115,7 @@ body:has(#landing-page:not(.ready)){background:#2a1238!important}
               <div style="text-align:right"><div class="card-member-lbl">Member</div><div class="card-member-name" id="pname">Your Name</div></div>
             </div>
             <div class="card-stamps-grid" id="csg"></div>
-            <div class="card-foot">10 stamps &nbsp;·&nbsp; 1 mystery free meal</div>
+            <div class="card-foot">10 stamps &nbsp;·&nbsp; 1 mystery free treat</div>
           </div>
           <p style="font-size:11px;color:rgba(255,255,255,0.3);text-align:center;margin-bottom:0.75rem;line-height:1.6">Stamps sync across devices via your WhatsApp number — never lose your progress</p>
           <div class="nav-row">
@@ -2224,10 +2224,11 @@ body:has(#landing-page:not(.ready)){background:#2a1238!important}
         }
 
         function doCancel(){
-          const ov=document.getElementById('loyalty-setup-overlay');
-          if(ov)ov.style.display='none';
-          if(typeof setScrollLock==='function')setScrollLock(false);
-        }
+  const ov=document.getElementById('loyalty-setup-overlay');
+  if(ov)ov.style.display='none';
+  if(typeof setScrollLock==='function')setScrollLock(false);
+  go(0);
+}
 
         buildStamps();
         buildCardStamps();
@@ -3330,7 +3331,7 @@ let cart = [], selectedItem = null, selectedQty = 1, orderType = "", tableNum = 
     let isSubmittingOrder = false;
     let manPendingItem = null, manFlavorChoices = [], manFlavorStep = 0, manCustQty = 1;
         const RIDERS = ["Ashar", "Abdurehman", "Abu Bakar", "Atif", "Ahsan"];
-    const LOYALTY_PRIZES = ["Pan Pizza (S)", "Zinger Burger", "Club Sandwich", "Loaded Fries", "6pcs Wings", "Chipotle Wrap"];
+    const LOYALTY_PRIZES = ["Kiddie Gelato Cup", "Classic Brownie", "Caramel Cake (Slice)", "Waffle Quarter", "Choco Holic Sundae", "Chocolate Jumbo Cone"];
     
     let RIMINI_COORDS = { lat: 30.2197, lng: 71.4711 };
     let PRICE_PER_KM = 16;
@@ -3870,12 +3871,12 @@ function renderAdminReviews() {
 
         if (stamps >= 10) {
             msg.innerHTML =
-                "🎁 <span class='gold-label'>UNLOCKED: MYSTERY MEAL!</span><br>" +
+                "🎁 <span class='gold-label'>UNLOCKED: MYSTERY TREAT!</span><br>" +
                 "Order now to claim your gift!";
         } else {
             msg.innerHTML =
                 `Order ${10 - stamps} more times (above Rs 1000 after discount) to unlock a ` +
-                `<span class='gold-label'>Free Mystery Meal</span>`;
+                `<span class='gold-label'>Free mystery treat</span>`;
         }
 
     } catch (e) {
@@ -4901,7 +4902,7 @@ if (!custPhone.startsWith('92')) custPhone = '92' + custPhone;
     if (claimedPrize) {
         bonus = "\n\n🌟 MEMBER GIFT CLAIMED: " + claimedPrize;
         }
-    localStorage.removeItem('ovenx_stamps');
+    
 
     // Build waMsg AFTER bonus is set
     const waMsg = encodeURIComponent(
