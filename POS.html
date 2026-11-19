@@ -3080,9 +3080,12 @@ async function applyPOSOverrides() {
         if (!r) return;
         // Price override
         if (r.prices) {
-          if (typeof item.p === 'object' && typeof r.prices === 'object' && !r.prices._flat) {
-            for (let k in r.prices) item.p[k] = r.prices[k];
-          } else if (r.prices._flat) {
+          if (typeof item.p === 'object') {
+            // sized item: merge real size prices only, never collapse to a flat price
+            if (typeof r.prices === 'object' && r.prices._flat == null) {
+              for (let k in r.prices) if (k in item.p) item.p[k] = r.prices[k];
+            }
+          } else if (r.prices._flat != null) {
             item.p = r.prices._flat;
           }
         }
@@ -3107,7 +3110,7 @@ async function applyPOSOverrides() {
     (customItems || []).forEach(item => {
       const priceObj = (() => { try { return JSON.parse(item.price); } catch(e) { return parseInt(item.price); } })();
       if (!menuData[item.category]) menuData[item.category] = [];
-      if (!menuData[item.category].find(i => i.name === item.name)) {
+      if (!menuData[item.category].find(i => i.n === item.name)) {
         menuData[item.category].push({ n: item.name, p: priceObj, _custom: true });
       }
     });
@@ -8961,149 +8964,18 @@ async function fpEditPrice(k) {
   if (!item) return;
 
   const newPriceStr = await askText(`Update price for "${item.name}" (Rs):`, item.price);
-  if (newPriceStr === null) return; // cancelled
-  
-  const newPrice = parseFloat(newPriceStr);
-  if (isNaN(newPrice) || newPrice <= 0) { showToast('Invalid price', 'error'); return; }
-
-  // 1. Update in local memory
-  item.price = newPrice;
-  const isCombo = /combo/i.test(item.name);
-  
-  if (isCombo) {
-    const deal = dealsData.find(d => d.n === item.name);
-    if (deal) deal.p = newPrice;
-  } else {
-    // (Optional) Update normal menu items locally
-    for(let c in menuData) {
-      const mItem = menuData[c].find(i => i.n === item.name);
-      if (mItem) {
-        if (typeof mItem.p === 'object') {
-           // If it's a pizza with sizes, this might not catch it, but it's safe
-        } else {
-           mItem.p = newPrice;
-        }
-      }
-    }
-  }
-
-  // 2. Save to Supabase so it stays updated
-  if (isCombo) {
-    // Save to custom_deals table
-    const res = await sbWrite('custom_deals', 'upsert', 
-      [{ branch: activeBranch, name: item.name, price: newPrice, available: true }], 
-      { onConflict: 'branch,name' }); // Using upsert so it updates if exists, or inserts if new
-
-    if (res && res.error) {
-      showToast('⚠️ Price changed on screen, but failed to save to cloud', 'error');
-    } else {
-      showToast(`Price updated to Rs ${newPrice}`, 'success');
-    }
-  } else {
-    // Save to menu_overrides table for normal items
-    const res = await sbWrite('menu_overrides', 'upsert', 
-      [{ branch: activeBranch, item_name: item.name, prices: { _flat: newPrice } }], 
-      { onConflict: 'branch,item_name' });
-    
-    if (res && res.error) {
-      showToast('⚠️ Price changed on screen, but failed to save to cloud', 'error');
-    } else {
-      showToast(`Price updated to Rs ${newPrice}`, 'success');
-    }
-  }
-
-  // 3. Refresh the search results so the cashier sees the new price
-  fpSearch(document.getElementById('fp-search').value);
-}
-let _fpSelectedFlavors = [];
-let _fpCurrentItem = null;
-
-function fpAdd(k) {
-  const i = window._fpMatches[k]; 
-  if (!i) return;
-  
-  // ONLY trigger the flavour menu for Combo 3
-  const needsFlavors = i.name.trim().toLowerCase() === 'combo 3';
-  
-  if (needsFlavors) {
-    _fpCurrentItem = i;
-    _fpSelectedFlavors = [];
-    
-    // Hardcode the flavours for the modal to avoid any map conflicts
-    const flavors = ['Chicken Tikka', 'Chicken Fajita', 'Chicken Supreme', 'Cheese Lover', 'Veg Lover', 'Sicilian Pizza'];
-    
-    document.getElementById('fp-flavor-title').textContent = i.name;
-    document.getElementById('fp-flavor-sub').textContent = 'Select flavours for this combo (max 2):';
-    
-    const optsContainer = document.getElementById('fp-flavor-options');
-    optsContainer.innerHTML = flavors.map(fl => `
-      <div class="size-opt" onclick="toggleFpFlavor('${fl}', this)" style="padding:10px 4px;">
-        <div class="size-opt-name" style="font-size:12px;">${fl}</div>
-      </div>
-    `).join('');
-    
-    document.getElementById('fp-flavor-confirm').onclick = () => {
-      if (_fpSelectedFlavors.length === 0) {
-        showToast('Please select at least one flavour', 'error');
-        return;
-      }
-      const finalName = `${i.name} (${_fpSelectedFlavors.join(' + ')})`;
-      fpPush(finalName, i.price);
-      closeModal('fp-flavor-modal');
-    };
-    
-    document.getElementById('fp-flavor-modal').classList.add('open');
-    return;
-  }
-  
-  fpPush(i.name, i.price);
-}
-
-function toggleFpFlavor(flavor, btnElement) {
-  const maxFlavors = 2;
-  const idx = _fpSelectedFlavors.indexOf(flavor);
-
-  // If already selected once, add it again (allows same flavour twice)
-  if (idx > -1) {
-    if (_fpSelectedFlavors.length >= maxFlavors) {
-      // Already at max — remove one instance instead
-      _fpSelectedFlavors.splice(idx, 1);
-      _fpUpdateFlavorBtn(flavor, btnElement);
-      return;
-    }
-    _fpSelectedFlavors.push(flavor);
-    _fpUpdateFlavorBtn(flavor, btnElement);
-    return;
-  }
-
-  if (_fpSelectedFlavors.length >= maxFlavors) {
-    showToast(`Max ${maxFlavors} flavours allowed`, 'error');
-    return;
-  }
-  _fpSelectedFlavors.push(flavor);
-  _fpUpdateFlavorBtn(flavor, btnElement);
-}
-
-function _fpUpdateFlavorBtn(flavor, btnElement) {
-  const count = _fpSelectedFlavors.filter(f => f === flavor).length;
-  if (count === 0) {
-    btnElement.classList.remove('selected');
-    btnElement.innerHTML = `<div class="size-opt-name" style="font-size:12px;">${flavor}</div>`;
-  } else {
-    btnElement.classList.add('selected');
-    btnElement.innerHTML = `<div class="size-opt-name" style="font-size:12px;">${flavor} ${count > 1 ? '×' + count : ''}</div>`;
-  }
-}
-
-async function fpEditPrice(k) {
-  const item = window._fpMatches[k];
-  if (!item) return;
-
-  const newPriceStr = await askText(`Update price for "${item.name}" (Rs):`, item.price);
   if (newPriceStr === null) return;
   
   const newPrice = parseFloat(newPriceStr);
   if (isNaN(newPrice) || newPrice <= 0) { showToast('Invalid price', 'error'); return; }
+
+  // Sized items like "KitKat (Kiddie)": change this FoodPanda sale only, never write a fake override row
+  if (/\)$/.test(item.name)) {
+    item.price = newPrice;
+    showToast('Price changed for this FoodPanda sale only', 'success');
+    fpSearch(document.getElementById('fp-search').value);
+    return;
+  }
 
   item.price = newPrice;
   const isCombo = /combo/i.test(item.name);
