@@ -11740,83 +11740,118 @@ async function assignHeldTo(orderId){
 </script>
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"80b7337066234d5c97e6656da5a7fef3","r":1,"spa":2}' crossorigin="anonymous"></script>
 <script>
-/* ═══════════════ Mixed Fun DEAL ═══════════════ */
+/* ═══════════════ Mixed Fun DEAL ═══════════════
+   Same layout as before. Each product: pick category, pick flavour(s) from that category, pick size.
+   The size decides how many flavours (scoops) you can pick and the price; flavours never add to the price. */
 const MIXFUN_CATS = ['Premium Italiano', 'Gelato'];   // category names (spaces are handled automatically)
-let _mix = [null, null];                                // each slot: {cat, flavor, size}
+
+// Scoops (= flavours allowed) per size name. Edit here if a size holds a different number.
+const MIX_SCOOPS = { 'Kiddie':1, 'Twin':2, 'Three':3, 'Five':5, 'Nine':9, 'Value':3, 'Home Pack':5, 'Family Pack':7 };
+
+let _mix = [null, null];                                // each slot: {cat, picks:[flavour names], size}
 
 function _mixKey(label) { return Object.keys(menuData).find(k => k.trim() === label); }
 function _mixItems(label) {
   const k = _mixKey(label);
   return k ? menuData[k].filter(i => !i._unavailable && typeof i.p === 'object') : [];
 }
+function _mixSizes(cat) {                               // [[size, price], ...] from the category price list
+  const first = _mixItems(cat)[0];
+  return first ? Object.entries(first.p) : [];
+}
+function _mixScoops(size) { return MIX_SCOOPS[size] != null ? MIX_SCOOPS[size] : 1; }
 function _mixPrice(s) {
-  if (!s || !s.flavor || !s.size) return 0;
-  const it = _mixItems(s.cat).find(i => i.n === s.flavor);
-  return it && it.p[s.size] != null ? it.p[s.size] : 0;
+  if (!s || !s.size) return 0;
+  const f = _mixSizes(s.cat).find(x => x[0] === s.size);
+  return f ? f[1] : 0;
 }
 
 function openMixFun() {
   if (!currentOrder || !currentOrder.table) { showToast('Open a table first', 'error'); return; }
-  _mix = [{ cat: MIXFUN_CATS[0] }, { cat: MIXFUN_CATS[1] }];
+  _mix = [{ cat: MIXFUN_CATS[0], picks: [] }, { cat: MIXFUN_CATS[1], picks: [] }];
   renderMixFun();
   document.getElementById('mixfun-modal').classList.add('open');
 }
 
 function mixSetCat(i, cat) {
-  _mix[i] = { cat };                // changing category clears flavour + size
+  _mix[i] = { cat, picks: [] };                         // changing category clears flavours + size
   renderMixFun();
 }
 function mixPick(i, idx) {
   const s = _mix[i];
   const it = _mixItems(s.cat)[idx];
   if (!it) return;
-  s.flavor = it.n;
-  if (!(s.size && it.p[s.size] != null)) s.size = null;   // keep size if this flavour has it
+  const at = s.picks.indexOf(it.n);
+  if (at >= 0) { s.picks.splice(at, 1); renderMixFun(); return; }          // tap again to remove
+  if (s.size && s.picks.length >= _mixScoops(s.size)) {
+    showToast(s.size + ' has ' + _mixScoops(s.size) + ' flavour' + (_mixScoops(s.size) === 1 ? '' : 's') + ' — remove one or pick a bigger size', 'error');
+    return;
+  }
+  s.picks.push(it.n);
   renderMixFun();
 }
-function mixSize(i, size) { _mix[i].size = size; renderMixFun(); }
+function mixSize(i, size) {
+  const s = _mix[i];
+  s.size = size;
+  s.picks = s.picks.slice(0, _mixScoops(size));         // smaller size → keep only the first flavours that fit
+  renderMixFun();
+}
 
 function renderMixFun() {
   const box = document.querySelector('#mixfun-modal .modal-box');
   const st = box ? box.scrollTop : 0;
+  const keep = [...document.querySelectorAll('#mixfun-body .size-options')].map(e => e.scrollTop);
   let total = 0;
   document.getElementById('mixfun-body').innerHTML = _mix.map((s, i) => {
     const items = _mixItems(s.cat);
-    const cur = items.find(x => x.n === s.flavor);
     const price = _mixPrice(s);
     total += price;
+    const need = s.size ? _mixScoops(s.size) : 0;
+    const status = !s.picks.length && !s.size ? 'Pick flavours, then a size'
+      : s.size ? `${s.size} · ${s.picks.length} of ${need} flavour${need === 1 ? '' : 's'}${s.picks.length === need ? ' ✓' : ''}`
+      : `${s.picks.length} flavour${s.picks.length === 1 ? '' : 's'} picked — now choose a size`;
     const catBtns = MIXFUN_CATS.map(c => `
       <button onclick="mixSetCat(${i},'${c}')" style="flex:1;padding:10px;border-radius:9px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;cursor:pointer;border:2px solid ${s.cat === c ? 'var(--orange)' : 'var(--border)'};background:${s.cat === c ? 'rgba(232,143,180,0.15)' : 'var(--surface2)'};color:${s.cat === c ? 'var(--orange)' : 'var(--text2)'};">${c}</button>`).join('');
     const flavours = items.map((it, idx) => `
-      <div class="size-opt ${s.flavor === it.n ? 'selected' : ''}" onclick="mixPick(${i},${idx})" style="padding:9px 4px;">
+      <div class="size-opt ${s.picks.includes(it.n) ? 'selected' : ''}" onclick="mixPick(${i},${idx})" style="padding:9px 4px;">
         <div class="size-opt-name" style="font-size:11px;">${_xcEsc(it.n)}</div>
       </div>`).join('');
-    const sizes = cur ? Object.entries(cur.p).map(([sz, pr]) => `
+    const sizes = _mixSizes(s.cat).map(([sz, pr]) => `
       <div class="size-opt ${s.size === sz ? 'selected' : ''}" onclick="mixSize(${i},'${sz}')">
-        <div class="size-opt-name">${sz}</div><div class="size-opt-price">Rs ${pr}</div>
-      </div>`).join('') : '<div style="font-size:12px;color:var(--text3);padding:6px 2px;">Pick a flavour first</div>';
+        <div class="size-opt-name">${_xcEsc(sz)}</div><div class="size-opt-price">Rs ${pr}</div>
+      </div>`).join('');
     return `
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
           <span style="font-family:'Outfit',sans-serif;font-weight:900;letter-spacing:1px;">PRODUCT ${i + 1}</span>
           <span style="font-weight:800;color:${price ? 'var(--green)' : 'var(--text3)'};">${price ? 'Rs ' + price : '—'}</span>
         </div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:8px;">${status}</div>
         <div style="display:flex;gap:6px;margin-bottom:8px;">${catBtns}</div>
         <div class="size-options" style="grid-template-columns:repeat(auto-fill,minmax(100px,1fr));max-height:150px;overflow-y:auto;margin-bottom:8px;">${flavours}</div>
         <div class="size-options" style="margin-bottom:0;">${sizes}</div>
       </div>`;
   }).join('');
+  document.querySelectorAll('#mixfun-body .size-options').forEach((e, k) => { if (keep[k]) e.scrollTop = keep[k]; });
   document.getElementById('mixfun-total').textContent = 'Rs ' + total;
   if (box) box.scrollTop = st;
 }
 
 function confirmMixFun() {
   for (let i = 0; i < 2; i++) {
-    if (!_mix[i].flavor || !_mix[i].size) { showToast('Product ' + (i + 1) + ': choose flavour and size', 'error'); return; }
+    const s = _mix[i];
+    if (!s.picks.length) { showToast('Product ' + (i + 1) + ': choose flavour(s)', 'error'); return; }
+    if (!s.size) { showToast('Product ' + (i + 1) + ': choose a size', 'error'); return; }
+    const need = _mixScoops(s.size);
+    if (s.picks.length < need) {
+      const m = need - s.picks.length;
+      showToast('Product ' + (i + 1) + ': pick ' + m + ' more flavour' + (m === 1 ? '' : 's') + ' for ' + s.size, 'error');
+      return;
+    }
   }
   _mix.forEach((s, i) => {
     const price = _mixPrice(s);
-    addItemToOrder({ n: s.flavor + ' (' + s.size + ')', p: price }, price, 1, 'Mixed Fun ' + (i + 1) + '/2');
+    addItemToOrder({ n: 'Mixed ' + s.size + ' (' + s.cat + '): ' + s.picks.join(' + '), p: price }, price, 1, 'Mixed Fun ' + (i + 1) + '/2');
   });
   closeModal('mixfun-modal');
   showToast('Mixed Fun added ✅', 'success');
