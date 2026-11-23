@@ -9236,10 +9236,12 @@ try {
   // Fetch the whole business day (no staff filter)
   const rows = await _xcFetchAll(
     shiftStart ? shiftStart.toISOString() : _dtLocalToISO(bizDayFrom()),
-    new Date().toISOString(),
-    currentStaff
+    new Date().toISOString()
   );
-  sys = _xcCalc(rows);
+  sys = _xcCalc(rows.filter(t => t.staff === currentStaff));
+  const _allExp = _xcCalc(rows);
+  sys.exp = _allExp.exp;
+  sys.expRows = _allExp.expRows;
 } catch (e) { btn.disabled = false; showToast('Could not load system figures — check internet', 'error'); return; }
 
   const sc = Math.round(sys.cash), so = Math.round(sys.online), se = Math.round(sys.exp);
@@ -9471,8 +9473,13 @@ async function loadCrossCheck() {
       // Only THIS cashier's own bills, from his login until the moment he submitted
       let startISO = d.shift_start || _dtLocalToISO(getBizDayFromForDate(d.shift_end));
 if (new Date(startISO) < new Date(fromISO)) startISO = fromISO;   // clamp to selected range
-d._winStart = startISO;
-      d._pos = _xcCalc(await _xcFetchAll(startISO, d.shift_end, d.staff));
+      d._winStart = startISO;
+      const _winRows = await _xcFetchAll(startISO, d.shift_end);           // everyone, one fetch
+      const _mine = _xcCalc(_winRows.filter(t => t.staff === d.staff));     // cash/online: his own bills only
+      const _all  = _xcCalc(_winRows);                                      // expenses: whoever entered them
+      _mine.exp = _all.exp;
+      _mine.expRows = _all.expRows;
+      d._pos = _mine;
     }));
   } catch (e) {
     content.innerHTML = '<div style="text-align:center;padding:36px;color:var(--red);">Could not load: ' + _xcEsc(e.message) + '</div>';
