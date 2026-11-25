@@ -348,9 +348,9 @@ if(ACTIVE.some(s=>s.offline))showToast('Offline mode','error');else showToast('S
 try{const ids={};ACTIVE.forEach(s=>{if(!String(s.rid).startsWith('local-'))ids[s.key]=String(s.rid)});if(Object.keys(ids).length)localStorage.setItem('rider_session_dual',JSON.stringify({name,phone,branch,ids,ts:Date.now()}))}catch(e){}
 $('splash').style.display='none';$('app').classList.add('on');
 $('me-n').textContent=name;$('me-p').textContent=phone;$('me-b').textContent=(branch==='BWP'?'Bahawalpur':'Multan')+' · '+ACTIVE.map(s=>s.name).join(' + ');
-initAlerts();updateDutyUI();loadOrders();startPolling()}
+initAlerts();updateDutyUI();loadOrders();startPolling();gpsStart()}
 async function riderLogout(){const v=await ask({title:'End your shift?',sub:'You will be marked off duty.',opts:[{label:'End shift',val:1,cls:'red'}]});if(!v)return;
-clearInterval(_poll);await Promise.all(ACTIVE.filter(s=>s.rid&&!String(s.rid).startsWith('local-')).map(s=>s.sb.from('rider_attendance').update({status:'off-duty',punched_out:new Date().toISOString()}).eq('id',s.rid)));
+clearInterval(_poll);gpsStop();await Promise.all(ACTIVE.filter(s=>s.rid&&!String(s.rid).startsWith('local-')).map(s=>s.sb.from('rider_attendance').update({status:'off-duty',punched_out:new Date().toISOString()}).eq('id',s.rid)));
 try{localStorage.removeItem('rider_session_dual')}catch(e){}location.reload()}
 
 /* ── duty ── */
@@ -452,13 +452,14 @@ function showSlip(){$('slip').innerHTML=ACTIVE.map(slipCard).join('')+`<button c
 $('slip').style.display='block';$('slip').scrollTop=0}
 
 /* ── order actions ── */
-async function startDelivery(k,id){const s=SRCS[k];try{const{error}=await s.sb.from('kitchen_orders').update({status:'DELIVERING',delivery_started_at:new Date().toISOString()}).eq('id',id);if(error)throw error;showToast('Delivery started · '+s.name);loadOrders()}catch(e){showToast('Error: '+e.message,'error')}}
+async function startDelivery(k,id){const s=SRCS[k];try{const{error}=await s.sb.from('kitchen_orders').update({status:'DELIVERING',delivery_started_at:new Date().toISOString()}).eq('id',id);if(error)throw error;showToast('Delivery started · '+s.name);await loadOrders();gpsPush(true)}catch(e){showToast('Error: '+e.message,'error')}}
 async function markComplete(k,id){const s=SRCS[k];
  if(!await ask({title:'Confirm delivery completed?',sub:s.name+' order. Next you will choose how it was paid.',opts:[{label:'Yes, delivered',val:1,cls:'grn'}]}))return;
  const m=await ask({title:'How was this order paid?',opts:[{label:'💵 Cash',val:'cash'},{label:'📱 JazzCash / EasyPaisa',val:'jazzcash'},{label:'💳 Card',val:'card'},{label:'🏦 Bank transfer',val:'bank'},{label:'📋 Credited',sub:'Not collected from customer',val:'credited'}]});
  if(!m)return;
  try{const{data:cur}=await s.sb.from('kitchen_orders').select('delivery_started_at,created_at').eq('id',id).single();const now=new Date().toISOString();
-  const patch={status:'COMPLETED',completed_at:now,payment_method:m};if(cur&&!cur.delivery_started_at)patch.delivery_started_at=cur.created_at||now;
+  const patch={status:'COMPLETED',completed_at:now,payment_method:m};
+if(s.key==='OX'){try{const{data:ll}=await s.sb.from('kitchen_orders').select('latitude,longitude').eq('id',id).single();if(_gpsLast&&ll&&ll.latitude&&ll.longitude&&Date.now()-_gpsLast.t<120000)patch.deliver_dist_m=Math.round(hav(_gpsLast.lat,_gpsLast.lng,+ll.latitude,+ll.longitude))}catch(e){}}if(cur&&!cur.delivery_started_at)patch.delivery_started_at=cur.created_at||now;
   const{error}=await s.sb.from('kitchen_orders').update(patch).eq('id',id);if(error)throw error;
   showToast('Delivered · '+PM[m][0].replace(/^\S+\s/,'')+' recorded · '+s.name);loadOrders()}catch(e){showToast('Error: '+e.message,'error')}}
 async function cancelOrder(k,id){const s=SRCS[k];const r=await ask({title:'Why is this order being cancelled?',sub:'Tap a reason or type your own.',input:'text',ph:'Reason',
@@ -474,6 +475,29 @@ else{window.open(`https://maps.google.com/maps?q=${encodeURIComponent(decodeURIC
 function startPolling(){ACTIVE.forEach(s=>{if(!s.rid||String(s.rid).startsWith('local-'))return;
 s.sb.channel('rider-orders-'+s.key+'-'+s.rid).on('postgres_changes',{event:'UPDATE',schema:'public',table:'kitchen_orders',filter:`assigned_rider=eq.${s.rid}`},p=>{if(p.new.status==='ASSIGNED')alertNewOrder({...p.new,_s:s.key});loadOrders()}).subscribe()});
 _poll=setInterval(loadOrders,20000)}
+
+/* ── GPS sharing (feeds the dashboard live map) ── */
+const GPS_TABLE='rider_locations',GPS_EVERY=8000,GPS_SOURCES=['OX']; // dashboard only reads the OvenX project
+let _gpsWatch=null,_gpsLast=null,_gpsSent=0;
+const hav=(a,b,c,d)=>{const x=Math.PI/180,R=6371000,dl=(c-a)*x,dg=(d-b)*x,h=Math.sin(dl/2)**2+Math.cos(a*x)*Math.cos(c*x)*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
+function gpsStart(){
+ if(_gpsWatch!=null||!navigator.geolocation)return;
+ _gpsWatch=navigator.geolocation.watchPosition(
+  p=>{_gpsLast={lat:p.coords.latitude,lng:p.coords.longitude,t:Date.now()};gpsPush()},
+  e=>{console.warn('GPS',e);if(e.code===1)showToast('Allow location so the shop can track deliveries','error')},
+  {enableHighAccuracy:true,maximumAge:5000,timeout:20000})}
+function gpsStop(){if(_gpsWatch!=null&&navigator.geolocation)navigator.geolocation.clearWatch(_gpsWatch);_gpsWatch=null}
+async function gpsPush(force){
+ if(!_gpsLast||dutyStatus!=='on-duty')return;
+ if(!force&&Date.now()-_gpsSent<GPS_EVERY)return;
+ _gpsSent=Date.now();
+ const now=new Date().toISOString();
+ for(const s of ACTIVE){
+  if(!GPS_SOURCES.includes(s.key)||!s.rid||String(s.rid).startsWith('local-'))continue;
+  const rows=(s.act||[]).filter(o=>o.status==='DELIVERING').map(o=>({order_id:o.id,rider_id:o.assigned_rider,lat:_gpsLast.lat,lng:_gpsLast.lng,updated_at:now}));
+  if(!rows.length)continue;
+  try{const{error}=await s.sb.from(GPS_TABLE).upsert(rows,{onConflict:'order_id'});if(error)console.warn('GPS upload',error.message)}catch(e){console.warn(e)}
+ }}
 
 /* ── KPI (custom SVG/CSS charts, no Chart.js) ── */
 let _kpiPeriod='today',_chartTab='speed';
