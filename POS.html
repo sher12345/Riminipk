@@ -9393,19 +9393,36 @@ let _xcRows = [], _xcOpening = 0, _xcDecls = [], _xcStaffRows = [];
 // POS expense lines for one cashier shift, each with an Admin edit button
 function _xcPosExpDetail(d) {
   const rows = (d._pos && d._pos.expRows) || [];
-  if (!rows.length) return '<div style="font-size:11px;color:var(--text3);margin-top:4px;">POS: no expenses recorded</div>';
+  const addBtn = currentStaffRole === 'Admin'
+    ? `<div><button onclick="openExpAdd('${d.id}')" style="margin-top:5px;padding:2px 9px;border-radius:5px;background:rgba(39,174,96,0.12);border:1px dashed rgba(39,174,96,0.4);color:var(--green);font-size:10px;font-weight:700;cursor:pointer;">+ Add POS expense</button></div>`
+    : '';
+  if (!rows.length) return '<div style="font-size:11px;color:var(--text3);margin-top:4px;">POS: no expenses recorded</div>' + addBtn;
   return '<div style="font-size:11px;color:var(--green);margin-top:6px;line-height:1.9;"><b>POS expenses:</b><br>' +
     rows.map(t => _xcEsc((t.items_text || '').replace(/^\s*\[FINANCE\]\s*/i, '')) + ' — Rs ' + Math.abs(t.total).toLocaleString('en-PK') +
       (currentStaffRole === 'Admin' ? ` <button onclick="openExpEdit('${t.id}')" style="padding:1px 7px;border-radius:5px;background:rgba(142,68,173,0.15);border:1px solid rgba(142,68,173,0.4);color:#bb77ff;font-size:10px;font-weight:700;cursor:pointer;">✏️</button>` : '')
-    ).join('<br>') + '</div>';
+    ).join('<br>') + '</div>' + addBtn;
 }
 
-let _pxeId = null;
+let _pxeId = null, _pxeNewDecl = null;
+
+function openExpAdd(declId) {
+  if (currentStaffRole !== 'Admin') { showToast('Admin only', 'error'); return; }
+  const d = _xcDecls.find(x => String(x.id) === String(declId));
+  if (!d) { showToast('Report not found — click Load and retry', 'error'); return; }
+  _pxeId = null; _pxeNewDecl = d;
+  document.getElementById('pxe-sub').textContent = 'New expense for ' + d.staff + ' — shift ending ' + new Date(d.shift_end).toLocaleString('en-PK');
+  document.getElementById('pxe-type').value = 'slip';
+  const wrap = document.getElementById('pxe-desc-wrap');
+  wrap.innerHTML = expDescFieldHTML('pxe');
+  expSetDesc(wrap, 'pxe', '');
+  document.getElementById('pxe-amt').value = '';
+  document.getElementById('pxe-modal').classList.add('open');
+}
 function openExpEdit(id) {
   if (currentStaffRole !== 'Admin') { showToast('Admin only', 'error'); return; }
   const t = _xcRows.find(x => String(x.id) === String(id));
   if (!t) { showToast('Expense not found — click Load and retry', 'error'); return; }
-  _pxeId = t.id;
+  _pxeId = t.id; _pxeNewDecl = null;
   const raw = t.items_text || '';
   const isFin = /^\s*\[FINANCE\]/i.test(raw);
   const clean = raw.replace(/^\s*\[FINANCE\]\s*/i, '').trim();
@@ -9419,8 +9436,35 @@ function openExpEdit(id) {
 }
 
 async function savePxe() {
-  if (currentStaffRole !== 'Admin' || !_pxeId) return;
+  if (currentStaffRole !== 'Admin' || (!_pxeId && !_pxeNewDecl)) return;
   if (!isOnline) { showToast('No internet connection', 'error'); return; }
+  if (!_pxeId) {                                   // ── creating a missing expense ──
+    const nd = expGetDesc(document.getElementById('pxe-desc-wrap'), 'pxe');
+    const na = Math.round(Number(document.getElementById('pxe-amt').value));
+    if (!nd) { showToast('Pick or type what the expense was for', 'error'); return; }
+    if (!na || na <= 0) { showToast('Amount must be above 0', 'error'); return; }
+    const fin = document.getElementById('pxe-type').value === 'finance';
+    const txt = (fin ? '[FINANCE] ' : '') + nd;
+    // time it 1 minute before the shift ended so it falls inside that cashier's window
+    const when = new Date(new Date(_pxeNewDecl.shift_end).getTime() - 60000);
+    const pk = new Date(when.getTime() + 5 * 3600000);
+    if (pk.getUTCHours() < BIZ_DAY_START_HOUR) pk.setUTCDate(pk.getUTCDate() - 1);
+    const bizDate = pk.toISOString().slice(0, 10);
+    const b = document.getElementById('pxe-save-btn'); b.disabled = true;
+    const r = await sbWrite('shift_transactions', 'insert', [{
+      id: genId(), branch: activeBranch, date: bizDate, created_at: when.toISOString(),
+      bill_no: 'EXP-X' + genId().slice(0, 6).toUpperCase(), type: 'Expense', table_loc: '',
+      items_text: txt, subtotal: na, total: -na, method: 'expense',
+      staff: _pxeNewDecl.staff, return_reason: nd
+    }]);
+    b.disabled = false;
+    if (r && r.error) { showToast('Could not add expense: ' + r.error, 'error'); return; }
+    _pxeNewDecl = null;
+    closeModal('pxe-modal');
+    showToast('Expense added ✅', 'success');
+    loadCrossCheck();
+    return;
+  }
   const desc = expGetDesc(document.getElementById('pxe-desc-wrap'), 'pxe');
   const amt = Math.round(Number(document.getElementById('pxe-amt').value));
   if (!desc) { showToast('Pick or type what the expense was for', 'error'); return; }
