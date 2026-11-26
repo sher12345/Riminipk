@@ -9260,7 +9260,7 @@ try {
     shiftStart ? shiftStart.toISOString() : _dtLocalToISO(bizDayFrom()),
     new Date().toISOString()
   );
-  sys = _xcCalc(rows.filter(t => t.staff === currentStaff));
+  sys = _xcCalc(rows.filter(t => t.staff === currentStaff || t.staff === 'Rimini Fleet'));
   const _allExp = _xcCalc(rows);
   sys.exp = _allExp.exp;
   sys.expRows = _allExp.expRows;
@@ -9608,7 +9608,7 @@ async function loadCrossCheck() {
 if (new Date(startISO) < new Date(fromISO)) startISO = fromISO;   // clamp to selected range
       d._winStart = startISO;
       const _winRows = await _xcFetchAll(startISO, d.shift_end);           // everyone, one fetch
-      const _mine = _xcCalc(_winRows.filter(t => t.staff === d.staff));     // cash/online: his own bills only
+      const _mine = _xcCalc(_winRows.filter(t => t.staff === d.staff || t.staff === 'Rimini Fleet'));   // his own bills + delivery cash cleared during his shift
       const _all  = _xcCalc(_winRows);                                      // expenses: whoever entered them
       _mine.exp = _all.exp;
       _mine.expRows = _all.expRows;
