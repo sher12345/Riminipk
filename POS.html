@@ -7889,7 +7889,32 @@ async function exportClosingStatement() {
   const finals = Object.values(sessions).map(l => l.sort((a, b) => (a.attempt_no || 1) - (b.attempt_no || 1))[l.length - 1]);
   const hasDecl = finals.length > 0;
   const submitted = sum(finals, d => d.cash_amount);
-  const difference = Math.round(submitted - (cashInHand - opening));
+
+  // POS figures per shift — same window + same rule as the Cross-Check tab
+  const _bizStartMs = iso => {
+    const pk = new Date(new Date(iso).getTime() + 5 * 3600000);
+    if (pk.getUTCHours() < BIZ_DAY_START_HOUR) pk.setUTCDate(pk.getUTCDate() - 1);
+    return new Date(_dtLocalToISO(pk.toISOString().slice(0, 10) + 'T' + String(BIZ_DAY_START_HOUR).padStart(2, '0') + ':00')).getTime();
+  };
+  const _sessEnd = {};
+  decls.forEach(d => {
+    const k = d.session_id || d.id, t = new Date(d.shift_end).getTime();
+    if (!_sessEnd[k] || t > _sessEnd[k]) _sessEnd[k] = t;
+  });
+  const _ends = Object.entries(_sessEnd);
+  const shiftRows = finals.map(d => {
+    const k = d.session_id || d.id, endMs = _sessEnd[k];
+    let startMs = _bizStartMs(d.shift_end);
+    _ends.forEach(([k2, t2]) => { if (k2 !== k && t2 < endMs && t2 > startMs) startMs = t2; });
+    const p = _xcCalc(txs.filter(t => { const ms = new Date(t.created_at).getTime(); return ms >= startMs && ms <= endMs; }));
+    const net = p.cash - p.exp;
+    return {
+      staff: d.staff, startMs, endMs, attempts: (sessions[k] || []).length,
+      says: { cash: Number(d.cash_amount) || 0, online: Number(d.online_amount) || 0, exp: Number(d.expenses_amount) || 0 },
+      pos:  { cash: Math.round(net < 0 ? p.cash : net), online: Math.round(p.online), exp: Math.round(p.exp) }
+    };
+  }).sort((a, b) => a.endMs - b.endMs);
+  const difference = Math.round(submitted - sum(shiftRows, s => s.pos.cash));
   const feeFromDrawer = sum(deliv.filter(t => ['card','bank','jazzcash'].includes(t.method)), t => t.rider_fee);
   const feeInCash = sum(deliv, t => t.rider_fee) - feeFromDrawer;
   const cnt = m => bills.filter(t => t.method === m).length;
@@ -7911,7 +7936,7 @@ async function exportClosingStatement() {
   const ws = wb.addWorksheet('Closing Statement', { views: [{ showGridLines: false }] });
   // A | P1: B C D | E | P2: F G H | I | P3: J K L | M
   ws.columns = [{width:2},{width:34},{width:8},{width:15},{width:2},{width:34},{width:8},{width:15},{width:2},{width:34},{width:8},{width:15},{width:2}];
-  for (let rr = 1; rr <= 45; rr++) for (let cc = 1; cc <= 30; cc++) ws.getCell(rr, cc).fill = solid(C.bg);
+  for (let rr = 1; rr <= 45 + shiftRows.length * 5 + 8; rr++) for (let cc = 1; cc <= 30; cc++) ws.getCell(rr, cc).fill = solid(C.bg);
 
   const P = [2, 6, 10];                 // first column of each panel
   const START = 6;
@@ -8031,18 +8056,53 @@ async function exportClosingStatement() {
   line(2, 'Items Removed After KOT', by('item-void').length, sum(by('item-void'), t => Math.abs(t.total)), { color: C.red });
   line(2, 'Discarded Orders', by('discarded').length, sum(by('discarded'), t => Math.abs(t.total)), { color: C.red });
 
+  // ---------- SHIFT-WISE: cashier report vs POS ----------
+  if (shiftRows.length) {
+    const fmtT = ms => new Date(ms).toLocaleString('en-PK', { ...tz, day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true });
+    const bandRow = (row, text, fill, size, color, h) => {
+      ws.mergeCells(row, 2, row, 12);
+      const c = ws.getCell(row, 2);
+      c.value = text; c.fill = fill;
+      c.font = { name: FONT, bold: true, size, color: { argb: color } };
+      c.alignment = { horizontal: 'center', vertical: 'middle' };
+      ws.getRow(row).height = h;
+    };
+    const t0 = Math.max(...cur) + 1;
+    bandRow(t0, 'SHIFT-WISE — CASHIER REPORT vs POS', solid('FF141B34'), 12, C.violet, 26);
+    cur[0] = cur[1] = cur[2] = t0 + 1;
+
+    shiftRows.forEach(s => {
+      const hr = Math.max(...cur);
+      bandRow(hr, '👤 ' + s.staff + '   ·   ' + fmtT(s.startMs) + '  →  ' + fmtT(s.endMs) + (s.attempts > 1 ? '   ·   ' + s.attempts + ' attempts (final shown)' : ''),
+        grad('FF2A3768', 'FF18213D'), 11, C.text, 24);
+      cur[0] = cur[1] = cur[2] = hr + 1;
+      alt[0] = alt[1] = alt[2] = false;
+
+      const trio = (pi, title, says, pos) => {
+        const d = Math.round(says - pos);
+        line(pi, title + ' — cashier says', '', says, { color: C.text });
+        line(pi, title + ' — POS actual', '', pos, { color: C.green });
+        line(pi, d === 0 ? title + ' — ✓ MATCH' : title + ' — DIFFERENCE', '', d,
+          { fill: d === 0 ? grad('FF1B7F4C', 'FF14A39A') : grad('FFA8324A', 'FF6B1F5A'), bold: true, color: 'FFFFFFFF' });
+      };
+      trio(0, 'Cash', s.says.cash, s.pos.cash);
+      trio(1, 'Online', s.says.online, s.pos.online);
+      trio(2, 'Expenses', s.says.exp, s.pos.exp);
+    });
+  }
+
   // ---------- footer ----------
   const last = Math.max(...cur) + 1;
   ws.getRow(last - 1).height = Math.max(ws.getRow(last - 1).height || 0, 22);
   ws.mergeCells(last, 2, last, 12);
   const f = ws.getCell(last, 2);
-  f.value = 'Printed by ' + currentStaff + ' — ' + new Date().toLocaleString('en-PK', tz) + '   |   ' + bills.length + ' bills   |   Difference = Submitted Cash − (Cash In Hand − Opening Balance)';
+  f.value = 'Printed by ' + currentStaff + ' — ' + new Date().toLocaleString('en-PK', tz) + '   |   ' + bills.length + ' bills   |   Difference = Submitted Cash − POS cash per shift (same as Cross-Check)';
   f.font = { name: FONT, size: 9, color: { argb: C.mute } };
   f.alignment = { horizontal: 'center', vertical: 'middle' };
   ws.getRow(last).height = 20;
 
   ws.pageSetup = {
-    paperSize: 9, orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 1,
+    paperSize: 9, orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0,
     horizontalCentered: true, verticalCentered: true, printArea: 'A1:M' + (last + 1),
     margins: { left: 0.25, right: 0.25, top: 0.25, bottom: 0.25, header: 0, footer: 0 }
   };
