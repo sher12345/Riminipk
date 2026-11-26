@@ -2112,6 +2112,17 @@ async function doLogin() {
       showLoginErr('🔒 Branch closed by Admin after last shift. Reopens at ' + gate.reopenTime + '.');
       return;
     }
+    // Locked out once this person has submitted a finished end-of-shift report for this business day
+    try {
+      const { data: _done } = await sb.from('cashier_declarations')
+        .select('attempt_no,has_mismatch')
+        .eq('branch', activeBranch).eq('staff', staffRecord.name)
+        .gte('shift_end', _dtLocalToISO(bizDayFrom()));
+      if ((_done || []).some(r => r.has_mismatch === false || (r.attempt_no || 1) >= 2)) {
+        showLoginErr('🔒 Your shift is already closed for today. You can log in again after the Admin closes the day.');
+        return;
+      }
+    } catch (e) { console.warn('shift lock check failed — allowing login:', e.message); }
   }
 
   currentStaff = staffRecord.name;
@@ -7875,13 +7886,7 @@ async function exportClosingStatement() {
   const cashInHand = computeCashInHand(txs, opening);
   const sessions = {};
   decls.forEach(d => { const k = d.session_id || d.id; (sessions[k] = sessions[k] || []).push(d); });
-  const _latestByStaff = {};
-  Object.values(sessions).forEach(l => {
-    const last = l.sort((a, b) => (a.attempt_no || 1) - (b.attempt_no || 1))[l.length - 1];
-    const prev = _latestByStaff[last.staff];
-    if (!prev || new Date(last.shift_end) > new Date(prev.shift_end)) _latestByStaff[last.staff] = last;
-  });
-  const finals = Object.values(_latestByStaff);
+  const finals = Object.values(sessions).map(l => l.sort((a, b) => (a.attempt_no || 1) - (b.attempt_no || 1))[l.length - 1]);
   const hasDecl = finals.length > 0;
   const submitted = sum(finals, d => d.cash_amount);
   const difference = Math.round(submitted - (cashInHand - opening));
@@ -9256,10 +9261,12 @@ async function submitDeclaration() {
 let sys;
 try {
   // Fetch the whole business day (no staff filter)
-  const rows = await _xcFetchAll(
-    _dtLocalToISO(bizDayFrom()),
-    new Date().toISOString()
-  );
+  let _startISO = _dtLocalToISO(bizDayFrom());
+  const { data: _prev } = await sb.from('cashier_declarations').select('shift_end')
+    .eq('branch', activeBranch).gte('shift_end', _startISO).neq('session_id', _declSession)
+    .order('shift_end', { ascending: false }).limit(1);
+  if (_prev && _prev.length) _startISO = _prev[0].shift_end;
+  const rows = await _xcFetchAll(_startISO, new Date().toISOString());
   sys = _xcCalc(rows);
   const _allExp = _xcCalc(rows);
   sys.exp = _allExp.exp;
@@ -9601,18 +9608,20 @@ async function loadCrossCheck() {
       return `${yyyy}-${mm}-${dd}T10:00`;
     };
 
-    // Recalculate _pos for ALL declarations (including old ones) based on the WHOLE day
+    // Shift-wise window: previous cashier's logout -> this cashier's logout
+    const _sessEnd = {};
+    _xcDecls.forEach(d => {
+      const k = d.session_id || d.id, t = new Date(d.shift_end).getTime();
+      if (!_sessEnd[k] || t > _sessEnd[k]) _sessEnd[k] = t;
+    });
+    const _ends = Object.entries(_sessEnd);
     await Promise.all(_xcDecls.map(async d => {
-      // Whole business day up to the moment she submitted (same logic as Closing)
-      let startISO = _dtLocalToISO(getBizDayFromForDate(d.shift_end));
-      if (new Date(startISO) < new Date(fromISO)) startISO = fromISO;   // clamp to selected range
-      d._winStart = startISO;
-      const _winRows = await _xcFetchAll(startISO, d.shift_end);
-      const _mine = _xcCalc(_winRows);   // everyone's bills, no staff filter
-      const _all  = _xcCalc(_winRows);                                      // expenses: whoever entered them
-      _mine.exp = _all.exp;
-      _mine.expRows = _all.expRows;
-      d._pos = _mine;
+      const k = d.session_id || d.id, endMs = _sessEnd[k];
+      let startMs = new Date(_dtLocalToISO(getBizDayFromForDate(d.shift_end))).getTime();
+      _ends.forEach(([k2, t2]) => { if (k2 !== k && t2 < endMs && t2 > startMs) startMs = t2; });
+      d._winStart = new Date(startMs).toISOString();
+      const _winRows = await _xcFetchAll(d._winStart, new Date(endMs).toISOString());
+      d._pos = _xcCalc(_winRows);
     }));
   } catch (e) {
     content.innerHTML = '<div style="text-align:center;padding:36px;color:var(--red);">Could not load: ' + _xcEsc(e.message) + '</div>';
@@ -9653,7 +9662,8 @@ function renderCrossCheck() {
     // Always use the dynamically calculated whole-day totals, overriding old DB values
   const posOf = d => {
     if (!d._pos) return { cash: 0, online: 0, exp: 0 }; // Fallback safety
-    return { cash: d._pos.cash - d._pos.exp, online: d._pos.online, exp: d._pos.exp };
+    const _net = d._pos.cash - d._pos.exp;
+    return { cash: _net < 0 ? d._pos.cash : _net, online: d._pos.online, exp: d._pos.exp };
   };
   const isWrong = d => { const p = posOf(d);
     return Math.round(Number(d.cash_amount) - p.cash) !== 0 || Math.round(Number(d.online_amount) - p.online) !== 0 || Math.round(Number(d.expenses_amount) - p.exp) !== 0; };
@@ -9661,13 +9671,7 @@ function renderCrossCheck() {
   const sessions = {};
   decls.forEach(d => { const k = d.session_id || d.id; (sessions[k] = sessions[k] || []).push(d); });
   const sessList = Object.values(sessions).map(l => l.sort((a, b) => (a.attempt_no || 1) - (b.attempt_no || 1)));
-  const _latestByStaff = {};
-  sessList.forEach(l => {
-    const last = l[l.length - 1];
-    const cur = _latestByStaff[last.staff];
-    if (!cur || new Date(last.shift_end) > new Date(cur.shift_end)) _latestByStaff[last.staff] = last;
-  });
-  const finals = Object.values(_latestByStaff);
+  const finals = sessList.map(l => l[l.length - 1]);
 
   const sessHtml = sessList.map(list => {
     const first = list[0], last = list[list.length - 1];
