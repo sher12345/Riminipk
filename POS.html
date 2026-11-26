@@ -1522,6 +1522,28 @@ img,canvas,video{max-width:100%}
         </div>
   </div>
 </div>
+<!-- ADMIN: EDIT POS EXPENSE -->
+<div class="modal-backdrop" id="pxe-modal">
+  <div class="modal-box" style="max-width:460px;">
+    <div class="modal-title">✏️ Edit POS Expense</div>
+    <div class="modal-sub" id="pxe-sub"></div>
+    <div class="of-label">Type</div>
+    <select id="pxe-type" class="of-input" style="font-size:15px;">
+      <option value="slip">Till (paid from drawer)</option>
+      <option value="finance">Finance (owner / bank)</option>
+    </select>
+    <div class="of-label">What for</div>
+    <div id="pxe-desc-wrap" style="margin-bottom:10px;"></div>
+    <div class="of-label">Amount (Rs)</div>
+    <input class="of-input" type="number" id="pxe-amt" min="0" placeholder="0">
+    <div class="modal-actions" style="margin-top:6px;">
+      <button class="modal-cancel" style="background:rgba(123,79,163,0.15);color:var(--red);" onclick="deletePxe()">🗑️ Delete</button>
+      <button class="modal-cancel" onclick="closeModal('pxe-modal')">Cancel</button>
+      <button class="modal-confirm" id="pxe-save-btn" onclick="savePxe()">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- FOODPANDA FLAVOUR MODAL -->
 <div class="modal-backdrop" id="fp-flavor-modal">
   <div class="modal-box">
@@ -9367,6 +9389,73 @@ async function saveXcEdit() {
 }
 
 let _xcRows = [], _xcOpening = 0, _xcDecls = [], _xcStaffRows = [];
+
+// POS expense lines for one cashier shift, each with an Admin edit button
+function _xcPosExpDetail(d) {
+  const rows = (d._pos && d._pos.expRows) || [];
+  if (!rows.length) return '<div style="font-size:11px;color:var(--text3);margin-top:4px;">POS: no expenses recorded</div>';
+  return '<div style="font-size:11px;color:var(--green);margin-top:6px;line-height:1.9;"><b>POS expenses:</b><br>' +
+    rows.map(t => _xcEsc((t.items_text || '').replace(/^\s*\[FINANCE\]\s*/i, '')) + ' — Rs ' + Math.abs(t.total).toLocaleString('en-PK') +
+      (currentStaffRole === 'Admin' ? ` <button onclick="openExpEdit('${t.id}')" style="padding:1px 7px;border-radius:5px;background:rgba(142,68,173,0.15);border:1px solid rgba(142,68,173,0.4);color:#bb77ff;font-size:10px;font-weight:700;cursor:pointer;">✏️</button>` : '')
+    ).join('<br>') + '</div>';
+}
+
+let _pxeId = null;
+function openExpEdit(id) {
+  if (currentStaffRole !== 'Admin') { showToast('Admin only', 'error'); return; }
+  const t = _xcRows.find(x => String(x.id) === String(id));
+  if (!t) { showToast('Expense not found — click Load and retry', 'error'); return; }
+  _pxeId = t.id;
+  const raw = t.items_text || '';
+  const isFin = /^\s*\[FINANCE\]/i.test(raw);
+  const clean = raw.replace(/^\s*\[FINANCE\]\s*/i, '').trim();
+  document.getElementById('pxe-sub').textContent = (t.staff || '—') + ' — ' + new Date(t.created_at).toLocaleString('en-PK');
+  document.getElementById('pxe-type').value = isFin ? 'finance' : 'slip';
+  const wrap = document.getElementById('pxe-desc-wrap');
+  wrap.innerHTML = expDescFieldHTML('pxe');
+  expSetDesc(wrap, 'pxe', clean);
+  document.getElementById('pxe-amt').value = Math.abs(t.total || 0);
+  document.getElementById('pxe-modal').classList.add('open');
+}
+
+async function savePxe() {
+  if (currentStaffRole !== 'Admin' || !_pxeId) return;
+  if (!isOnline) { showToast('No internet connection', 'error'); return; }
+  const desc = expGetDesc(document.getElementById('pxe-desc-wrap'), 'pxe');
+  const amt = Math.round(Number(document.getElementById('pxe-amt').value));
+  if (!desc) { showToast('Pick or type what the expense was for', 'error'); return; }
+  if (!amt || amt <= 0) { showToast('Amount must be above 0', 'error'); return; }
+  const isFin = document.getElementById('pxe-type').value === 'finance';
+  const text = (isFin ? '[FINANCE] ' : '') + desc;
+  const btn = document.getElementById('pxe-save-btn');
+  btn.disabled = true;
+  const { data, error } = await sb.from('shift_transactions').update({
+    items_text: text, return_reason: desc, subtotal: amt, total: -amt   // expenses are always stored negative
+  }).eq('id', _pxeId).select();
+  btn.disabled = false;
+  if (error || !data || !data.length) { showToast('Save failed — check connection / permissions', 'error'); console.error(error); return; }
+  const live = completedOrders.find(o => o.id === _pxeId);
+  if (live) {
+    live.total = -amt; live.itemsText = text; live.expenseDesc = text;
+    live.items = [{ name: text, price: amt, qty: 1, note: '' }];
+    _recalcAllTotals();
+  }
+  closeModal('pxe-modal');
+  showToast('Expense updated ✅', 'success');
+  loadCrossCheck();
+}
+
+async function deletePxe() {
+  if (currentStaffRole !== 'Admin' || !_pxeId) return;
+  if (!confirm('Delete this expense? Cash in drawer will go back up by this amount.')) return;
+  const { error } = await sb.from('shift_transactions').delete().eq('id', _pxeId);
+  if (error) { showToast('Delete failed', 'error'); return; }
+  completedOrders = completedOrders.filter(o => o.id !== _pxeId);
+  _recalcAllTotals();
+  closeModal('pxe-modal');
+  showToast('Expense deleted ✅', 'success');
+  loadCrossCheck();
+}
 function _xcExpDetail(d) {
   const items = Array.isArray(d.expense_items) ? d.expense_items : [];
   if (!items.length) return '';
@@ -9544,7 +9633,7 @@ function renderCrossCheck() {
       const items = [['Cash', d.cash_amount, p.cash], ['Online', d.online_amount, p.online], ['Expenses', d.expenses_amount, p.exp]];
       return items.map((it, i) => `<tr${i === 0 ? ' style="border-top:2px solid var(--border);"' : ''}>
         ${i === 0 ? `<td rowspan="3" style="font-weight:800;vertical-align:top;white-space:nowrap;">Attempt ${d.attempt_no || 1}<br><span style="font-size:11px;color:var(--text3);font-weight:600;">${fmtT(d.created_at || d.shift_end)}</span>${currentStaffRole === 'Admin' ? `<br><button onclick="openXcEdit('${d.id}')" style="margin-top:6px;padding:4px 10px;border-radius:6px;background:rgba(142,68,173,0.15);border:1px solid rgba(142,68,173,0.4);color:#bb77ff;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;cursor:pointer;">✏️ Edit</button>` : ''}</td>` : ''}
-        <td style="font-weight:600;">${it[0]}${it[0] === 'Expenses' ? _xcExpDetail(d) : ''}</td>
+        <td style="font-weight:600;">${it[0]}${it[0] === 'Expenses' ? _xcExpDetail(d) + _xcPosExpDetail(d) : ''}</td>
         <td style="text-align:right;font-weight:700;color:var(--gold);">${R(it[1])}</td>
         <td style="text-align:right;font-weight:700;color:var(--green);">${R(it[2])}</td>
         <td>${diffCell(it[1], it[2])}</td></tr>`).join('')
@@ -9584,7 +9673,7 @@ const missing = [...new Set(rows.map(t => t.staff).filter(Boolean))].filter(n =>
           <td style="color:var(--text2);font-size:12px;">${_xcEsc([t.items_text, (t.return_reason && t.return_reason !== t.items_text) ? '— ' + t.return_reason : ''].filter(Boolean).join(' '))}</td>
           <td style="text-align:right;font-weight:700;">${R(Math.abs(t.total))}</td>
           ${currentStaffRole === 'Admin' ? `<td style="text-align:center;">
-            <button onclick="openAdminTxModal('${t.bill_no}', ${t.date === todayKey()}, '${t.date}', '${t.branch || activeBranch}', '${t.id}')" style="padding:4px 10px;border-radius:6px;border:1px solid rgba(142,68,173,0.4);background:rgba(142,68,173,0.1);color:#bb77ff;font-size:11px;font-weight:bold;cursor:pointer;" title="Edit / Delete">✏️ Edit</button>
+            <button onclick="${t.method === 'expense' ? `openExpEdit('${t.id}')` : `openAdminTxModal('${t.bill_no}', ${t.date === todayKey()}, '${t.date}', '${t.branch || activeBranch}', '${t.id}')`}" style="padding:4px 10px;border-radius:6px;border:1px solid rgba(142,68,173,0.4);background:rgba(142,68,173,0.1);color:#bb77ff;font-size:11px;font-weight:bold;cursor:pointer;" title="Edit / Delete">✏️ Edit</button>
           </td>` : ''}
         </tr>`).join('')}</tbody>
       </table>
