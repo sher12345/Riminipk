@@ -9257,10 +9257,10 @@ let sys;
 try {
   // Fetch the whole business day (no staff filter)
   const rows = await _xcFetchAll(
-    shiftStart ? shiftStart.toISOString() : _dtLocalToISO(bizDayFrom()),
+    _dtLocalToISO(bizDayFrom()),
     new Date().toISOString()
   );
-  sys = _xcCalc(rows.filter(t => t.staff === currentStaff || t.staff === 'Rimini Fleet'));
+  sys = _xcCalc(rows);
   const _allExp = _xcCalc(rows);
   sys.exp = _allExp.exp;
   sys.expRows = _allExp.expRows;
@@ -9603,12 +9603,12 @@ async function loadCrossCheck() {
 
     // Recalculate _pos for ALL declarations (including old ones) based on the WHOLE day
     await Promise.all(_xcDecls.map(async d => {
-      // Only THIS cashier's own bills, from his login until the moment he submitted
-      let startISO = d.shift_start || _dtLocalToISO(getBizDayFromForDate(d.shift_end));
-if (new Date(startISO) < new Date(fromISO)) startISO = fromISO;   // clamp to selected range
+      // Whole business day up to the moment she submitted (same logic as Closing)
+      let startISO = _dtLocalToISO(getBizDayFromForDate(d.shift_end));
+      if (new Date(startISO) < new Date(fromISO)) startISO = fromISO;   // clamp to selected range
       d._winStart = startISO;
-      const _winRows = await _xcFetchAll(startISO, d.shift_end);           // everyone, one fetch
-      const _mine = _xcCalc(_winRows.filter(t => t.staff === d.staff || t.staff === 'Rimini Fleet'));   // his own bills + delivery cash cleared during his shift
+      const _winRows = await _xcFetchAll(startISO, d.shift_end);
+      const _mine = _xcCalc(_winRows);   // everyone's bills, no staff filter
       const _all  = _xcCalc(_winRows);                                      // expenses: whoever entered them
       _mine.exp = _all.exp;
       _mine.expRows = _all.expRows;
