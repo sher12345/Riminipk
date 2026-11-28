@@ -1633,6 +1633,7 @@ img,canvas,video{max-width:100%}
 <label><input type="checkbox" id="ns-perm-expense" checked> Record Expenses</label>
 <label><input type="checkbox" id="ns-perm-credit"> Customer Credit</label>
 <label><input type="checkbox" id="ns-perm-totals"> Totals Tab</label>
+<label><input type="checkbox" id="ns-perm-crosscheck"> Cross-Check Tab</label>
       </div>
     </div>
 
@@ -3187,7 +3188,7 @@ async function applyPOSOverrides() {
 // ══════════════════════════════════
 // STAFF / USER MANAGEMENT (admin only)
 // ══════════════════════════════════
-const PERM_KEYS = ['cash','closing','history','delivery','analytics','void','view_totals','admin_tools','print_logout','expense','credit','totals'];
+const PERM_KEYS = ['cash','closing','history','delivery','analytics','void','view_totals','admin_tools','print_logout','expense','credit','totals','crosscheck'];
 
 function applyPOSPermissions() {
   const perms = currentStaffPermissions || {};
@@ -3203,7 +3204,7 @@ function applyPOSPermissions() {
   gate('nav-closing',     isAdmin || perms.closing !== false);
   gate('nav-history',     isAdmin || perms.history !== false);
   gate('nav-closeshifts', isAdmin || perms.admin_tools === true);
-  gate('nav-crosscheck', isAdmin || perms.admin_tools === true);
+  gate('nav-crosscheck', isAdmin || perms.crosscheck === true || perms.admin_tools === true);
   gate('nav-credit', isAdmin || perms.credit === true);
   gate('nav-totals', isAdmin || perms.totals === true);
   gate('nav-analytics-1', isAdmin || perms.analytics === true);
@@ -3268,6 +3269,7 @@ async function renderStaffTable() {
           <label><input type="checkbox" id="sp_${s.id}_expense" ${p.expense!==false?'checked':''}> Record Expenses</label>
           <label><input type="checkbox" id="sp_${s.id}_credit" ${p.credit===true?'checked':''}> Customer Credit</label>
           <label><input type="checkbox" id="sp_${s.id}_totals" ${p.totals===true?'checked':''}> Totals Tab</label>
+          <label><input type="checkbox" id="sp_${s.id}_crosscheck" ${p.crosscheck===true?'checked':''}> Cross-Check Tab</label>
         </div>
         <button onclick="saveStaffPermissions('${s.id}')" style="padding:6px 14px;border-radius:7px;background:var(--purple);color:white;border:none;font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;cursor:pointer;">💾 Save Access</button>
       </td>
@@ -3854,7 +3856,7 @@ document.addEventListener('click', () => {
 function switchView(v) {
   const isAdmin = currentStaffRole === 'Admin' || currentStaffRole === 'Manager';
   const perms = currentStaffPermissions || {};
-  const blocked = { cash: perms.cash===false, closing: perms.closing===false, history: perms.history===false, delivery: perms.delivery===false, crosscheck: perms.admin_tools !== true, credit: perms.credit !== true, totals: perms.totals !== true };
+  const blocked = { cash: perms.cash===false, closing: perms.closing===false, history: perms.history===false, delivery: perms.delivery===false, crosscheck: perms.crosscheck !== true && perms.admin_tools !== true, credit: perms.credit !== true, totals: perms.totals !== true };
   if (!isAdmin && blocked[v]) { showToast('Access denied', 'error'); v = 'tables'; }
 
   document.querySelectorAll('.pos-view').forEach(x => x.classList.remove('active'));
