@@ -3250,6 +3250,7 @@ async function renderStaffTable() {
       <td><span class="status-badge ${s.active!==false?'sb-ready':'sb-waiting'}">${s.active!==false?'Active':'Disabled'}</span></td>
       <td style="white-space:nowrap;">
         <button onclick="toggleStaffPermRow('${s.id}')" style="padding:4px 9px;border-radius:6px;background:rgba(142,68,173,0.15);border:1px solid rgba(142,68,173,0.3);color:#bb77ff;font-size:11px;font-weight:700;cursor:pointer;">🔑 Access</button>
+        <button onclick="changeStaffPin('${s.id}','${s.name}')" style="padding:4px 9px;border-radius:6px;background:rgba(41,128,185,0.15);border:1px solid rgba(41,128,185,0.3);color:#5dade2;font-size:11px;font-weight:700;cursor:pointer;">🔢 PIN</button>
         <button onclick="toggleStaffActive('${s.id}', ${s.active === false})" style="padding:4px 9px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:11px;font-weight:700;cursor:pointer;">${s.active === false ? 'Enable' : 'Disable'}</button>
         <button onclick="deleteStaffUser('${s.id}','${s.name}')" ${isSelf?'disabled':''} style="padding:4px 9px;border-radius:6px;background:rgba(123,79,163,0.15);border:1px solid rgba(123,79,163,0.3);color:var(--red);font-size:11px;font-weight:700;cursor:pointer;">🗑️</button>
       </td>
@@ -3309,6 +3310,22 @@ async function createStaffUser() {
   document.getElementById('ns-pin').value = '';
   showToast(`Staff "${name}" added ✅`, 'success');
   renderStaffTable();
+}
+
+async function changeStaffPin(id, name) {
+  if (!isOnline) { showToast('Staff changes need an internet connection', 'error'); return; }
+  const newPin = await askText('New PIN for "' + name + '" (4-6 digits):');
+  if (newPin === null) return;
+  const pin = newPin.trim();
+  if (!/^\d{4,6}$/.test(pin)) { showToast('PIN must be 4 to 6 digits', 'error'); return; }
+
+  const { data, error } = await sb.from('staff').update({ pin }).eq('id', id).select();
+  if (error || !data || !data.length) {
+    showToast('Could not change PIN — check permissions', 'error');
+    console.error(error);
+    return;
+  }
+  showToast('PIN updated for ' + name + ' ✅', 'success');
 }
 
 async function toggleStaffActive(id, newState) {
